@@ -1,0 +1,49 @@
+{
+  "name": "Abstract API",
+  "logo": {
+    "dark": "/logo/dark.png",
+    "light": "/logo/light.png"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#687DED",
+    "light": "#A3B1FF",
+    "dark": "#1B1643"
+  },
+  "topbarLinks": [
+    {
+      "name": "Pricing",
+      "url": "https://www.abstractapi.com/api/phone-validation-api#pricing"
+    },
+    {
+      "name": "Login",
+      "url": "https://app.abstractapi.com/users/login"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Signup",
+    "url": "https://app.abstractapi.com/users/signup"
+  },
+  "anchors": [
+    {
+      "name": "Contact Us",
+      "icon": "envelope",
+      "url": "mailto:team@abstractapi.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "API's to Verify",
+      "pages": [
+        "email-validation",
+        "phone-validation"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "facebook": "https://www.facebook.com/abstractapi",
+    "twitter": "https://twitter.com/abstractapi",
+    "linkedin": "https://www.linkedin.com/company/abstractapi",
+    "website": "https://www.abstractapi.com/"
+  }
+}

@@ -1,0 +1,247 @@
+---
+title: 'Email Validation API'
+description: Improve your delivery rate and clean your email lists with Abstract's industry-leading email verification API
+icon: 'envelope'
+api: 'GET https://emailvalidation.abstractapi.com/v1'
+hideApiMarker: true
+---
+
+## Getting Started
+
+Abstract's Email Validation and Verification API requires only your unique API key (`api_key`) and a single email (`email`):
+
+```bash
+https://emailvalidation.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& email = johnsmith@gmail.com
+```
+
+This was a successful request, and all available details about that email were returned:
+
+<ResponseExample>
+
+```json
+{
+  "email": "johnsmith@gmail.com",
+  "autocorrect": "",
+  "deliverability": "DELIVERABLE",
+  "quality_score": 0.9,
+  "is_valid_format": {
+    "value": true,
+    "text": "TRUE"
+  },
+  "is_free_email": {
+    "value": true,
+    "text": "TRUE"
+  },
+  "is_disposable_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_role_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_catchall_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_mx_found": {
+    "value": true,
+    "text": "TRUE"
+  },
+  "is_smtp_valid": {
+    "value": true,
+    "text": "TRUE"
+  },
+  "quality_score": 0.9
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="string" required>
+  Your unique API key. Note that each user has unique API keys _for each of
+  Abstract's APIs_, so your Exchange Rate API key will not work for your IP
+  Geolocation API key, for example.
+</ParamField>
+
+<ParamField query="email" type="String" required>
+  The email address to validate.
+</ParamField>
+
+<ParamField query="auto_correct" type="boolean" default="true">
+  You can chose to disable auto correct. To do so, just input `false` for the
+  `auto_correct` param. By default, `auto_correct` is turned on.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="email" type="String">
+  The value for "email" that was entered into the request.
+</ResponseField>
+
+<ResponseField name="auto_correct" type="String">
+  If a typo has been detected then this parameter returns a suggestion of the
+  correct email (e.g., johnsmith@gmial.com => johnsmith@gmail.com). If no typo
+  is detected then this is empty.
+</ResponseField>
+
+<ResponseField name="deliverability" type="String">
+  Abstract's evaluation of the deliverability of the email. Possible values are:
+  `DELIVERABLE`, `UNDELIVERABLE`, `RISKY`, and `UNKNOWN`
+</ResponseField>
+
+<ResponseField name="quality_score" type="Number">
+  An internal decimal score between 0.01 and 0.99 reflecting Abstract's
+  confidence in the quality and deliverability of the submitted email.
+</ResponseField>
+
+<ResponseField name="is_valid_format" type="Boolean">
+  Is `true` if the email follows the format of "address @ domain . TLD". If any
+  of those elements are missing or if they contain extra or incorrect special
+  characters, then it returns `false`.
+</ResponseField>
+
+<ResponseField name="is_free_email" type="Boolean">
+  Is `true` if the email's domain is found among Abstract's list of free email
+  providers (e.g., [Gmail](https://www.gmail.com/),
+  [Yahoo](https://mail.yahoo.com/), etc).
+</ResponseField>
+
+<ResponseField name="is_disposable_email" type="Boolean">
+  Is `true` if the email's domain is found among Abstract's list of disposable
+  email providers (e.g., [Mailinator](https://www.mailinator.com/),
+  [Yopmail](http://www.yopmail.com/en/), etc).
+</ResponseField>
+
+<ResponseField name="is_role_email" type="Boolean">
+  Is `true` if the email's local part (e.g., the "to" part) appears to be for a
+  role rather than individual. Examples of this include "team@", "sales@",
+  info@", etc.
+</ResponseField>
+
+<ResponseField name="is_catchall_email" type="Boolean">
+  Is `true` if the domain is configured to [catch all
+  email](https://www.corporatecomm.com/faqs/other-questions/what-is-a-catch-all-account).
+</ResponseField>
+
+<ResponseField name="is_mx_found" type="Boolean">
+  Is `true` if [MX Records](https://en.wikipedia.org/wiki/MX_record) for the
+  domain can be found. **Only available on paid plans. Will return `null` and
+  `UNKNOWN` on free plans**.
+</ResponseField>
+
+<ResponseField name="is_smtp_valid" type="Boolean">
+  Is `true` if the [SMTP
+  check](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol) of the
+  email was successful. If the check fails, but other checks are valid, we'll
+  return the email as `UNKNOWN`. We recommend not blocking signups or form
+  submissions when an SMTP check fails.
+</ResponseField>
+
+## Request examples
+
+### Checking a misspelled email
+
+In the example below, we show the request and response when the API detects a possible misspelling in the requested email.
+
+Note that even if a possible misspelling is detected, all of the other checks on that email (e.g., free email, disposable domain, etc) will still be done against the original submitted email, not against the autocorrected email.
+
+```bash
+https://emailvalidation.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& email = johnsmith@gmial.con
+```
+
+The request was valid and successful, and so it returns the following:
+
+```json
+{
+  "email": "johnsmith@glmai.com",
+  "autocorrect": "johnsmith@gmail.com",
+  "deliverability": "UNDELIVERABLE",
+  "quality_score": 0.0,
+  "is_valid_format": {
+    "value": true,
+    "text": "TRUE"
+  },
+  "is_free_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_disposable_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_role_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_catchall_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_mx_found": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_smtp_valid": {
+    "value": false,
+    "text": "FALSE"
+  }
+}
+```
+
+### Checking a malformed email
+
+In the example below, we show the request and response for an email does not follow the proper format. If the email fails the `is_valid_format` check, then the other checks (e.g., `is_free_email`, `is_role_email`) will not be performed and will be returned as false
+
+```bash
+https://emailvalidation.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& email = johnsmith
+```
+
+The request was valid and successful, and so it returns the following:
+
+```json
+{
+  "email": "johnsmith",
+  "autocorrect": "",
+  "deliverability": "UNDELIVERABLE",
+  "quality_score": 0.0,
+  "is_valid_format": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_free_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_disposable_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_role_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_catchall_email": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_mx_found": {
+    "value": false,
+    "text": "FALSE"
+  },
+  "is_smtp_valid": {
+    "value": false,
+    "text": "FALSE"
+  }
+}
+```
