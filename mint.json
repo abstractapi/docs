@@ -33,10 +33,9 @@
   ],
   "navigation": [
     {
-      "group": "API's to Verify",
+      "group": "Email Validation",
       "pages": [
-        "email-validation",
-        "phone-validation"
+        "email-validation"
       ]
     }
   ],
