@@ -35,7 +35,7 @@
     {
       "group": "Email Validation",
       "pages": [
-        "email-validation/endpoint"
+        "email-validation"
       ]
     }
   ],
