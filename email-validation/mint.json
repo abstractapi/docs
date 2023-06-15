@@ -29,18 +29,6 @@
       "name": "Contact Us",
       "icon": "envelope",
       "url": "mailto:team@abstractapi.com"
-    },
-    {
-      "name": "Email Validation",
-      "icon": "envelope",
-      "url": "email-validation",
-      "isDefaultHidden": true
-    },
-    {
-      "name": "Phone Validation",
-      "icon": "phone",
-      "url": "phone-validation",
-      "isDefaultHidden": true
     }
   ],
   "navigation": [
@@ -48,12 +36,6 @@
       "group": "Email Validation",
       "pages": [
         "email-validation/endpoint"
-      ]
-    },
-    {
-      "group": "Phone validation",
-      "pages": [
-        "phone-validation/endpoint"
       ]
     }
   ],
