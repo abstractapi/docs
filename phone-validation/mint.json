@@ -13,7 +13,7 @@
   "topbarLinks": [
     {
       "name": "Pricing",
-      "url": "https://www.abstractapi.com/api/phone-validation-api#pricing"
+      "url": "https://app.abstractapi.com/api/phone-validation/pricing/select"
     },
     {
       "name": "Login",
@@ -21,8 +21,8 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Signup",
-    "url": "https://app.abstractapi.com/users/signup?target=/api/phone-validation/pricing/select"
+    "name": "Dashboard",
+    "url": "https://app.abstractapi.com/api/phone-validation/tester"
   },
   "anchors": [
     {
