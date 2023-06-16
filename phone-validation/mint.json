@@ -22,7 +22,7 @@
   ],
   "topbarCtaButton": {
     "name": "Signup",
-    "url": "https://app.abstractapi.com/users/signup"
+    "url": "https://app.abstractapi.com/users/signup?target=/api/phone-validation/pricing/select"
   },
   "anchors": [
     {
