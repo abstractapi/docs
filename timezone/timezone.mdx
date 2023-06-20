@@ -1,0 +1,141 @@
+---
+title: 'Timezones API'
+icon: 'phone'
+description: "Abstract's Phone Number Validation and Verification API is a fast, lightweight, modern, and RESTful JSON API for determining the validity and other details of phone numbers from over 190 countries."
+api: 'GET https://phonevalidation.abstractapi.com/v1'
+hideApiMarker: true
+---
+
+It's very simple to use: you only need to submit your API key and a phone number, and the API will respond as assessment of its validity, as well as additional details like the carrier details, line type, region and city details, and more.
+
+Validating and verifying phone numbers is a critical step to reducing the chances of low quality data and fraudulent or risky users in your website or application.
+
+## Getting started
+
+### REST
+
+The Phone Number Validation and Verification API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The Phone Number Validation and Verification API requires all communications to be secured TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's API are versioned. The Phone Number Validation and Verification API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's Phone Number Validation and Verification API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Number Validation and Verification and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Base URL
+
+```
+https://phonevalidation.abstractapi.com/v1/
+```
+
+### Validation endpoint
+
+Abstract's Phone Number Validation and Verification API simply requires your unique API key and the phone number you'd like to check:
+
+```
+https://phonevalidation.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& phone = 14154582468
+```
+
+This was a successful request, so the valid phone number and details associated with it are returned below:
+
+<ResponseExample>
+
+```json
+{
+  "phone": "14152007986",
+  "valid": true,
+  "format": {
+    "international": "+14152007986",
+    "local": "(415) 200-7986"
+  },
+  "country": {
+    "code": "US",
+    "name": "United States",
+    "prefix": "+1"
+  },
+  "location": "California",
+  "type": "mobile",
+  "carrier": "T-Mobile USA, Inc."
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys _for each of
+  Abstract's APIs_, so your Phone Validation API key will not work for your IP
+  Geolocation API key, for example.
+</ParamField>
+
+<ParamField query="phone" type="String" required>
+  The phone number to validate and verify.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="phone" type="String">
+  The phone number submitted for validation and verification.
+</ResponseField>
+
+<ResponseField name="valid" type="Boolean">
+  Is true if the phone number submitted is valid.
+</ResponseField>
+
+<ResponseField name="format" type="Object">
+  The object containing the `international` and `local` formats of the submitted
+  number
+</ResponseField>
+
+<ResponseField name="format.international" type="String">
+  The international format of the submitted phone number. This means appending
+  the phone number's country code and a "+" at the beginning.
+</ResponseField>
+
+<ResponseField name="format.local" type="String">
+  The local or national format of the submitted phone number. For example, it
+  removes any international formatting, such as "+1" in the case of the US.
+</ResponseField>
+
+<ResponseField name="country" type="Object">
+  The object containing details of the phone number's country
+</ResponseField>
+
+<ResponseField name="country.code" type="String">
+  The country's two letter [ISO 3166-1 alpha-2
+  code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+</ResponseField>
+
+<ResponseField name="country.name" type="String">
+  The name of the country in which the phone number is registered.
+</ResponseField>
+
+<ResponseField name="country.prefix" type="String">
+  The country's [calling code
+  prefix](https://en.wikipedia.org/wiki/List_of_country_calling_codes).
+</ResponseField>
+
+<ResponseField name="location" type="String">
+  As much location details as are available from our data. This can include the
+  region, state / province, and in some cases down to the city.
+</ResponseField>
+
+<ResponseField name="type" type="String">
+  The type of phone number. The possible values are: `Landline`, `Mobile`,
+  `Satellite`, `Premium`, `Paging`, `Special`, `Toll_Free`, and `Unknown`.
+</ResponseField>
+
+<ResponseField name="carrier" type="String">
+  The carrier that the number is registered with.
+</ResponseField>

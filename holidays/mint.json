@@ -1,0 +1,48 @@
+{
+  "name": "Abstract API",
+  "logo": {
+    "dark": "/logo/dark.png",
+    "light": "/logo/light.png"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#687DED",
+    "light": "#A3B1FF",
+    "dark": "#1B1643"
+  },
+  "topbarLinks": [
+    {
+      "name": "Pricing",
+      "url": "https://app.abstractapi.com/api/phone-validation/pricing/select"
+    },
+    {
+      "name": "Login",
+      "url": "https://app.abstractapi.com/users/login"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.abstractapi.com/api/phone-validation/tester"
+  },
+  "anchors": [
+    {
+      "name": "Contact Us",
+      "icon": "envelope",
+      "url": "mailto:team@abstractapi.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Holidays API",
+      "pages": [
+        "holidays"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "facebook": "https://www.facebook.com/abstractapi",
+    "twitter": "https://twitter.com/abstractapi",
+    "linkedin": "https://www.linkedin.com/company/abstractapi",
+    "website": "https://www.abstractapi.com/"
+  }
+}
