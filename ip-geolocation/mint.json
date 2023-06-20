@@ -13,7 +13,7 @@
   "topbarLinks": [
     {
       "name": "Pricing",
-      "url": "https://app.abstractapi.com/api/phone-validation/pricing/select"
+      "url": "https://app.abstractapi.com/api/ip-geolocation/pricing/select"
     },
     {
       "name": "Login",
@@ -22,7 +22,7 @@
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://app.abstractapi.com/api/phone-validation/tester"
+    "url": "https://app.abstractapi.com/api/ip-geolocation/tester"
   },
   "anchors": [
     {
