@@ -1,141 +1,485 @@
 ---
-title: 'Holidays API'
-icon: 'phone'
-description: "Abstract's Phone Number Validation and Verification API is a fast, lightweight, modern, and RESTful JSON API for determining the validity and other details of phone numbers from over 190 countries."
-api: 'GET https://phonevalidation.abstractapi.com/v1'
+title: 'Public Holidays API'
+icon: 'calendar'
+description: "Abstract's Public Holidays API is a fast, lightweight, modern, and RESTful JSON API that allows you to get the public, local, religious, and other holidays of a particular country."
+api: 'GET https://holidays.abstractapi.com/v1/'
 hideApiMarker: true
 ---
 
-It's very simple to use: you only need to submit your API key and a phone number, and the API will respond as assessment of its validity, as well as additional details like the carrier details, line type, region and city details, and more.
-
-Validating and verifying phone numbers is a critical step to reducing the chances of low quality data and fraudulent or risky users in your website or application.
+It's simple to use: you only need to submit your `api_key` and a two letter country code `country`. The API will return the public holidays for that country.
 
 ## Getting started
 
 ### REST
 
-The Phone Number Validation and Verification API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Public Holidays API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Phone Number Validation and Verification API requires all communications to be secured TLS 1.2 or greater.
+The Public Holidays API requires all communications to be secured TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Phone Number Validation and Verification API is currently on Version 1.
+All of Abstract's API are versioned. The Public Holidays API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Phone Number Validation and Verification API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Number Validation and Verification and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Public Holidays API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Public Holidays and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+https://holidays.abstractapi.com/v1/
 ```
 
 ### Validation endpoint
 
-Abstract's Phone Number Validation and Verification API simply requires your unique API key and the phone number you'd like to check:
+Abstract's Public Holidays API simply requires your unique API key and the country you'd like to get the public holidays from.
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+https://holidays.abstractapi.com/v1/
 ? api_key = YOUR_UNIQUE_API_KEY
-& phone = 14154582468
+& country = SG
 ```
 
-This was a successful request, so the valid phone number and details associated with it are returned below:
+This was a successful request, so the public holidays from Singapur and details associated with it are returned below:
 
 <ResponseExample>
 
 ```json
-{
-  "phone": "14152007986",
-  "valid": true,
-  "format": {
-    "international": "+14152007986",
-    "local": "(415) 200-7986"
-  },
-  "country": {
-    "code": "US",
-    "name": "United States",
-    "prefix": "+1"
-  },
-  "location": "California",
-  "type": "mobile",
-  "carrier": "T-Mobile USA, Inc."
-}
+[
+    {
+        "name": "New Year's Day",
+        "name_local": "",
+        "language": "",
+        "description": "",
+        "country": "SG",
+        "location": "Singapore",
+        "type": "National",
+        "date": "01/01/2023",
+        "date_year": "2023",
+        "date_month": "01",
+        "date_day": "01",
+        "week_day": "Sunday"
+    },
+    {
+        "name": "New Year's Day",
+        "name_local": "",
+        "language": "",
+        "description": "",
+        "country": "SG",
+        "location": "Singapore",
+        "type": "National",
+        "date": "01/02/2023",
+        "date_year": "2023",
+        "date_month": "01",
+        "date_day": "02",
+        "week_day": "Monday"
+    },
+    {
+        "name": "Chinese Lunar New Year's Day",
+        "name_local": "",
+        "language": "",
+        "description": "",
+        "country": "SG",
+        "location": "Singapore",
+        "type": "National",
+        "date": "01/23/2023",
+        "date_year": "2023",
+        "date_month": "01",
+        "date_day": "23",
+        "week_day": "Monday"
+    },
+
+    ......
+    
+    {
+        "name": "Christmas Eve",
+        "name_local": "",
+        "language": "",
+        "description": "",
+        "country": "SG",
+        "location": "Singapore",
+        "type": "Observance",
+        "date": "12/24/2023",
+        "date_year": "2023",
+        "date_month": "12",
+        "date_day": "24",
+        "week_day": "Sunday"
+    },
+    {
+        "name": "Christmas Day",
+        "name_local": "",
+        "language": "",
+        "description": "",
+        "country": "SG",
+        "location": "Singapore",
+        "type": "National",
+        "date": "12/25/2023",
+        "date_year": "2023",
+        "date_month": "12",
+        "date_day": "25",
+        "week_day": "Monday"
+    },
+    {
+        "name": "New Year's Eve",
+        "name_local": "",
+        "language": "",
+        "description": "",
+        "country": "SG",
+        "location": "Singapore",
+        "type": "Observance",
+        "date": "12/31/2023",
+        "date_year": "2023",
+        "date_month": "12",
+        "date_day": "31",
+        "week_day": "Sunday"
+    }
+]
 ```
 
 </ResponseExample>
 
+### Checking specific days, months, or years
+
+It's also possible to specify the day, month, or year. Note that if you specify a day, you must also include a month and year. If you specify a month, you must also specify the year.
+
+For example, this return all the holidays in the US in January 2021:
+
+```
+https://holidays.abstractapi.com/v1/  
+? api_key = YOUR_UNIQUE_API_KEY  
+& country = US
+& year = 2021
+& month = 01
+```
+
+And this would return any holidays in the US on January 1, 2021:
+
+```
+https://holidays.abstractapi.com/v1/  
+? api_key = YOUR_UNIQUE_API_KEY  
+& country = US
+& year = 2021
+& month = 01
+& day = 01
+```
+
+> Note: if the query is valid but there are no holidays in the checked period, you will get a 200 response with an empty array.
+
 ### Request parameters
 
 <ParamField query="api_key" type="String" required>
-  Your unique API key. Note that each user has unique API keys _for each of
-  Abstract's APIs_, so your Phone Validation API key will not work for your IP
-  Geolocation API key, for example.
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Public Holiday API key will not work for your IP Geolocation API key, for example.
 </ParamField>
 
-<ParamField query="phone" type="String" required>
-  The phone number to validate and verify.
+<ParamField query="country" type="String" required>
+  The country's two letter ISO 3166-1 alpha-2 code.
+</ParamField>
+
+<ParamField query="year" type="String">
+  The year to get the holiday(s) from. Note that this is optional on paid plans and required on free plans, and if left blank it will default to the current year.
+</ParamField>
+
+<ParamField query="month" type="String">
+  The month to get the holiday(s) from, in the format of 1-12 (e.g., 1 is January, 2 is February, etc). Note that this is optional on paid plans and required on free plans, and if left blank it will default to the current month.
+</ParamField>
+
+<ParamField query="day" type="String">
+  The day to get the holiday(s) from, in the format of 1-31. Note that this is optional on paid plans and required on free plans, and if left blank it will default to the current day.
 </ParamField>
 
 ### Response parameters
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
 
-<ResponseField name="phone" type="String">
-  The phone number submitted for validation and verification.
+<ResponseField name="name" type="String">
+  The name of the holiday.
 </ResponseField>
 
-<ResponseField name="valid" type="Boolean">
-  Is true if the phone number submitted is valid.
+<ResponseField name="name_local" type="String">
+  The local name of the holiday.
 </ResponseField>
 
-<ResponseField name="format" type="Object">
-  The object containing the `international` and `local` formats of the submitted
-  number
+<ResponseField name="language" type="String">
+  If the name_local is used, then this specifies the language in which it is in.
 </ResponseField>
 
-<ResponseField name="format.international" type="String">
-  The international format of the submitted phone number. This means appending
-  the phone number's country code and a "+" at the beginning.
+<ResponseField name="description" type="String">
+  A short description or additional details on the holiday, such as whether it is part of a long weekend.
 </ResponseField>
 
-<ResponseField name="format.local" type="String">
-  The local or national format of the submitted phone number. For example, it
-  removes any international formatting, such as "+1" in the case of the US.
-</ResponseField>
-
-<ResponseField name="country" type="Object">
-  The object containing details of the phone number's country
-</ResponseField>
-
-<ResponseField name="country.code" type="String">
-  The country's two letter [ISO 3166-1 alpha-2
-  code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-</ResponseField>
-
-<ResponseField name="country.name" type="String">
-  The name of the country in which the phone number is registered.
-</ResponseField>
-
-<ResponseField name="country.prefix" type="String">
-  The country's [calling code
-  prefix](https://en.wikipedia.org/wiki/List_of_country_calling_codes).
+<ResponseField name="country" type="String">
+  The country in which the holiday occurs, returned directly from the request.
 </ResponseField>
 
 <ResponseField name="location" type="String">
-  As much location details as are available from our data. This can include the
-  region, state / province, and in some cases down to the city.
+  The location or region in which the holiday occurs, if the holiday is that specific.
 </ResponseField>
 
 <ResponseField name="type" type="String">
-  The type of phone number. The possible values are: `Landline`, `Mobile`,
-  `Satellite`, `Premium`, `Paging`, `Special`, `Toll_Free`, and `Unknown`.
+  The type of holiday it is (e.g., public holiday, religious holiday, etc).
 </ResponseField>
 
-<ResponseField name="carrier" type="String">
-  The carrier that the number is registered with.
+<ResponseField name="date" type="String">
+  The date on which the holiday occurs.
 </ResponseField>
+
+<ResponseField name="date_year" type="String">
+  The year in which the holiday occurs.
+</ResponseField>
+
+<ResponseField name="date_month" type="String">
+  The month in which the holiday occurs.
+</ResponseField>
+
+<ResponseField name="date_day" type="String">
+  The day in which the holiday occurs.
+</ResponseField>
+
+<ResponseField name="week_day" type="String">
+  The day of the week on which the holiday occurs (Monday, Tuesday, Wednesday, etc.)
+</ResponseField>
+
+## Code samples and libraries
+
+Please see the top of this page for code samples for these languages and more. If we're missing a code sample, or if you'd like to contribute a code sample or library in exchange for free credits, email us at: team@abstractapi.com
+
+## Country Codes
+
+Below is a list of two-letter ISO 3166 Alpha 2 country codes to use when querying for a specific country.
+
+| Country name        | Country code        |
+| ------------------- | ------------------- |
+| Afghanistan | AF |
+| Albania | AL |
+| Algeria | DZ |
+| American Samoa | AS |
+| Andorra | AD |
+| Angola | AO |
+| Anguilla | AI |
+| Antigua and Barbuda | AG |
+| Argentina | AR |
+| Armenia | AM |
+| Aruba | AW |
+| Australia | AU |
+| Austria | AT |
+| Azerbaijan | AZ |
+| Bahrain | BH |
+| Bangladesh | BD |
+| Barbados | BB |
+| Belarus | BY |
+| Belgium | BE |
+| Belize | BZ |
+| Benin | BJ |
+| Bermuda | BM |
+| Bhutan | BT |
+| Bolivia | BO |
+| Bosnia and Herzegovina | BA |
+| Botswana | BW |
+| Brazil | BR |
+| British Virgin Islands | VG |
+| Brunei | BN |
+| Bulgaria | BG |
+| Burkina Faso | BF |
+| Burundi | BI |
+| Cabo Verde | CV |
+| Cambodia | KH |
+| Cameroon | CM |
+| Canada | CA |
+| Cayman Islands | KY |
+| Central African Republic | CF |
+| Chad | TD |
+| Chile | CL |
+| China | CN |
+| Colombia | CO |
+| Comoros | KM |
+| Congo | CG |
+| Congo Democratic Republic | CD |
+| Cook Islands | CK |
+| Costa Rica | CR |
+| Cote d'Ivoire | CI |
+| Croatia | HR |
+| Cuba | CU |
+| Curaçao | CW |
+| Cyprus | CY |
+| Czechia | CZ |
+| Denmark | DK |
+| Djibouti | DJ |
+| Dominica | DM |
+| Dominican Republic | DO |
+| East Timor | TL |
+| Ecuador | EC |
+| Egypt | EG |
+| El Salvador | SV |
+| Equatorial Guinea | GQ |
+| Eritrea | ER |
+| Estonia | EE |
+| eSwatini | SZ |
+| Ethiopia | ET |
+| Falkland Islands | FK |
+| Faroe Islands | FO |
+| Fiji | FJ |
+| Finland | FI |
+| France | FR |
+| French Guiana | GF |
+| French Polynesia | PF |
+| Gabon | GA |
+| Gambia | GM |
+| Georgia | GE |
+| Germany | DE |
+| Ghana | GH |
+| Gibraltar | GI |
+| Greece | GR |
+| Greenland | GL |
+| Grenada | GD |
+| Guadeloupe | GP |
+| Guam | GU |
+| Guatemala | GT |
+| Guernsey | GG |
+| Guinea | GN |
+| Guinea Bissau | GW |
+| Guyana | GY |
+| Haiti | HT |
+| Honduras | HN |
+| Hong Kong | HK |
+| Hungary | HU |
+| Iceland | IS |
+| India | IN |
+| Indonesia | ID |
+| Iran | IR |
+| Iraq | IQ |
+| Ireland | IE |
+| Isle of Man | IM |
+| Israel | IL |
+| Italy | IT |
+| Jamaica | JM |
+| Japan | JP |
+| Jersey | JE |
+| Jordan | JO |
+| Kazakhstan | KZ |
+| Kenya | KE |
+| Kiribati | KI |
+| Kosovo | XK |
+| Kuwait | KW |
+| Kyrgyzstan | KG |
+| Laos | LA |
+| Latvia | LV |
+| Lebanon | LB |
+| Lesotho | LS |
+| Liberia | LR |
+| Libya | LY |
+| Liechtenstein | LI |
+| Lithuania | LT |
+| Luxembourg | LU |
+| Macau | MO |
+| Madagascar | MG |
+| Malawi | MW |
+| Malaysia | MY |
+| Maldives | MV |
+| Mali | ML |
+| Malta | MT |
+| Marshall Islands | MH |
+| Martinique | MQ |
+| Mauritania | MR |
+| Mauritius | MU |
+| Mayotte | YT |
+| Mexico | MX |
+| Micronesia | FM |
+| Moldova | MD |
+| Monaco | MC |
+| Mongolia | MN |
+| Montenegro | ME |
+| Montserrat | MS |
+| Morocco | MA |
+| Mozambique | MZ |
+| Myanmar | MM |
+| Namibia | NA |
+| Nauru | NR |
+| Nepal | NP |
+| Netherlands | NL |
+| New Caledonia | NC |
+| New Zealand | NZ |
+| Nicaragua | NI |
+| Niger | NE |
+| Nigeria | NG |
+| North Korea | KP |
+| North Macedonia | MK |
+| Northern Mariana Islands | MP |
+| Norway | NO |
+| Oman | OM |
+| Pakistan | PK |
+| Palau | PW |
+| Panama | PA |
+| Papua New Guinea | PG |
+| Paraguay | PY |
+| Peru | PE |
+| Philippines | PH |
+| Poland | PL |
+| Portugal | PT |
+| Puerto Rico | PR |
+| Qatar | QA |
+| Reunion | RE |
+| Romania | RO |
+| Russia | RE |
+| Rwanda | RW |
+| Saint Helena | SH |
+| Saint Kitts and Nevis | KN |
+| Saint Lucia | LC |
+| Saint Martin | MF |
+| Saint Pierre and Miquelon | PM |
+| Saint Vincent and the Grenadines | VC |
+| Samoa | WS |
+| San Marino | SM |
+| Sao Tome and Principe | ST |
+| Saudi Arabia | SA |
+| Senegal | SN |
+| Serbia | RS |
+| Seychelles | SC |
+| Sierra Leone | SL |
+| Singapore | SG |
+| Sint Maarten | SX |
+| Slovakia | SK |
+| Slovenia | SI |
+| Solomon Islands | SB |
+| Somalia | SO |
+| South Africa | ZA |
+| South Korea | KR |
+| South Sudan | SS |
+| Spain | ES |
+| Sri Lanka | LK |
+| St. Barts | BL |
+| Sudan | SD |
+| Suriname | SR |
+| Sweden | SE |
+| Switzerland | CH |
+| Syria | SY |
+| Taiwan | TW |
+| Tajikistan | TJ |
+| Tanzania | TZ |
+| Thailand | TH |
+| The Bahamas | BH |
+| Togo | TG |
+| Tonga | TO |
+| Trinidad and Tobago | TT |
+| Tunisia | TN |
+| Turkey | TR |
+| Turkmenistan | TM |
+| Turks and Caicos Islands | TC |
+| Tuvalu | TV |
+| Uganda | UG |
+| Ukraine | UA |
+| United Arab Emirates | AE |
+| United Kingdom | GB |
+| United States | US |
+| Uruguay | UY |
+| US Virgin Islands | VI |
+| Uzbekistan | UZ |
+| Vanuatu | VU |
+| Vatican City (Holy See) | VA |
+| Venezuela | VE |
+| Vietnam | VN |
+| Wallis and Futuna | WF |
+| Yemen | YE |
+| Zambia | ZM |
+| Zimbabwe | ZW |
