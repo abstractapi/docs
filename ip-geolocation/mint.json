@@ -14,10 +14,6 @@
     {
       "name": "Pricing",
       "url": "https://app.abstractapi.com/api/ip-geolocation/pricing/select"
-    },
-    {
-      "name": "Login",
-      "url": "https://app.abstractapi.com/users/login"
     }
   ],
   "topbarCtaButton": {

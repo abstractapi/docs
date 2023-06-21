@@ -1,47 +1,45 @@
 ---
 title: 'Company Enrichment API'
-icon: 'phone'
-description: "Abstract's Phone Number Validation and Verification API is a fast, lightweight, modern, and RESTful JSON API for determining the validity and other details of phone numbers from over 190 countries."
-api: 'GET https://phonevalidation.abstractapi.com/v1'
+icon: 'building'
+description: "With Abstract's Company Enrichment API, you can get the company details of any domain."
+api: 'GET https://companyenrichment.abstractapi.com/v1'
 hideApiMarker: true
 ---
 
-It's very simple to use: you only need to submit your API key and a phone number, and the API will respond as assessment of its validity, as well as additional details like the carrier details, line type, region and city details, and more.
-
-Validating and verifying phone numbers is a critical step to reducing the chances of low quality data and fraudulent or risky users in your website or application.
+It's very simple to use: you are only required to send your unique `api_key` and the `domain` you want to enrich to get information about the company.
 
 ## Getting started
 
 ### REST
 
-The Phone Number Validation and Verification API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Company Enrichment API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Phone Number Validation and Verification API requires all communications to be secured TLS 1.2 or greater.
+The Company Enrichment API requires all communications to be secured TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Phone Number Validation and Verification API is currently on Version 1.
+All of Abstract's API are versioned. The Company Enrichment API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Phone Number Validation and Verification API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Number Validation and Verification and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Company Enrichment API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Company Enrichment and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+https://companyenrichment.abstractapi.com/v1
 ```
 
 ### Validation endpoint
 
-Abstract's Phone Number Validation and Verification API simply requires your unique API key and the phone number you'd like to check:
+Abstract's Company Enrichment API simply requires your unique API key and the domain you'd like to enrich:
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+https://companyenrichment.abstractapi.com/v1
 ? api_key = YOUR_UNIQUE_API_KEY
-& phone = 14154582468
+& domain = airbnb.com
 ```
 
 This was a successful request, so the valid phone number and details associated with it are returned below:
@@ -50,20 +48,14 @@ This was a successful request, so the valid phone number and details associated 
 
 ```json
 {
-  "phone": "14152007986",
-  "valid": true,
-  "format": {
-    "international": "+14152007986",
-    "local": "(415) 200-7986"
-  },
-  "country": {
-    "code": "US",
-    "name": "United States",
-    "prefix": "+1"
-  },
-  "location": "California",
-  "type": "mobile",
-  "carrier": "T-Mobile USA, Inc."
+    "name": "Airbnb",
+    "domain": "airbnb.com",
+    "year_founded": 2008,
+    "industry": "Internet",
+    "employees_count": 14604,
+    "locality": "San Francisco",
+    "country": "United States",
+    "linkedin_url": "linkedin.com/company/airbnb"
 }
 ```
 
@@ -77,65 +69,471 @@ This was a successful request, so the valid phone number and details associated 
   Geolocation API key, for example.
 </ParamField>
 
-<ParamField query="phone" type="String" required>
-  The phone number to validate and verify.
+<ParamField query="domain" type="String" required>
+  The domain of the company you want to get data from.
+</ParamField>
+
+<ParamField query="fields" type="String">
+  You can chose to only receive a few fields from the JSON response. To do so, you can include a fields value in the query parameters with a comma separated list of the top-level keys you want to be returned. For example, adding ?fields=city will return only the city in the JSON response.
 </ParamField>
 
 ### Response parameters
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
 
-<ResponseField name="phone" type="String">
-  The phone number submitted for validation and verification.
+<ResponseField name="name" type="String">
+  The name of the company.
 </ResponseField>
 
-<ResponseField name="valid" type="Boolean">
-  Is true if the phone number submitted is valid.
+<ResponseField name="domain" type="String">
+  The domain the company website is hosted on.
 </ResponseField>
 
-<ResponseField name="format" type="Object">
-  The object containing the `international` and `local` formats of the submitted
-  number
+<ResponseField name="country" type="String">
+  The country the company is based in.
 </ResponseField>
 
-<ResponseField name="format.international" type="String">
-  The international format of the submitted phone number. This means appending
-  the phone number's country code and a "+" at the beginning.
+<ResponseField name="locality" type="String">
+  The city or regiont he company headquarter is based in.
 </ResponseField>
 
-<ResponseField name="format.local" type="String">
-  The local or national format of the submitted phone number. For example, it
-  removes any international formatting, such as "+1" in the case of the US.
+<ResponseField name="employees_count" type="String">
+  The approximate number of employees of the company.
 </ResponseField>
 
-<ResponseField name="country" type="Object">
-  The object containing details of the phone number's country
+<ResponseField name="industry" type="String">
+  The industry the company is operating in.
 </ResponseField>
 
-<ResponseField name="country.code" type="String">
-  The country's two letter [ISO 3166-1 alpha-2
-  code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+<ResponseField name="year_founded" type="Uint32">
+  The year the company was founded.
 </ResponseField>
 
-<ResponseField name="country.name" type="String">
-  The name of the country in which the phone number is registered.
+<ResponseField name="linkedin_url" type="String">
+  The linkedin URL of the company.
 </ResponseField>
 
-<ResponseField name="country.prefix" type="String">
-  The country's [calling code
-  prefix](https://en.wikipedia.org/wiki/List_of_country_calling_codes).
-</ResponseField>
+## Response and error codes
 
-<ResponseField name="location" type="String">
-  As much location details as are available from our data. This can include the
-  region, state / province, and in some cases down to the city.
-</ResponseField>
+Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
 
-<ResponseField name="type" type="String">
-  The type of phone number. The possible values are: `Landline`, `Mobile`,
-  `Satellite`, `Premium`, `Paging`, `Special`, `Toll_Free`, and `Unknown`.
-</ResponseField>
+| Code        | Type                    | Details                                                                                                                                                     |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200         | OK                      | Everything worked as expected.                                                                                                                              |
+| 204         | OK                      | Their is no location data for the submitted IP.                                                                                                             |
+| 400         | Bad request	            | Bad request.                                                                                                                                                |
+| 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits.                                                                                                    |
+| 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
+| 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
+| 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
 
-<ResponseField name="carrier" type="String">
-  The carrier that the number is registered with.
-</ResponseField>
+## Possible responses
+
+The country and industry fields have a limited number of possible responses as listed below:
+
+Field: `industry`
+
+The industry field can take any of the values listed below:
+
+| Industry    |
+| ----------- |
+| Accounting |
+| Airlines/Aviation |
+| Alternative Dispute Resolution |
+| Alternative Medicine |
+| Animation |
+| Apparel & Fashion |
+| Architecture & Planning |
+| Arts And Crafts |
+| Automotive |
+| Aviation & Aerospace |
+| Banking |
+| Biotechnology |
+| Broadcast Media |
+| Building Materials |
+| Business Supplies And Equipment |
+| Capital Markets |
+| Chemicals |
+| Civic & Social Organization |
+| Civil Engineering |
+| Commercial Real Estate |
+| Computer Games |
+| Computer Hardware |
+| Computer Networking |
+| Computer & Network Security |
+| Computer Software |
+| Construction |
+| Consumer Electronics |
+| Consumer Goods |
+| Consumer Services |
+| Cosmetics |
+| Dairy |
+| Defense & Space |
+| Design |
+| Education Management |
+| E-Learning |
+| Electrical/Electronic Manufacturing |
+| Entertainment |
+| Environmental Services |
+| Events Services |
+| Executive Office |
+| Facilities Services |
+| Farming |
+| Financial Services |
+| Fine Art |
+| Fishery |
+| Food & Beverages |
+| Food Production |
+| Fund-Raising |
+| Furniture |
+| Gambling & Casinos |
+| Glass, Ceramics & Concrete |
+| Government Administration |
+| Government Relations |
+| Graphic Design |
+| Health, Wellness And Fitness |
+| Higher Education |
+| Hospital & Health Care |
+| Hospitality |
+| Human Resources |
+| Import And Export |
+| Individual & Family Services |
+| Industrial Automation |
+| Information Services |
+| Information Technology And Services |
+| Insurance |
+| International Affairs |
+| International Trade And Development |
+| Internet |
+| Investment Banking |
+| Investment Management |
+| Judiciary |
+| Law Enforcement |
+| Law Practice |
+| Legal Services |
+| Legislative Office |
+| Leisure, Travel & Tourism |
+| Libraries |
+| Logistics And Supply Chain |
+| Luxury Goods & Jewelry |
+| Machinery |
+| Management Consulting |
+| Maritime |
+| Marketing And Advertising |
+| Market Research |
+| Mechanical Or Industrial Engineering |
+| Media Production |
+| Medical Devices |
+| Medical Practice |
+| Mental Health Care |
+| Military |
+| Mining & Metals |
+| Motion Pictures And Film |
+| Museums And Institutions |
+| Music |
+| Nanotechnology |
+| Newspapers |
+| Non-Profit Organization Management |
+| Nonprofit Organization Management |
+| Oil & Energy |
+| Online Media |
+| Outsourcing/Offshoring |
+| Package/Freight Delivery |
+| Packaging And Containers |
+| Paper & Forest Products |
+| Performing Arts |
+| Pharmaceuticals |
+| Philanthropy |
+| Photography |
+| Plastics |
+| Political Organization |
+| Primary/Secondary Education |
+| Printing |
+| Professional Training & Coaching |
+| Program Development |
+| Public Policy |
+| Public Relations And Communications |
+| Public Safety |
+| Publishing |
+| Railroad Manufacture |
+| Ranching |
+| Real Estate |
+| Recreational Facilities And Services |
+| Religious Institutions |
+| Renewables & Environment |
+| Research |
+| Restaurants |
+| Retail |
+| Security And Investigations |
+| Semiconductors |
+| Shipbuilding |
+| Sporting Goods |
+| Sports |
+| Staffing And Recruiting |
+| Supermarkets |
+| Telecommunications |
+| Textiles |
+| Think Tanks |
+| Tobacco |
+| Translation And Localization |
+| Transportation/Trucking/Railroad |
+| Utilities |
+| Venture Capital & Private Equity |
+| Veterinary |
+| Warehousing |
+| Wholesale |
+| Wine And Spirits |
+| Wireless |
+| Writing And Editing |
+
+Field: `country`
+
+The country field can take can take any of the values listed below:
+
+| Country    |
+| ----------- |
+| Afghanistan |
+| Åland Islands |
+| Albania |
+| Algeria |
+| American Samoa |
+| Andorra |
+| Angola |
+| Anguilla |
+| Antigua And Barbuda |
+| Argentina |
+| Armenia |
+| Aruba |
+| Australia |
+| Austria |
+| Azerbaijan |
+| Bahamas |
+| Bahrain |
+| Bangladesh |
+| Barbados |
+| Belarus |
+| Belgium |
+| Belize |
+| Benin |
+| Bermuda |
+| Bhutan |
+| Bolivia |
+| Bosnia And Herzegovina |
+| Botswana |
+| Brazil |
+| British Virgin Islands |
+| Brunei |
+| Bulgaria |
+| Burkina Faso |
+| Burundi |
+| Cambodia |
+| Cameroon |
+| Canada |
+| Cape Verde |
+| Caribbean Netherlands |
+| Cayman Islands |
+| Central African Republic |
+| Chad |
+| Chile |
+| China |
+| Colombia |
+| Comoros |
+| Cook Islands |
+| Costa Rica |
+| Côte D’Ivoire |
+| Croatia |
+| Cuba |
+| Curaçao |
+| Cyprus |
+| Czechia |
+| Democratic Republic Of The Congo |
+| Denmark |
+| Djibouti |
+| Dominica |
+| Dominican Republic |
+| Ecuador |
+| Egypt |
+| El Salvador |
+| Equatorial Guinea |
+| Eritrea |
+| Estonia |
+| Ethiopia |
+| Faroe Islands |
+| Fiji |
+| Finland |
+| France |
+| French Guiana |
+| French Polynesia |
+| Gabon |
+| Gambia |
+| Georgia |
+| Germany |
+| Ghana |
+| Gibraltar |
+| Greece |
+| Greenland |
+| Grenada |
+| Guadeloupe |
+| Guam |
+| Guatemala |
+| Guernsey |
+| Guinea |
+| Guinea-Bissau |
+| Guyana |
+| Haiti |
+| Honduras |
+| Hong Kong |
+| Hungary |
+| Iceland |
+| India |
+| Indonesia |
+| Iran |
+| Iraq |
+| Ireland |
+| Isle Of Man |
+| Israel |
+| Italy |
+| Jamaica |
+| Japan |
+| Jersey |
+| Jordan |
+| Kazakhstan |
+| Kenya |
+| Kiribati |
+| Kosovo |
+| Kuwait |
+| Kyrgyzstan |
+| Laos |
+| Latvia |
+| Lebanon |
+| Lesotho |
+| Liberia |
+| Libya |
+| Liechtenstein |
+| Lithuania |
+| Luxembourg |
+| Macau |
+| Macedonia |
+| Madagascar |
+| Malawi |
+| Malaysia |
+| Maldives |
+| Mali |
+| Malta |
+| Marshall Islands |
+| Martinique |
+| Mauritania |
+| Mauritius |
+| Mayotte |
+| Mexico |
+| Micronesia |
+| Moldova |
+| Monaco |
+| Mongolia |
+| Montenegro |
+| Montserrat |
+| Morocco |
+| Mozambique |
+| Myanmar |
+| Namibia |
+| Nepal |
+| Netherlands |
+| Netherlands Antilles |
+| New Caledonia |
+| New Zealand |
+| Nicaragua |
+| Niger |
+| Nigeria |
+| Niue |
+| Norfolk Island |
+| North Korea |
+| Northern Mariana Islands |
+| Norway |
+| Oman |
+| Pakistan |
+| Palau |
+| Palestine |
+| Panama |
+| Papua New Guinea |
+| Paraguay |
+| Peru |
+| Philippines |
+| Poland |
+| Portugal |
+| Puerto Rico |
+| Qatar |
+| Republic Of The Congo |
+| Réunion |
+| Romania |
+| Russia |
+| Rwanda |
+| Saint Barthélemy |
+| Saint Helena |
+| Saint Kitts And Nevis |
+| Saint Lucia |
+| Saint Martin |
+| Saint Pierre And Miquelon |
+| Saint Vincent And The Grenadines |
+| Samoa |
+| San Marino |
+| São Tomé And Príncipe |
+| Saudi Arabia |
+| Senegal |
+| Serbia |
+| Seychelles |
+| Sierra Leone |
+| Singapore |
+| Sint Maarten |
+| Slovakia |
+| Slovenia |
+| Solomon Islands |
+| Somalia |
+| South Africa |
+| South Korea |
+| South Sudan |
+| Spain |
+| Sri Lanka |
+| Sudan |
+| Suriname |
+| Svalbard And Jan Mayen |
+| Swaziland |
+| Sweden |
+| Switzerland |
+| Syria |
+| Taiwan |
+| Tajikistan |
+| Tanzania |
+| Thailand |
+| Timor-Leste |
+| Togo |
+| Tonga |
+| Trinidad And Tobago |
+| Tunisia |
+| Turkey |
+| Turkmenistan |
+| Turks And Caicos Islands |
+| Tuvalu |
+| U.S. Virgin Islands |
+| Uganda |
+| Ukraine |
+| United Arab Emirates |
+| United Kingdom |
+| United States |
+| Uruguay |
+| Uzbekistan |
+| Vanuatu |
+| Venezuela |
+| Vietnam |
+| Western Sahara |
+| Yemen |
+| Zambia |
+| Zimbabwe |
+
+## Code samples and libraries
+
+Please see the top of this page for code samples for these languages and more. If we're missing a code sample, or if you'd like to contribute a code sample or library in exchange for free credits, email us at: team@abstractapi.com
+
+## Other notes
+
+A note on metered billing: Each individual domain you submit for lookup counts as a credit used. So, if you submit 20 different domain in a single request, that will count as 20 credits against your monthly quota. Credits are also counted per request, not per successful response. So if you submit a request for the (invalid) domain "kasj8929hs", that still counts as 1 credit.

@@ -13,16 +13,12 @@
   "topbarLinks": [
     {
       "name": "Pricing",
-      "url": "https://app.abstractapi.com/api/phone-validation/pricing/select"
-    },
-    {
-      "name": "Login",
-      "url": "https://app.abstractapi.com/users/login"
+      "url": "https://app.abstractapi.com/api/company-enrichment/pricing/select"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://app.abstractapi.com/api/phone-validation/tester"
+    "url": "https://app.abstractapi.com/api/company-enrichment/tester"
   },
   "anchors": [
     {
