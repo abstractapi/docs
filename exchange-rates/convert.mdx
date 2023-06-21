@@ -1,0 +1,94 @@
+---
+title: 'Convert exchange rates'
+description: "The `convert` endpoint is similar to the `live` endpoint, except it allows you to convert an arbitrary amount of currency."
+api: 'GET https://exchange-rates.abstractapi.com/v1/convert'
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://exchange-rates.abstractapi.com/v1/convert
+```
+
+### Validation endpoint
+
+Along with your API key and a base currency, the `convert` endpoint required a `target` parameter.
+
+```
+https://exchange-rates.abstractapi.com/v1/live
+? api_key = YOUR_UNIQUE_API_KEY
+& base = USD
+& target = EUR
+```
+
+This was a successful request and returns a converted amount of 1 USD at its most updated EUR exchange rate.
+
+<ResponseExample>
+
+```json
+{
+    "base": "USD",
+    "target": "EUR",
+    "base_amount": 1,
+    "converted_amount": 0.915499,
+    "exchange_rate": 0.915499,
+    "last_updated": 1687266900
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys _for each of
+  Abstract's APIs_, so your Exchange Rates API key will not work for your IP
+  Geolocation API, for example.
+</ParamField>
+
+<ParamField query="base" type="String" required>
+  The base currency used to get the latest exchange rate(s) for. Uses the ISO 4217 currency standard (e.g., USD for United States Dollars), like all currency parameters in this API.
+</ParamField>
+
+<ParamField query="target" type="String" required>
+  The target currency or currencies to get the exchange rate of versus the base currency. Like the base parameters, any currency passed here follows the ISO 4217 standard. Note that unlinke the other endpoints, `convert` only accepts one target currency at a time. 
+</ParamField>
+
+<ParamField query="date" type="String">
+  The historical date you'd like to get rates from, in the format of YYYY-MM-DD. If you leave this blank, it will use the latest available rate(s).
+</ParamField>
+
+<ParamField query="base_amount" type="Float">
+  The amount of the base currency you would like to convert to the target currency.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="base" type="String">
+  The base currency used to get the exchange rates.
+</ResponseField>
+
+<ResponseField name="target" type="String">
+  The target currency that the base_amount was converted into.
+</ResponseField>
+
+<ResponseField name="date" type="String">
+  The date the currencies were pulled from, per the successful request.
+</ResponseField>
+
+<ResponseField name="base_amount" type="Float">
+  The amount of the base currency from the request.
+</ResponseField>
+
+<ResponseField name="converted_amount" type="Float">
+  The amount of the target currency that the base_amount has been converted into.
+</ResponseField>
+
+<ResponseField name="exchange_rate" type="Float">
+  The exchange rate used to convert the base_amount from the base currency to the target currency.
+</ResponseField>

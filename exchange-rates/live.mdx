@@ -1,0 +1,114 @@
+---
+title: 'Live exchange rates'
+description: "The `live` endpoint returns the most recent exchange rate(s) for a given set of currencies. The base currency is the currency you're converting FROM, while the target currency or currencies are what you're converting TO."
+api: 'GET https://exchange-rates.abstractapi.com/v1/live'
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://exchange-rates.abstractapi.com/v1/live
+```
+
+### Validation endpoint
+
+If no target currency or currencies are specified, then all available currencies are returned. You can see a full list of supported currencies [here](getting-started).
+
+```
+https://exchange-rates.abstractapi.com/v1/live
+? api_key = YOUR_UNIQUE_API_KEY
+& base = USD
+```
+
+This was a successful request, and because no target currency or currencies were included, the exchange rate of all available currencies were included in the response.
+
+<ResponseExample>
+
+```json
+{
+    "base": "USD",
+    "last_updated": 1687266900,
+    "exchange_rates": {
+        "EUR": 0.915499,
+        "JPY": 141.801703,
+        "BGN": 1.790534,
+        "CZK": 21.755012,
+        "DKK": 6.818548,
+        "GBP": 0.785755,
+        "HUF": 338.64323,
+        "PLN": 4.058226,
+        "RON": 4.543166,
+        "SEK": 10.762886,
+        "CHF": 0.897464,
+        "ISK": 135.768562,
+        "NOK": 10.754372,
+        "HRK": 7.06591,
+        "RUB": 104.99999999999999,
+        "TRY": 23.559736,
+        "AUD": 1.478898,
+        "BRL": 4.78559,
+        "CAD": 1.321523,
+        "CNY": 7.18841,
+        "HKD": 7.828435,
+        "IDR": 14950.837682,
+        "ILS": 3.607434,
+        "INR": 82.007232,
+        "KRW": 1294.406299,
+        "MXN": 17.155818,
+        "MYR": 4.644969,
+        "NZD": 1.620159,
+        "PHP": 55.613842,
+        "SGD": 1.34377,
+        "THB": 34.840245,
+        "ZAR": 18.381672,
+        "ARS": 75.269373,
+        "DZD": 124.445887,
+        "MAD": 8.83269,
+        "TWD": 27.466513,
+        "BTC": 0.000039,
+        "ETH": 0.000571,
+        "BNB": 0.004132,
+        "DOGE": 16.348523,
+        "XRP": 1.92295,
+        "BCH": 0.009477,
+        "LTC": 0.012865
+    }
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys _for each of
+  Abstract's APIs_, so your Exchange Rates API key will not work for your IP
+  Geolocation API, for example.
+</ParamField>
+
+<ParamField query="base" type="String" required>
+  The base currency used to get the latest exchange rate(s) for. Uses the ISO 4217 currency standard (e.g., USD for United States Dollars), like all currency parameters in this API.
+</ParamField>
+
+<ParamField query="target" type="String">
+  The target currency or currencies to get the exchange rate of versus the base currency. Like the base parameters, any currency passed here follows the ISO 4217 standard. If multiple currencies are passed in the target, they should be separated by commas (e.g., &target=EUR,CAD,AUD).
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="base" type="String">
+  The base currency used to get the exchange rates.
+</ResponseField>
+
+<ResponseField name="last_updated" type="Integer">
+  The Unix timestamp of when the returned data was last updated.
+</ResponseField>
+
+<ResponseField name="exchange_rates" type="Object">
+  A JSON Object containing each of the target currency as the key and its exchange rate versus the base currency as that key's value.
+</ResponseField>

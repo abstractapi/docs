@@ -1,0 +1,121 @@
+---
+title: 'Historical exchange rates'
+description: "The `historical` endpoint functions almost exactly like the `live` endpoint, except it requires you to request a date parameter, and subsequently returns the most recent exchange rate(s) for a given set of currencies."
+api: 'GET https://exchange-rates.abstractapi.com/v1/historical'
+hideApiMarker: true
+---
+
+> Note: the `historical` endpoint is currently in closed beta.
+
+## Getting started
+
+### Base URL
+
+```
+https://exchange-rates.abstractapi.com/v1/historical
+```
+
+### Validation endpoint
+
+The base currency is the currency you're converting FROM, while the target currency or currencies are what you're converting TO. Also, if no target currency or currencies are specified, then all available currencies are returned. You can see a full list of supported currencies [here](getting-started).
+
+```
+https://exchange-rates.abstractapi.com/v1/historical
+? api_key = YOUR_UNIQUE_API_KEY
+& base = USD
+& date = 2020-08-31
+```
+
+This was a successful request, and because no target currency or currencies were included, the exchange rate of all available currencies were included in the response:
+
+<ResponseExample>
+
+```json
+{
+    "base": "USD",
+    "date": "2020-08-31",
+    "exchange_rates": {
+        "EUR": 0.837521,
+        "JPY": 105.921273,
+        "BGN": 1.638023,
+        "CZK": 21.949749,
+        "DKK": 6.234422,
+        "GBP": 0.750461,
+        "HUF": 296.934673,
+        "PLN": 3.682663,
+        "RON": 4.053434,
+        "SEK": 8.617085,
+        "CHF": 0.902345,
+        "ISK": 137.60469,
+        "NOK": 8.756281,
+        "HRK": 6.304858,
+        "RUB": 73.952513,
+        "TRY": 7.350921,
+        "AUD": 1.357956,
+        "BRL": 5.422027,
+        "CAD": 1.306616,
+        "CNY": 6.843467,
+        "HKD": 7.750084,
+        "IDR": 14576.549414,
+        "ILS": 3.361055,
+        "INR": 73.2567,
+        "KRW": 1185.728643,
+        "MXN": 21.824958,
+        "MYR": 4.165494,
+        "NZD": 1.484757,
+        "PHP": 48.439698,
+        "SGD": 1.359715,
+        "THB": 31.070352,
+        "ZAR": 16.715997,
+        "ARS": 73.957538,
+        "DZD": 127.987018,
+        "MAD": 9.135762,
+        "TWD": 29.371859,
+        "BTC": 0.000086,
+        "ETH": 0.002297,
+        "BNB": 0.043234,
+        "DOGE": 312.659687,
+        "XRP": 3.595519,
+        "BCH": 0.003663,
+        "LTC": 0.016405
+    }
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys _for each of
+  Abstract's APIs_, so your Exchange Rates API key will not work for your IP
+  Geolocation API, for example.
+</ParamField>
+
+<ParamField query="base" type="String" required>
+  The base currency used to get the latest exchange rate(s) for. Uses the ISO 4217 currency standard (e.g., USD for United States Dollars), like all currency parameters in this API.
+</ParamField>
+
+<ParamField query="date" type="String" required>
+  The historical date you'd like to get rates from, in the format of YYYY-MM-DD.
+</ParamField>
+
+<ParamField query="target" type="String">
+  The target currency or currencies to get the exchange rate of versus the base currency. Like the base parameters, any currency passed here follows the ISO 4217 standard. If multiple currencies are passed in the target, they should be separated by commas (e.g., &target=EUR,CAD,AUD).
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="base" type="String">
+  The base currency used to get the exchange rates.
+</ResponseField>
+
+<ResponseField name="date" type="String">
+  The date the currencies were pulled from, per the successful request.
+</ResponseField>
+
+<ResponseField name="exchange_rates" type="Object">
+  A JSON Object containing each of the target currency as the key and its exchange rate versus the base currency as that key's value.
+</ResponseField>

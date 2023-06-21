@@ -13,16 +13,12 @@
   "topbarLinks": [
     {
       "name": "Pricing",
-      "url": "https://app.abstractapi.com/api/phone-validation/pricing/select"
-    },
-    {
-      "name": "Login",
-      "url": "https://app.abstractapi.com/users/login"
+      "url": "https://app.abstractapi.com/api/exchange-rates/pricing/select"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://app.abstractapi.com/api/phone-validation/tester"
+    "url": "https://app.abstractapi.com/api/exchange-rates/tester"
   },
   "anchors": [
     {
@@ -35,7 +31,10 @@
     {
       "group": "Exchange Rates",
       "pages": [
-        "exchange-rates"
+        "getting-started",
+        "live",
+        "convert",
+        "historical"
       ]
     }
   ],
