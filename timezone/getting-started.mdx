@@ -1,0 +1,257 @@
+---
+title: 'Introduction'
+description: "The Time, Date, and Timezone API is the easiest way to find, convert, and manage time and timezone data across the world."
+hideApiMarker: true
+---
+
+## Getting started
+
+<Card title="Current time endpoint" icon="clock" href="current-time">
+  The `current_time` endpoint take a location in the form of a location name, latitude and longitude, or IP address and returns the current time, date, and timezone of that location.
+</Card>
+
+<Card title="Convert timezones endpoint" icon="clock-rotate-left" href="convert-time">
+  The `convert_time` endpoint makes it easy to convert the time and date of a given location to the time and date of another location. By default it converts the current time, but the conversion can take place in either the past or future with a simple parameter.
+</Card>
+
+### REST
+
+The Timezones API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The Timezones API requires all communications to be secured TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's API are versioned. The Timezones API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's Timezones API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Timezones and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+## Response and error codes
+
+Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
+
+| Code        | Type                    | Details                                                                                                                                                     |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200         | OK                      | Everything worked as expected.                                                                                                                              |
+| 204         | OK                      | Their is no location data for the submitted IP.                                                                                                             |
+| 400         | Bad request	            | Bad request.                                                                                                                                                |
+| 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits.                                                                                                    |
+| 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
+| 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
+| 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
+
+## List of timezones
+
+| Timezone code       | Details             |
+| ------------------- | ------------------- |
+| ACDT | Australian Central Daylight Saving Time |
+| ACST | Australian Central Standard Time |
+| ACT | Acre Time |
+| ACT | ASEAN Common Time |
+| ACWST | Australian Central Western Standard Time |
+| ADT | Atlantic Daylight Time |
+| AEDT | Australian Eastern Daylight Saving Time |
+| AEST | Australian Eastern Standard Time |
+| AET | Australian Eastern Time |
+| AFT | Afghanistan Time |
+| AKDT | Alaska Daylight Time |
+| AKST | Alaska Standard Time |
+| ALMT | Alma-Ata Time |
+| AMST | Amazon Summer Time |
+| AMT | Amazon Time |
+| AMT | Armenia Time |
+| ANAT | Anadyr Time |
+| AQTT | Aqtobe Time |
+| ART | Argentina Time |
+| AST | Arabia Standard Time |
+| AST | Atlantic Standard Time |
+| AWST | Australian Western Standard Time |
+| AZOST | Azores Summer Time |
+| AZOT | Azores Standard Time |
+| AZT | Azerbaijan Time |
+| BDT | Brunei Time |
+| BIOT | British Indian Ocean Time |
+| BIT | Baker Island Time |
+| BOT | Bolivia Time |
+| BRST | Brasília Summer Time |
+| BRT | Brasília Time |
+| BST | Bangladesh Standard Time |
+| BST | Bougainville Standard Time |
+| BST | British Summer Time |
+| BTT | Bhutan Time |
+| CAT | Central Africa Time |
+| CCT | Cocos Islands Time |
+| CDT | Central Daylight Time |
+| CDT | Cuba Daylight Time |
+| CEST | Central European Summer Time |
+| CET | Central European Time |
+| CHADT | Chatham Daylight Time |
+| CHAST | Chatham Standard Time |
+| CHOT | Choibalsan Standard Time |
+| CHOST | Choibalsan Summer Time |
+| CHST | Chamorro Standard Time |
+| CHUT | Chuuk Time |
+| CIST | Clipperton Island Standard Time |
+| CIT | Central Indonesia Time |
+| CKT | Cook Island Time |
+| CLST | Chile Summer Time |
+| CLT | Chile Standard Time |
+| COST | Colombia Summer Time |
+| COT | Colombia Time |
+| CST | Central Standard Time |
+| CST | China Standard Time |
+| CST | Cuba Standard Time |
+| CT | China Time |
+| CVT | Cape Verde Time |
+| CWST | Central Western Standard Time |
+| CXT | Christmas Island Time |
+| DAVT | Davis Time |
+| DDUT | Dumont d'Urville Time |
+| DFT | AIX-specific equivalent of Central European Time |
+| EASST | Easter Island Summer Time |
+| EAST | Easter Island Standard Time |
+| EAT | East Africa Time |
+| ECT | Eastern Caribbean Time |
+| ECT | Ecuador Time |
+| EDT | Eastern Daylight Time |
+| EEST | Eastern European Summer Time |
+| EET | Eastern European Time |
+| EGST | Eastern Greenland Summer Time |
+| EGT | Eastern Greenland Time |
+| EIT | Eastern Indonesian Time |
+| EST | Eastern Standard Time |
+| FET | Further-eastern European Time |
+| FJT | Fiji Time |
+| FKST | Falkland Islands Summer Time |
+| FKT | Falkland Islands Time |
+| FNT | Fernando de Noronha Time |
+| GALT | Galápagos Time |
+| GAMT | Gambier Islands Time |
+| GET | Georgia Standard Time |
+| GFT | French Guiana Time |
+| GILT | Gilbert Island Time |
+| GIT | Gambier Island Time |
+| GMT | Greenwich Mean Time |
+| GST | South Georgia and the South Sandwich Islands Time |
+| GST | Gulf Standard Time |
+| GYT | Guyana Time |
+| HDT | Hawaii–Aleutian Daylight Time |
+| HAEC | Heure Avancée d'Europe Centrale French-language name for CEST |
+| HST | Hawaii–Aleutian Standard Time |
+| HKT | Hong Kong Time |
+| HMT | Heard and McDonald Islands Time |
+| HOVST | Hovd Summer Time |
+| HOVT | Hovd Time |
+| ICT | Indochina Time |
+| IDLW | International Day Line West time zone |
+| IDT | Israel Daylight Time |
+| IOT | Indian Ocean Time |
+| IRDT | Iran Daylight Time |
+| IRKT | Irkutsk Time |
+| IRST | Iran Standard Time |
+| IST | Indian Standard Time |
+| IST | Irish Standard Time |
+| IST | Israel Standard Time |
+| JST | Japan Standard Time |
+| KALT | Kaliningrad Time |
+| KGT | Kyrgyzstan Time |
+| KOST | Kosrae Time |
+| KRAT | Krasnoyarsk Time |
+| KST | Korea Standard Time |
+| LHST | Lord Howe Standard Time |
+| LHST | Lord Howe Summer Time |
+| LINT | Line Islands Time |
+| MAGT | Magadan Time |
+| MART | Marquesas Islands Time |
+| MAWT | Mawson Station Time |
+| MDT | Mountain Daylight Time |
+| MET | Middle European Time Same zone as CET |
+| MEST | Middle European Summer Time Same zone as CEST |
+| MHT | Marshall Islands Time |
+| MIST | Macquarie Island Station Time |
+| MIT | Marquesas Islands Time |
+| MMT | Myanmar Standard Time |
+| MSK | Moscow Time |
+| MST | Malaysia Standard Time |
+| MST | Mountain Standard Time |
+| MUT | Mauritius Time |
+| MVT | Maldives Time |
+| MYT | Malaysia Time |
+| NCT | New Caledonia Time |
+| NDT | Newfoundland Daylight Time |
+| NFT | Norfolk Island Time |
+| NOVT | Novosibirsk Time |
+| NPT | Nepal Time |
+| NST | Newfoundland Standard Time |
+| NT | Newfoundland Time |
+| NUT | Niue Time |
+| NZDT | New Zealand Daylight Time |
+| NZST | New Zealand Standard Time |
+| OMST | Omsk Time |
+| ORAT | Oral Time |
+| PDT | Pacific Daylight Time |
+| PET | Peru Time |
+| PETT | Kamchatka Time |
+| PGT | Papua New Guinea Time |
+| PHOT | Phoenix Island Time |
+| PHT | Philippine Time |
+| PKT | Pakistan Standard Time |
+| PMDT | Saint Pierre and Miquelon Daylight Time |
+| PMST | Saint Pierre and Miquelon Standard Time |
+| PONT | Pohnpei Standard Time |
+| PST | Pacific Standard Time |
+| PST | Philippine Standard Time |
+| PYST | Paraguay Summer Time |
+| PYT | Paraguay Time |
+| RET | Réunion Time |
+| ROTT | Rothera Research Station Time |
+| SAKT | Sakhalin Island Time |
+| SAMT | Samara Time |
+| SAST | South African Standard Time |
+| SBT | Solomon Islands Time |
+| SCT | Seychelles Time |
+| SDT | Samoa Daylight Time |
+| SGT | Singapore Time |
+| SLST | Sri Lanka Standard Time |
+| SRET | Srednekolymsk Time |
+| SRT | Suriname Time |
+| SST | Samoa Standard Time |
+| SST | Singapore Standard Time |
+| SYOT | Showa Station Time |
+| TAHT | Tahiti Time |
+| THA | Thailand Standard Time |
+| TFT | French Southern and Antarctic Time |
+| TJT | Tajikistan Time |
+| TKT | Tokelau Time |
+| TLT | Timor Leste Time |
+| TMT | Turkmenistan Time |
+| TRT | Turkey Time |
+| TOT | Tonga Time |
+| TVT | Tuvalu Time |
+| ULAST | Ulaanbaatar Summer Time |
+| ULAT | Ulaanbaatar Standard Time |
+| UTC | Coordinated Universal Time |
+| UYST | Uruguay Summer Time |
+| UYT | Uruguay Standard Time |
+| UZT | Uzbekistan Time |
+| VET | Venezuelan Standard Time |
+| VLAT | Vladivostok Time |
+| VOLT | Volgograd Time |
+| VOST | Vostok Station Time |
+| VUT | Vanuatu Time |
+| WAKT | Wake Island Time |
+| WAST | West Africa Summer Time |
+| WAT | West Africa Time |
+| WEST | Western European Summer Time |
+| WET | Western European Time |
+| WIT | Western Indonesian Time |
+| WGST | West Greenland Summer Time |
+| WGT | West Greenland Time |
+| WST | Western Standard Time |
+| YAKT | Yakutsk Time |
+| YEKT | Yekaterinburg Time |

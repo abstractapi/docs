@@ -1,0 +1,93 @@
+---
+title: 'Current Time endpoint'
+description: "The `current_time` endpoint take a location in the form of a location name, latitude and longitude, or IP address and returns the current time, date, and timezone of that location."
+api: 'GET https://timezone.abstractapi.com/v1/current_time'
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://timezone.abstractapi.com/v1/current_time
+```
+
+### Validation endpoint
+
+```
+https://timezone.abstractapi.com/v1/current_time
+? api_key = YOUR_UNIQUE_API_KEY
+& location = Oxford, United Kingdom
+```
+
+This was a successful request, and the details below are included in the response:
+
+<ResponseExample>
+
+```json
+{
+    "datetime": "2023-06-21 19:40:49",
+    "timezone_name": "British Summer Time",
+    "timezone_location": "Europe/London",
+    "timezone_abbreviation": "BST",
+    "gmt_offset": 1,
+    "is_dst": true,
+    "requested_location": "Oxford,United Kingdom",
+    "latitude": 51.7520131,
+    "longitude": -1.2578499
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Time, Date, and Timezone API key will not work for as your User Avatar API key, for example.
+</ParamField>
+
+<ParamField query="location" type="String" required>
+  The location to determine the current time and timezone of. This parameter accepts the location as a string (e.g., Los Angeles, CA), a longitude and latitude (e.g., -31.4173391,-64.183319) , or an IP address (e.g., 82.111.111.111)
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="requested_location" type="String">
+  The location from the request.
+</ResponseField>
+
+<ResponseField name="longitude" type="Float">
+  Decimal of the longitude found for the requested_location.
+</ResponseField>
+
+<ResponseField name="latitude" type="Float">
+  Decimal of the longitude found for the requested_location.
+</ResponseField>
+
+<ResponseField name="datetime" type="String">
+  The current date and time of the requested_location.
+</ResponseField>
+
+<ResponseField name="timezone_name" type="String">
+  Timezone's name from the [IANA Time Zone Database](https://www.iana.org/time-zones).
+</ResponseField>
+
+<ResponseField name="timezone_location" type="String">
+  Timezone's location.
+</ResponseField>
+
+<ResponseField name="timezone_abbreviation" type="String">
+  Timezone's abbreviation, also from the [IANA Time Zone Database](https://www.iana.org/time-zones).
+</ResponseField>
+
+<ResponseField name="gmt_offset" type="Integer">
+  Timezone's offset from [Greenwich Mean Time (GMT)](https://greenwichmeantime.com/what-is-gmt/).
+</ResponseField>
+
+<ResponseField name="is_dst" type="Boolean">
+  True if the location is currently in [Daylight Savings Time (DST)](https://en.wikipedia.org/wiki/Daylight_saving_time).
+</ResponseField>
+

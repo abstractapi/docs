@@ -13,16 +13,12 @@
   "topbarLinks": [
     {
       "name": "Pricing",
-      "url": "https://app.abstractapi.com/api/phone-validation/pricing/select"
-    },
-    {
-      "name": "Login",
-      "url": "https://app.abstractapi.com/users/login"
+      "url": "https://app.abstractapi.com/api/timezone/pricing/select"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://app.abstractapi.com/api/phone-validation/tester"
+    "url": "https://app.abstractapi.com/api/timezone/tester"
   },
   "anchors": [
     {
@@ -35,7 +31,9 @@
     {
       "group": "Timezone API",
       "pages": [
-        "timezone"
+        "getting-started",
+        "current-time",
+        "convert-time"
       ]
     }
   ],

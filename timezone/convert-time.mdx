@@ -1,0 +1,119 @@
+---
+title: 'Convert Time endpoint'
+description: "The `convert_time` endpoint makes it easy to convert the time and date of a given location to the time and date of another location. By default it converts the current time, but the conversion can take place in either the past or future with a simple parameter."
+api: 'GET https://timezone.abstractapi.com/v1/convert_time'
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://timezone.abstractapi.com/v1/convert_time
+```
+
+### Validation endpoint
+
+```
+https://timezone.abstractapi.com/v1/convert_time
+? api_key = YOUR_UNIQUE_API_KEY
+& base_location = Los Angeles, CA
+& base_datetime = 2020-05-01 07:00:00
+& target_location = Oxford, United Kingdom
+```
+
+This was a successful request, and returns both datetime and timezone data for the base location (Los Angeles) and the target location (Oxford).
+
+<ResponseExample>
+
+```json
+{
+    "base_location": {
+        "datetime": "2020-05-01 07:00:00",
+        "timezone_name": "PDT",
+        "timezone_location": "America/Los_Angeles",
+        "timezone_abbreviation": "Pacific Daylight Time",
+        "gmt_offset": -7,
+        "is_dst": true,
+        "requested_location": "Los Angeles,CA",
+        "latitude": 34.0536909,
+        "longitude": -118.242766
+    },
+    "target_location": {
+        "datetime": "2020-05-01 15:00:00",
+        "timezone_name": "BST",
+        "timezone_location": "Europe/London",
+        "timezone_abbreviation": "British Summer Time",
+        "gmt_offset": 1,
+        "is_dst": true,
+        "requested_location": "Oxford,United Kingdom",
+        "latitude": 51.7520131,
+        "longitude": -1.2578499
+    }
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Time, Date, and Timezone API key will not work for your User Avatar API key, for example.
+</ParamField>
+
+<ParamField query="base_location" type="String" required>
+  The location you use as a base to convert the datetime for. This parameter accepts the location as a string (e.g., Los Angeles, CA), a longitude and latitude (e.g., -31.4173391,-64.183319) , or an IP address (e.g., 82.111.111.111)
+</ParamField>
+
+<ParamField query="target_location" type="String" required>
+  The location you want to get the datetime for. This parameter accepts the location as a string (e.g., Los Angeles, CA), a longitude and latitude (e.g., -31.4173391,-64.183319) , or an IP address (e.g., 82.111.111.111)
+</ParamField>
+
+<ParamField query="base_datetime" type="String">
+  The current datetime you're converting.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="base_location" type="Object">
+  The JSON Object containing the time and timezone details of the base location from the request.
+</ResponseField>
+
+<ResponseField name="target_location" type="Object">
+  The JSON Object containing the time and timezone details of the target location from the request.
+</ResponseField>
+
+<ResponseField name="requested_location" type="String">
+  Present in both in the base_location and target_location objects. The location from the request.
+</ResponseField>
+
+<ResponseField name="longitude" type="Float">
+  Present in both in the base_location and target_location objects. Decimal of the longitude found for the requested_location.
+</ResponseField>
+
+<ResponseField name="latitude" type="Float">
+  Present in both in the base_location and target_location objects. Decimal of the latitude found for the requested_location.
+</ResponseField>
+
+<ResponseField name="datetime" type="String">
+  Present in both in the base_location and target_location objects. The current date and time of the requested_location.
+</ResponseField>
+
+<ResponseField name="timezone_name" type="String">
+  Present in both in the base_location and target_location objects. Timezone's name from the [IANA Time Zone Database](https://www.iana.org/time-zones).
+</ResponseField>
+
+<ResponseField name="timezone_abbreviation" type="String">
+  Present in both in the base_location and target_location objects. Timezone's abbreviation, also from the [IANA Time Zone Database](https://www.iana.org/time-zones).
+</ResponseField>
+
+<ResponseField name="gmt_offset" type="Integer">
+  Present in both in the base_location and target_location objects. Timezone's offset from [Greenwich Mean Time (GMT)](https://greenwichmeantime.com/what-is-gmt/).
+</ResponseField>
+
+<ResponseField name="is_dst" type="Boolean">
+  Present in both in the base_location and target_location objects. True if the location is currently in [Daylight Savings Time (DST)](https://en.wikipedia.org/wiki/Daylight_saving_time).
+</ResponseField>
