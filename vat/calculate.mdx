@@ -1,0 +1,99 @@
+---
+title: 'Calculate VAT endpoint'
+description: "The `calculate` endpoint makes it easy to calculate a VAT compliant price given a country and price, as well as such optional values as the type of goods."
+api: 'GET https://vat.abstractapi.com/v1/calculate'
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://vat.abstractapi.com/v1/calculate
+```
+
+### Validation endpoint
+
+The `calculate` endpoint simply requires your unique API key, the country and the price you'd like to check:
+
+```
+https://vat.abstractapi.com/v1/calculate
+? api_key = YOUR_UNIQUE_API_KEY
+& amount = 175  
+& country_code = DE
+```
+
+This was a successful request, and the details below are included in the response:
+
+<ResponseExample>
+
+```json
+{
+    "amount_excluding_vat": "175.00",
+    "amount_including_vat": "208.25",
+    "vat_amount": "33.25",
+    "vat_category": "standard",
+    "vat_rate": "0.190",
+    "country": {
+        "code": "DE",
+        "name": "Germany"
+    }
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your VAT Validation API key will not work for as your IP Geolocation API key, for example.
+</ParamField>
+
+<ParamField query="amount" type="String" required>
+  The amount that you would like to get the VAT amount for or from.
+</ParamField>
+
+<ParamField query="country_code" type="String" required>
+  The two letter ISO 3166-1 alpha-2 code of the country in which the transaction takes place.
+</ParamField>
+
+<ParamField query="is_vat_incl" type="Boolean">
+  If the amount already has VAT added and you'd like to do the reverse calculation and split out the amount and VAT, set this parameter to true. If this parameter is not explicitly included it will default to false.
+</ParamField>
+
+<ParamField query="vat_category" type="String">
+  Some countries offer a reduced VAT rate for certain categories of goods. To determine if a reduced VAT is available and to apply it to the final amount, include the vat_category in the request.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="amount_excl_vat" type="Float">
+  The amount excluding the VAT.
+</ResponseField>
+
+<ResponseField name="vat_amount" type="Float">
+  The calculated amount of VAT.
+</ResponseField>
+
+<ResponseField name="amount_incl_vat" type="Float">
+  The sum of the base amount and the VAT, i.e., `amount_excl_vat` + `vat_amount`.
+</ResponseField>
+
+<ResponseField name="vat_rate" type="Float">
+  The VAT rate, from 0.01 to 0.99.
+</ResponseField>
+
+<ResponseField name="vat_category" type="String">
+  The optional category of the purchase, used to determine whether it qualifies for a reduced rate. See below for a list of supported categories.
+</ResponseField>
+
+<ResponseField name="country_code" type="String">
+  The two letter ISO 3166-1 alpha-2 code of the country in which the transaction takes place.
+</ResponseField>
+
+<ResponseField name="country_name" type="String">
+  The name of the country the VAT is being calculated from.
+</ResponseField>

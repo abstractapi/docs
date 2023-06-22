@@ -1,0 +1,89 @@
+---
+title: 'Introduction'
+description: "Abstract's VAT Validation API is a fast, lightweight, modern, and RESTful JSON API that allows you to stay compliant for all your domestic and cross-border sales."
+hideApiMarker: true
+---
+
+## Getting started
+
+<Card title="Validate VAT endpoint" icon="tag" href="validate">
+  Check whether the submitted VAT number is valid and, if it is, returns company details registered country, name, address, etc.
+</Card>
+
+<Card title="Calculate VAT endpoint" icon="tags" href="calculate">
+  Determines VAT-compliant prices for a given value, country, purchase type, and more.
+</Card>
+
+<Card title="VAT Categories endpoint" icon="globe" href="categories">
+  Returns the latest VAT rates for a specific country.
+</Card>
+
+### REST
+
+The VAT Validation API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The VAT Validation API requires all communications to be secured TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's API are versioned. The VAT Validation API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's VAT Validation API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the VAT Validation and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Code samples and libraries
+
+Please see the top of this page for code samples for these languages and more. If we're missing a code sample, or if you'd like to contribute a code sample or library in exchange for free credits, email us at: team@abstractapi.com
+
+## Response and error codes
+
+Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
+
+| Code        | Type                    | Details                                                                                                                                                     |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200         | OK                      | Everything worked as expected.                                                                                                                              |
+| 204         | OK                      | Their is no location data for the submitted IP.                                                                                                             |
+| 400         | Bad request	            | Bad request.                                                                                                                                                |
+| 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits.                                                                                                    |
+| 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
+| 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
+| 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
+
+## Country codes
+
+Below are the list of countries supported by the VAT endpoints
+
+| Country code       | Country name       |
+| ------------------ | ------------------ |
+| AT | Austria |
+| BE | Belgium |
+| BG | Bulgaria |
+| CY | Cyprus |
+| CZ | Czech Republic |
+| DE | Germany |
+| DK | Denmark |
+| EE | Estonia |
+| EL | Greece |
+| ES | Spain |
+| FI | Finland |
+| FR | France |
+| HR | Croatia |
+| HU | Hungary |
+| IR | Ireland |
+| IT | Italy |
+| LT | Lithuania |
+| LU | Luxembourg |
+| LV | Latva |
+| MT | Malta |
+| NL | The Netherlands |
+| PL | Poland |
+| PT | Portugal |
+| RO | Romania |
+| SE | Sweden |
+| SI | Slovenia |
+| SK | Slovakia |
+| XI | Northern Ireland |

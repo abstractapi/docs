@@ -1,0 +1,110 @@
+---
+title: 'VAT Categories endpoint'
+description: "The `categories` endpoint makes it easy to get the latest VAT rates, including the reduced rates for certain categories, for a specific country."
+api: 'GET https://vat.abstractapi.com/v1/categories'
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://vat.abstractapi.com/v1/categories
+```
+
+### Validation endpoint
+
+The `categories` endpoint simply requires your unique API key, and the country you'd like to check:
+
+```
+https://vat.abstractapi.com/v1/categories
+? api_key = YOUR_UNIQUE_API_KEY
+& country_code = DE
+```
+
+This was a successful request, and the response includes both the standard rate as well as the reduces rates and categories associated with them:
+
+<ResponseExample>
+
+```json
+[
+    {
+        "country_code": "DE",
+        "rate": "0.070",
+        "category": "water",
+        "description": "Supply of water. No reduced rate for bottled water..."
+    },
+    {
+        "country_code": "DE",
+        "rate": "0.070",
+        "category": "foodstuffs",
+        "description": "Foodstuffs (including beverages but excluding alcoholic beverages) for human..."
+    },
+    {
+        "country_code": "DE",
+        "rate": "0.070",
+        "category": "sculpture art",
+        "description": "Original sculptures and statuary, in any material, provided..."
+    },
+    {
+        "country_code": "DE",
+        "rate": "0.070",
+        "category": "social welfare goods",
+        "description": "Supply of goods and services by organisations recognised as being..."
+    },
+    
+    ..................
+
+    {
+        "country_code": "DE",
+        "rate": "0.190",
+        "category": "standard",
+        "description": ""
+    },
+    {
+        "country_code":..."
+        "rate": "0.070",
+        "category": "books",
+        "description": "Supply, including on loan by libraries, of books..."
+    },
+    {
+        "country_code": "DE",
+        "rate": "0.070",
+        "category": "picture art",
+        "description": "Pictures, collages and similar decorative plaques, paintings and..."
+    }
+]
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your VAT Validation API key will not work for as your IP Geolocation API key, for example.
+</ParamField>
+
+<ParamField query="country_code" type="String" required>
+  The two letter ISO 3166-1 alpha-2 code of the country in which the transaction takes place.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="country_code" type="String">
+  The two letter ISO 3166-1 alpha-2 code of the country in which the transaction takes place, which is returned from the request.
+</ResponseField>
+
+<ResponseField name="rate" type="String">
+  The VAT rate for this specific category.
+</ResponseField>
+
+<ResponseField name="category" type="String">
+  The name of the category.
+</ResponseField>
+
+<ResponseField name="description" type="String">
+  A description about the category.
+</ResponseField>

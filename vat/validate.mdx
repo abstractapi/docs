@@ -1,0 +1,83 @@
+---
+title: 'Validate VAT endpoint'
+description: "The `validate` endpoint takes a VAT number in the request, checks if that number is valid, and if it is valid, returns addition details about the company associated with that VAT number."
+api: 'GET https://vat.abstractapi.com/v1/validate'
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://vat.abstractapi.com/v1/validate
+```
+
+### Validation endpoint
+
+The `validate` endpoint simply requires your unique API key and the VAT number you'd like to check:
+
+```
+https://vat.abstractapi.com/v1/validate
+? api_key = YOUR_UNIQUE_API_KEY
+& vat_number = SE556656688001
+```
+
+This was a successful request, and the details below are included in the response:
+
+<ResponseExample>
+
+```json
+{
+    "vat_number": "SE556656688001",
+    "valid": true,
+    "company": {
+        "name": "GOOGLE SWEDEN AB",
+        "address": "GOOGLE IRLAND LTD \nM COLLINS, GORDON HOUSE \nBARROW STREET, DUBLIN 4 \nIRLAND"
+    },
+    "country": {
+        "code": "SE",
+        "name": "Sweden"
+    }
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your VAT Validation and Rates API key will not work for your IP Geolocation API key, for example.
+</ParamField>
+
+<ParamField query="vat_number" type="String" required>
+  The VAT number to validate.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="vat_number" type="String">
+  The VAT number to validate.
+</ResponseField>
+
+<ResponseField name="is_vat_valid" type="Boolean">
+  Is true if the submitted VAT number is valid.
+</ResponseField>
+
+<ResponseField name="company_name" type="String">
+  The name of the company associated with the VAT number.
+</ResponseField>
+
+<ResponseField name="company_address" type="String">
+  The address of the company associated with the VAT number.
+</ResponseField>
+
+<ResponseField name="company_country" type="String">
+  The country of the company associated with the VAT number.
+</ResponseField>
+
+<ResponseField name="company_country_code" type="String">
+  The two letter ISO 3166-1 alpha-2 code of the country associated with the VAT number.
+</ResponseField>
