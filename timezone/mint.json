@@ -31,7 +31,7 @@
     {
       "group": "Timezone API",
       "pages": [
-        "getting-started",
+        "timezones",
         "current-time",
         "convert-time"
       ]
