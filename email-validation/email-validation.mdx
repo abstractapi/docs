@@ -8,7 +8,7 @@ hideApiMarker: true
 
 ## Getting Started
 
-Abstract's Email Validation and Verification API requires only your unique API key (`api_key`) and a single email (`email`):
+Abstract's Email Validation and Verification API requires only your unique API key `api_key` and a single email `email`:
 
 ```bash
 https://emailvalidation.abstractapi.com/v1/
@@ -64,7 +64,7 @@ This was a successful request, and all available details about that email were r
 
 <ParamField query="api_key" type="string" required>
   Your unique API key. Note that each user has unique API keys _for each of
-  Abstract's APIs_, so your Exchange Rate API key will not work for your IP
+  Abstract's APIs_, so your Email Validation API key will not work for your IP
   Geolocation API, for example.
 </ParamField>
 
@@ -88,10 +88,10 @@ The API response is returned in a universal and lightweight [JSON format](https:
 
 <ResponseField name="deliverability" type="String">
   Abstract's evaluation of the deliverability of the email. Possible values are:
-  `DELIVERABLE`, `UNDELIVERABLE`, `RISKY`, and `UNKNOWN`
+  `DELIVERABLE`, `UNDELIVERABLE`, and `UNKNOWN`.
 </ResponseField>
 
-<ResponseField name="quality_score" type="Number">
+<ResponseField name="quality_score" type="Float">
   An internal decimal score between 0.01 and 0.99 reflecting Abstract's
   confidence in the quality and deliverability of the submitted email.
 </ResponseField>
@@ -104,14 +104,12 @@ The API response is returned in a universal and lightweight [JSON format](https:
 
 <ResponseField name="is_free_email" type="Boolean">
   Is `true` if the email's domain is found among Abstract's list of free email
-  providers (e.g., [Gmail](https://www.gmail.com/),
-  [Yahoo](https://mail.yahoo.com/), etc).
+  providers Gmail, Yahoo, etc).
 </ResponseField>
 
 <ResponseField name="is_disposable_email" type="Boolean">
   Is `true` if the email's domain is found among Abstract's list of disposable
-  email providers (e.g., [Mailinator](https://www.mailinator.com/),
-  [Yopmail](http://www.yopmail.com/en/), etc).
+  email providers (e.g., Mailinator, Yopmail, etc).
 </ResponseField>
 
 <ResponseField name="is_role_email" type="Boolean">
@@ -255,3 +253,11 @@ Whenever you make a request that fails for some reason, an error is returned als
 | 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
 | 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
 | 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
+
+## Code samples and libraries
+
+Please see the top of this page for code samples for these languages and more. If we're missing a code sample, or if you'd like to contribute a code sample or library in exchange for free credits, email us at: team@abstractapi.com
+
+## Other notes
+
+A note on metered billing: Each individual IP you submit counts as a credit used. So, if you submit 20 different IP addresses in a single request, that will count as 20 credits against your monthly quota. Credits are also counted per request, not per successful response. So if you submit a request for the (invalid) IP address "kasj8929hs", that still counts as 1 credit.

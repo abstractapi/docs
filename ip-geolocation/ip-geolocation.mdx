@@ -127,9 +127,8 @@ The API response is returned in a universal and lightweight [JSON format](https:
   City's geoname ID.
 </ResponseField>
 
-<ResponseField name="format.international" type="String">
-  The international format of the submitted phone number. This means appending
-  the phone number's country code and a "+" at the beginning.
+<ResponseField name="region" type="String">
+  State or province in which the the city is located.
 </ResponseField>
 
 <ResponseField name="region_iso_code" type="Char[2]">
@@ -200,7 +199,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
   Current time in the local time zone.
 </ResponseField>
 
-<ResponseField name="timezone.is_dst" type="String">
+<ResponseField name="timezone.is_dst" type="Boolean">
   True if the location is currently in Daylight Savings Time (DST).
 </ResponseField>
 
