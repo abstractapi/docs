@@ -1,70 +1,97 @@
 ---
 title: 'Web Scraping API'
-icon: 'phone'
-description: "Abstract's Phone Number Validation and Verification API is a fast, lightweight, modern, and RESTful JSON API for determining the validity and other details of phone numbers from over 190 countries."
-api: 'GET https://phonevalidation.abstractapi.com/v1'
+icon: 'globe'
+description: "Abstract's Web Scraping API is a simple yet powerful REST API that is used to extract data from a given URL. To make a request, you simply include the target URL and your API key, and Abstract's API will return the data from that site."
+api: 'GET https://scrape.abstractapi.com/v1'
 hideApiMarker: true
 ---
 
-It's very simple to use: you only need to submit your API key and a phone number, and the API will respond as assessment of its validity, as well as additional details like the carrier details, line type, region and city details, and more.
-
-Validating and verifying phone numbers is a critical step to reducing the chances of low quality data and fraudulent or risky users in your website or application.
+It's very simple to use: you only need to submit your `api_key` and a target `URL`, and the API will return the data from that site.
 
 ## Getting started
 
 ### REST
 
-The Phone Number Validation and Verification API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Web Scraping API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Phone Number Validation and Verification API requires all communications to be secured TLS 1.2 or greater.
+The Web Scraping API requires all communications to be secured TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Phone Number Validation and Verification API is currently on Version 1.
+All of Abstract's API are versioned. The Web Scraping API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Phone Number Validation and Verification API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Number Validation and Verification and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Web Scraping API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Web Scraping and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+https://scrape.abstractapi.com/v1/
 ```
 
 ### Validation endpoint
 
-Abstract's Phone Number Validation and Verification API simply requires your unique API key and the phone number you'd like to check:
+Abstract's Web Scraping API simply requires your unique `api_key` and the target `URL` you'd like to scrape:
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+https://scrape.abstractapi.com/v1/
 ? api_key = YOUR_UNIQUE_API_KEY
-& phone = 14154582468
+& url = https://news.ycombinator.com
 ```
 
 This was a successful request, so the valid phone number and details associated with it are returned below:
 
 <ResponseExample>
 
-```json
-{
-  "phone": "14152007986",
-  "valid": true,
-  "format": {
-    "international": "+14152007986",
-    "local": "(415) 200-7986"
-  },
-  "country": {
-    "code": "US",
-    "name": "United States",
-    "prefix": "+1"
-  },
-  "location": "California",
-  "type": "mobile",
-  "carrier": "T-Mobile USA, Inc."
-}
+```
+<html lang="en" op="news"><head><meta name="referrer" content="origin"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" type="text/css" href="news.css?ZjsaulklTz22B6Rfir3c">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="rss">
+<title>Hacker News</title></head><body><center><table id="hnmain" border="0" cellpadding="0" cellspacing="0" width="85%" bgcolor="#f6f6ef">
+<tr><td bgcolor="#ff6600"><table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:2px"><tr><td style="width:18px;padding-right:4px"><a href="https://news.ycombinator.com"><img src="y18.svg" width="18" height="18" style="border:1px white solid; display:block"></a></td>
+<td style="line-height:12pt; height:10px;"><span class="pagetop"><b class="hnname"><a href="news">Hacker News</a></b>
+  <a href="newest">new</a> | <a href="front">past</a> | <a href="newcomments">comments</a> | <a href="ask">ask</a> | <a href="show">show</a> | <a href="jobs">jobs</a> | <a href="submit">submit</a>            </span></td><td style="text-align:right;padding-right:4px;"><span class="pagetop">
+  <a href="login?goto=news">login</a>
+</span></td>
+</tr></table></td></tr>
+<tr id="pagespace" title="" style="height:10px"></tr><tr><td>
+
+<table border="0" cellpadding="0" cellspacing="0">
+  <tr class='athing' id='36478206'>
+  <td align="right" valign="top" class="title"><span class="rank">1.</span></td>      <td valign="top" class="votelinks"><center><a id='up_36478206'href='vote?id=36478206&amp;how=up&amp;goto=news'><div class='votearrow' title='upvote'></div></a></center></td><td class="title"><span class="titleline"><a href="https://matan-h.com/google-has-a-secret-browser-hidden-inside-the-settings/" rel="noreferrer">Google has a secret browser hidden inside the settings</a><span class="sitebit comhead"> (<a href="from?site=matan-h.com"><span class="sitestr">matan-h.com</span></a>)</span></span></td></tr><tr><td colspan="2"></td><td class="subtext"><span class="subline">
+      <span class="score" id="score_36478206">412 points</span> by <a href="user?id=matan-h" class="hnuser">matan-h</a> <span class="age" title="2023-06-26T11:13:03"><a href="item?id=36478206">3 hours ago</a></span> <span id="unv_36478206"></span> | <a href="hide?id=36478206&amp;goto=news">hide</a> | <a href="item?id=36478206">140&nbsp;comments</a>        </span>
+          </td></tr>
+  <tr class="spacer" style="height:5px"></tr>
+            <tr class='athing' id='36478892'>
+  <td align="right" valign="top" class="title"><span class="rank">2.</span></td>      <td valign="top" class="votelinks"><center><a id='up_36478892'href='vote?id=36478892&amp;how=up&amp;goto=news'><div class='votearrow' title='upvote'></div></a></center></td><td class="title"><span class="titleline"><a href="https://faultlore.com/blah/text-hates-you/" rel="noreferrer">Text Rendering Hates You (2019)</a><span class="sitebit comhead"> (<a href="from?site=faultlore.com"><span class="sitestr">faultlore.com</span></a>)</span></span></td></tr><tr><td colspan="2"></td><td class="subtext"><span class="subline">
+      <span class="score" id="score_36478892">96 points</span> by <a href="user?id=subset" class="hnuser">subset</a> <span class="age" title="2023-06-26T12:32:55"><a href="item?id=36478892">2 hours ago</a></span> <span id="unv_36478892"></span> | <a href="hide?id=36478892&amp;goto=news">hide</a> | <a href="item?id=36478892">32&nbsp;comments</a>        </span>
+          </td></tr>
+  <tr class="spacer" style="height:5px"></tr>
+            <tr class='athing' id='36479387'>
+  <td align="right" valign="top" class="title"><span class="rank">3.</span></td>      <td valign="top" class="votelinks"><center><a id='up_36479387'href='vote?id=36479387&amp;how=up&amp;goto=news'><div class='votearrow' title='upvote'></div></a></center></td><td class="title"><span class="titleline"><a href="https://www.johndcook.com/blog/2023/06/23/every-factorial-is-a-power/" rel="noreferrer">Every factorial is a power</a><span class="sitebit comhead"> (<a href="from?site=johndcook.com"><span class="sitestr">johndcook.com</span></a>)</span></span></td></tr><tr><td colspan="2"></td><td class="subtext"><span class="subline">
+      <span class="score" id="score_36479387">41 points</span> by <a href="user?id=warrenm" class="hnuser">warrenm</a> <span class="age" title="2023-06-26T13:24:53"><a href="item?id=36479387">1 hour ago</a></span> <span id="unv_36479387"></span> | <a href="hide?id=36479387&amp;goto=news">hide</a> | <a href="item?id=36479387">22&nbsp;comments</a>        </span>
+          </td></tr>
+  
+  ............
+
+  <tr class="spacer" style="height:5px"></tr>
+            <tr class='athing' id='36469297'>
+  <td align="right" valign="top" class="title"><span class="rank">30.</span></td>      <td valign="top" class="votelinks"><center><a id='up_36469297'href='vote?id=36469297&amp;how=up&amp;goto=news'><div class='votearrow' title='upvote'></div></a></center></td><td class="title"><span class="titleline"><a href="https://github.com/TeamHypersomnia/Hypersomnia">Show HN: Open-source shooter which made it to AC: Valhalla and Skydio drones</a><span class="sitebit comhead"> (<a href="from?site=github.com/teamhypersomnia"><span class="sitestr">github.com/teamhypersomnia</span></a>)</span></span></td></tr><tr><td colspan="2"></td><td class="subtext"><span class="subline">
+      <span class="score" id="score_36469297">251 points</span> by <a href="user?id=geneotech" class="hnuser">geneotech</a> <span class="age" title="2023-06-25T15:34:42"><a href="item?id=36469297">18 hours ago</a></span> <span id="unv_36469297"></span> | <a href="hide?id=36469297&amp;goto=news">hide</a> | <a href="item?id=36469297">35&nbsp;comments</a>        </span>
+          </td></tr>
+  <tr class="spacer" style="height:5px"></tr>
+        <tr class="morespace" style="height:10px"></tr><tr><td colspan="2"></td>
+  <td class='title'><a href='?p=2' class='morelink' rel='next'>More</a></td>    </tr>
+</table>
+</td></tr>
+<tr><td><img src="s.gif" height="10" width="0"><table width="100%" cellspacing="0" cellpadding="1"><tr><td bgcolor="#ff6600"></td></tr></table><br>
+<center><span class="yclinks"><a href="newsguidelines.html">Guidelines</a> | <a href="newsfaq.html">FAQ</a> | <a href="lists">Lists</a> | <a href="https://github.com/HackerNews/API">API</a> | <a href="security.html">Security</a> | <a href="https://www.ycombinator.com/legal/">Legal</a> | <a href="https://www.ycombinator.com/apply/">Apply to YC</a> | <a href="mailto:hn@ycombinator.com">Contact</a></span><br><br>
+<form method="get" action="//hn.algolia.com/">Search: <input type="text" name="q" size="17" autocorrect="off" spellcheck="false" autocapitalize="off" autocomplete="false"></form></center></td></tr>      </table></center></body>
+      <script type='text/javascript' src='hn.js?ZjsaulklTz22B6Rfir3c'></script>
+  </html>
 ```
 
 </ResponseExample>
@@ -72,70 +99,21 @@ This was a successful request, so the valid phone number and details associated 
 ### Request parameters
 
 <ParamField query="api_key" type="String" required>
-  Your unique API key. Note that each user has unique API keys _for each of
-  Abstract's APIs_, so your Phone Validation API key will not work for your IP
-  Geolocation API key, for example.
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Web Scraping API key will not work for your User Avatar API key, for example.
 </ParamField>
 
-<ParamField query="phone" type="String" required>
-  The phone number to validate and verify.
+<ParamField query="url" type="String" required>
+  The URL to extract the data from. Note that this parameter should include the full HTTP Protocol (http:// or https://). If your URL has parameters, you should encode it. For example the `&` character would be encoded to `%26`.
 </ParamField>
 
-### Response parameters
+<ParamField query="render_js" type="Boolean">
+  If true the request will render Javascript on the target site. Note that Javascript is rendered via a Google Chrome headless browser. Defaults to false.
+</ParamField>
 
-The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+<ParamField query="block_ads" type="Boolean">
+  If true the request will block any advertisements it can identify on the target site. Defaults to false.
+</ParamField>
 
-<ResponseField name="phone" type="String">
-  The phone number submitted for validation and verification.
-</ResponseField>
-
-<ResponseField name="valid" type="Boolean">
-  Is true if the phone number submitted is valid.
-</ResponseField>
-
-<ResponseField name="format" type="Object">
-  The object containing the `international` and `local` formats of the submitted
-  number
-</ResponseField>
-
-<ResponseField name="format.international" type="String">
-  The international format of the submitted phone number. This means appending
-  the phone number's country code and a "+" at the beginning.
-</ResponseField>
-
-<ResponseField name="format.local" type="String">
-  The local or national format of the submitted phone number. For example, it
-  removes any international formatting, such as "+1" in the case of the US.
-</ResponseField>
-
-<ResponseField name="country" type="Object">
-  The object containing details of the phone number's country
-</ResponseField>
-
-<ResponseField name="country.code" type="String">
-  The country's two letter [ISO 3166-1 alpha-2
-  code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-</ResponseField>
-
-<ResponseField name="country.name" type="String">
-  The name of the country in which the phone number is registered.
-</ResponseField>
-
-<ResponseField name="country.prefix" type="String">
-  The country's [calling code
-  prefix](https://en.wikipedia.org/wiki/List_of_country_calling_codes).
-</ResponseField>
-
-<ResponseField name="location" type="String">
-  As much location details as are available from our data. This can include the
-  region, state / province, and in some cases down to the city.
-</ResponseField>
-
-<ResponseField name="type" type="String">
-  The type of phone number. The possible values are: `Landline`, `Mobile`,
-  `Satellite`, `Premium`, `Paging`, `Special`, `Toll_Free`, and `Unknown`.
-</ResponseField>
-
-<ResponseField name="carrier" type="String">
-  The carrier that the number is registered with.
-</ResponseField>
+<ParamField query="proxy_country" type="String">
+  The country to make the request from. The country should be submitted in the two letter, ISO 3166-1 alpha-2 code.
+</ParamField>
