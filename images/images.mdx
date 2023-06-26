@@ -1,47 +1,51 @@
 ---
 title: 'Image Processing API'
-icon: 'phone'
-description: "Abstract's Phone Number Validation and Verification API is a fast, lightweight, modern, and RESTful JSON API for determining the validity and other details of phone numbers from over 190 countries."
-api: 'GET https://phonevalidation.abstractapi.com/v1'
+icon: 'image'
+description: "Abstract's Image Processing and Optimization API is a simple yet powerful REST API that is used to convert, compress, or optimization an image that is provided via a URL or via POST to the API itself."
+api: 'POST curl https://images.abstractapi.com/v1/url'
 hideApiMarker: true
 ---
 
-It's very simple to use: you only need to submit your API key and a phone number, and the API will respond as assessment of its validity, as well as additional details like the carrier details, line type, region and city details, and more.
-
-Validating and verifying phone numbers is a critical step to reducing the chances of low quality data and fraudulent or risky users in your website or application.
+It's very simple to use: you only need to submit your `api_key` and an image via url or POST to the API, and the API will respond as assessment of its validity, as well as additional details like the carrier details, line type, region and city details, and more.
 
 ## Getting started
 
 ### REST
 
-The Phone Number Validation and Verification API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Image Processing API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Phone Number Validation and Verification API requires all communications to be secured TLS 1.2 or greater.
+The Image Processing API requires all communications to be secured TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Phone Number Validation and Verification API is currently on Version 1.
+All of Abstract's API are versioned. The Image Processing API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Phone Number Validation and Verification API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Number Validation and Verification and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Image Processing API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Image Processing and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+curl https://images.abstractapi.com/v1/url/
 ```
 
 ### Validation endpoint
 
-Abstract's Phone Number Validation and Verification API simply requires your unique API key and the phone number you'd like to check:
+Abstract's Image Processing API simply requires your unique API key and the phone number you'd like to check:
 
 ```
-https://phonevalidation.abstractapi.com/v1/
+curl https://images.abstractapi.com/v1/url/
 ? api_key = YOUR_UNIQUE_API_KEY
 & phone = 14154582468
+
+curl https://images.abstractapi.com/v1/url/ 
+-X POST 
+-H "Content-Type: application/json" 
+-H "Accept: application/json" 
+-d '{"api_key": YOUR_UNIQUE_API_KEY, "lossy": true, "url": "https://s3.amazonaws.com/static.abstractapi.com/test-images/dog.jpg"}
 ```
 
 This was a successful request, so the valid phone number and details associated with it are returned below:
