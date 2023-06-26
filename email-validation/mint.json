@@ -40,5 +40,11 @@
     "twitter": "https://twitter.com/abstractapi",
     "linkedin": "https://www.linkedin.com/company/abstractapi",
     "website": "https://www.abstractapi.com/"
-  }
+  },
+  "analytics": {
+    "mixpanel": {
+        "projectToken": "c39efa9bf07f680d3be6c26cb8a84420"
+    }
+}
+
 }
