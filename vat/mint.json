@@ -31,10 +31,10 @@
     {
       "group": "VAT API",
       "pages": [
-        "getting-started",
+        "vat-validation",
         "validate",
         "calculate",
-        "rates"
+        "categories"
       ]
     }
   ],
