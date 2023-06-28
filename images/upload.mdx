@@ -1,0 +1,193 @@
+---
+title: 'Upload via POST endpoint'
+description: "Abstract's Image Processing and Optimization API is a simple yet powerful REST API that is used to convert, compress, or optimization an image that is provided via a URL or via POST to the API itself."
+hideApiMarker: true
+---
+
+## Getting started
+
+### Base URL
+
+```
+https://images.abstractapi.com/v1/upload
+```
+
+### Validation endpoint
+
+This endpoint only requires your API key, along with any other optional properties that you wish to use to optimize your image.
+
+```
+curl -X POST \
+  -H "Content-Type: multipart/form-data" \
+  -F "data={\"api_key\": \"YOUR_UNIQUE_API_KEY\"}" \
+  -F "image=@path/to/image/file.jpg" \
+  https://images.abstractapi.com/v1/upload/
+```
+
+This was a successful request and the API returns information about the image along with a link to download the new one.
+
+<ResponseExample>
+
+```json
+{
+  "original_size": 205559,
+  "original_height": 430,
+  "original_width": 1142,
+  "final_size": 181512,
+  "bytes_saved": 24047,
+  "final_height": 430,
+  "final_width": 1142,
+  "url": "https://abstractapi-images.s3.amazonaws.com/e6c6ea1f8bfd46be9ed357b9ce4240ff_dog.jpg"
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField body="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Image API key will not work for your User Avatar API key, for example.
+</ParamField>
+
+<ParamField body="image" type="String" required>
+  The path to your image in your local machine.
+</ParamField>
+
+<ParamField body="lossy" type="Boolean">
+  If true, the API will perform a lossy compression on the image, reducing the size massively with a small drop in image quality. If false, the image size will only be reduced slightly (10% - 20% at most), but there will be no reduction in image quality. The default value is false if this is not provided.
+</ParamField>
+
+<ParamField body="quality" type="Integer">
+  This is an integer between 0 and 100 that determines the quality level for lossy compression. If not submitted it will be determined intelligently. Generally a quality above 95 is useless and may result in an image that is larger than the input image, and a quality below 25 will result in an image so low in quality that it will be useless.
+</ParamField>
+
+<ParamField body="resize" type="Object">
+  This is a set of JSON data that will determine how to resize the image. If not provided, we will only compress the image as desired. Find specific configurations for this parameter below.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="original_size" type="Integer">
+  The original size of the provided image, in bytes.
+</ResponseField>
+
+<ResponseField name="original_height" type="Integer">
+  The original height of the provided image, in bytes.
+</ResponseField>
+
+<ResponseField name="original_width" type="Integer">
+  The original width of the provided image, in bytes.
+</ResponseField>
+
+<ResponseField name="final_size" type="Integer">
+  The final size of the processed image, in bytes.
+</ResponseField>
+
+<ResponseField name="bytes_saved" type="Integer">
+  The number of bytes saved by optimizing the image, in bytes.
+</ResponseField>
+
+<ResponseField name="final_height" type="Integer">
+  The final height of the processed image, in bytes.
+</ResponseField>
+
+<ResponseField name="final_width" type="Integer">
+  The final width of the processed image, in bytes.
+</ResponseField>
+
+<ResponseField name="url" type="String">
+  The URL with the new processed image.
+</ResponseField>
+
+### Options for "resize" parameter
+
+The resize parameter takes a set of JSON data that determines how to resize the image. That JSON data can contain one or many of the following resizing strategies:
+
+`exact` : Resize to exact width and height. Aspect ratio will not be maintained
+```
+"resize": {  
+  "width": 100,  
+  "height": 75,  
+  "strategy": "exact"  
+}
+```
+
+`portrait` : Exact height will be set, width will be adjusted according to aspect ratio
+```
+"resize": {  
+  "height": 75,  
+  "strategy": "portrait"  
+}
+```
+
+`landscape` : Exact width will be set, height will be adjusted according to aspect ratio
+```
+"resize": {  
+  "width": 100,  
+  "strategy": "landscape"  
+}
+```
+
+`auto` : The best strategy (portrait or landscape) will be selected according to its aspect ratio
+```
+"resize": {  
+  "width": 100,  
+  "height": 75,  
+  "strategy": "auto"  
+}
+```
+
+`fit` : This option will crop and resize the image to fit the desired width and height.
+```
+"resize": {  
+  "width": 100,  
+  "height": 75,  
+  "strategy": "fit"  
+}
+```
+
+`crop` : This option will crop an image to the exact size you specify. The resulting cropped image can optionally be scaled by inclusion of a scale, which accepts a number representing the percentage by which the image should be scaled.
+```
+"resize": {  
+  "width": 100,  
+  "height": 75,  
+  "strategy": "crop",  
+  "scale": 50,  
+  "crop_mode": "c",  
+}
+```
+If you want to crop from a direction other than the default "center", you can specify a crop_mode parameter, which can take one of the following gravity (or direction) values:
+- n or t - North / Top
+- nw or tl - North West / Top Left
+- ne or tr - North East / Top Right
+- w or l - West / Left
+- c - Center - this is the default gravity or direction, and applied when the crop_mode parameter is left out, or an invalid value is passed.
+- e or r - East / Right
+- se or br - South East / Bottom Right
+- sw or bl - South West / Bottom Left
+- s or b - South / Bottom
+
+If you would like to crop a custom area from an image, you can do so by specifying the rectangular region you wish to extract as x, y, width and height. Optionally, you can pass a scale parameter (as mentioned above), which must be a number representing the percentage by which you would like to scale the image.
+
+> Please note that the crop_mode parameter can be used with both the fit and the crop strategies.
+
+`square` : This strategy will crop the image by its shorter dimension to make it a square, then resize it to the specified size.
+```
+"resize": {  
+  "size": 100,  
+  "strategy": "square"  
+}
+```
+
+`fill` : This strategy allows you to resize the image to fit the specified bounds while preserving the aspect ratio. The optional background property allows you to specify a color which will be used to fill the unused portions of the previously specified bounds.
+```
+"resize": {  
+  "width": 100,  
+  "height": 75,  
+  "strategy": "fill",  
+  "background": "rgb(91, 126, 156)&ququot;  
+}
+```
+The background property can be formatted in HEX notation #f60 or #ff6600 or RGB rgb(255, 0, 0). The default background color is white.

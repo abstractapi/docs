@@ -31,7 +31,9 @@
     {
       "group": "Images Processing API",
       "pages": [
-        "images"
+        "images",
+        "url",
+        "upload"
       ]
     }
   ],
