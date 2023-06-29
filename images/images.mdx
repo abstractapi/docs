@@ -48,7 +48,3 @@ Whenever you make a request that fails for some reason, an error is returned als
 | 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
 | 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
 | 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
-
-## Other notes
-
-A note on metered billing: Each individual domain you submit for lookup counts as a credit used. So, if you submit 20 different domain in a single request, that will count as 20 credits against your monthly quota. Credits are also counted per request, not per successful response. So if you submit a request for the (invalid) domain "kasj8929hs", that still counts as 1 credit.
