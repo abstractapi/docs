@@ -32,8 +32,8 @@
       "group": "Timezone API",
       "pages": [
         "timezones",
-        "current-time",
-        "convert-time"
+        "timezones/current-time",
+        "timezones/convert-time"
       ]
     }
   ],

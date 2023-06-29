@@ -32,9 +32,9 @@
       "group": "Exchange Rates",
       "pages": [
         "exchange-rates",
-        "live",
-        "convert",
-        "historical"
+        "exchange-rates/live",
+        "exchange-rates/convert",
+        "exchange-rates/historical"
       ]
     }
   ],
