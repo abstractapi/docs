@@ -32,9 +32,9 @@
       "group": "VAT API",
       "pages": [
         "vat-validation",
-        "validate",
-        "calculate",
-        "categories"
+        "vat-validation/validate",
+        "vat-validation/calculate",
+        "vat-validation/categories"
       ]
     }
   ],
