@@ -2,7 +2,8 @@
   "name": "Abstract API",
   "logo": {
     "dark": "/logo/dark.png",
-    "light": "/logo/light.png"
+    "light": "/logo/light.png",
+    "href": "https://www.abstractapi.com/api/holidays-api"
   },
   "favicon": "/favicon.png",
   "colors": {
