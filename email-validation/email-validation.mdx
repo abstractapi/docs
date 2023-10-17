@@ -253,7 +253,7 @@ Whenever you make a request that fails for some reason, an error is returned als
 | 204         | OK                      | Their is no location data for the submitted IP.                                                                                                             |
 | 400         | Bad request	            | Bad request.                                                                                                                                                |
 | 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
-| 422         | Quota reached	          | The request was aborted due to insufficient API credits.                                                                                                    |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits. (Free plans)                                                                                       |
 | 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
 | 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
 | 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
