@@ -32,7 +32,8 @@
     {
       "group": "Company Enrichment",
       "pages": [
-        "company-enrichment"
+        "company-enrichment",
+        "company-enrichment/company-enrichment-v2"
       ]
     }
   ],
