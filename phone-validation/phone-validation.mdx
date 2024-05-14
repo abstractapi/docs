@@ -79,6 +79,10 @@ This was a successful request, so the valid phone number and details associated 
   The phone number to validate and verify.
 </ParamField>
 
+<ParamField query="country" type="String">
+  The country's ISO code. Add this parameter to indicate the phone number's country, and the API will append the corresponding country code to its analysis. For instance, add country=US to indicate that the phone number is from the United States.
+</ParamField>
+
 ### Response parameters
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
