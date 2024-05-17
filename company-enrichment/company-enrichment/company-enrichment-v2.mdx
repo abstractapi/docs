@@ -1,7 +1,7 @@
 ---
 title: 'Company Enrichment API'
 icon: 'building'
-description: "With Abstract's Company Enrichment API, you can get the company details of any domain."
+description: "With Abstract's Company Enrichment API, you can easily get detailed information about any company domain."
 api: 'GET https://companyenrichment.abstractapi.com/v2'
 hideApiMarker: true
 ---
@@ -12,19 +12,19 @@ It's very simple to use: you are only required to send your unique `api_key` and
 
 ### REST
 
-The Company Enrichment API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Company Enrichment API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Company Enrichment API requires all communications to be secured TLS 1.2 or greater.
+The Company Enrichment API requires all communications to be secured with TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Company Enrichment API is currently on Version 2.
+All of Abstract's APIs are versioned. The Company Enrichment API is currently on Version 2.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Company Enrichment API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Company Enrichment and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Company Enrichment API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the Company Enrichment and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
@@ -34,7 +34,7 @@ https://companyenrichment.abstractapi.com/v2
 
 ### Validation endpoint
 
-Abstract's Company Enrichment API simply requires your unique API key and the domain you'd like to enrich:
+Abstract's Company Enrichment API simply requires your unique API key and the domain you’d like to enrich:
 
 ```
 https://companyenrichment.abstractapi.com/v2
@@ -224,7 +224,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
 
 ## Response and error codes
 
-Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
+Whenever you make a request that fails for some reason, an error is returned in JSON format. The errors include an error code and description, which you can find detailed below.
 
 | Code        | Type                    | Details                                                                                                                                                     |
 | ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -242,4 +242,4 @@ Please see the top of this page for code samples for these languages and more. I
 
 ## Other notes
 
-A note on metered billing: Each individual domain you submit for lookup counts as a credit used. Credits are also counted per request, not per successful response. So if you submit a request for the (invalid) domain "kasj8929hs", that still counts as 1 credit.
+A note on metered billing: Each individual domain you submit for lookup counts as a credit used. Credits are counted per request, not per successful response. So if you submit a request for the (invalid) domain "kasj8929hs", that still counts as 1 credit.
