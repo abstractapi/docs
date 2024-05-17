@@ -1,7 +1,7 @@
 ---
 title: 'Web Scraping API'
 icon: 'globe'
-description: "Abstract's Web Scraping API is a simple yet powerful REST API that is used to extract data from a given URL. To make a request, you simply include the target URL and your API key, and Abstract's API will return the data from that site."
+description: "Abstract’s Web Scraping API is a simple yet powerful REST API used to extract data from a given URL. To make a request, you simply include the target URL and your API key, and Abstract’s API will return the data from that site."
 api: 'GET https://scrape.abstractapi.com/v1'
 hideApiMarker: true
 ---
@@ -12,19 +12,19 @@ It's very simple to use: you only need to submit your `api_key` and a target `UR
 
 ### REST
 
-The Web Scraping API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Web Scraping API, like all of Abstract’s APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Web Scraping API requires all communications to be secured TLS 1.2 or greater.
+The Web Scraping API requires all communications to be secured with TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Web Scraping API is currently on Version 1.
+All of Abstract's APIs are versioned. The Web Scraping API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Web Scraping API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Web Scraping and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract’s Web Scraping API. Note that each of Abstract’s APIs has a unique API key, so you will need different keys to access the Web Scraping and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
@@ -99,7 +99,7 @@ This was a successful request, so the information from the provided website is r
 ### Request parameters
 
 <ParamField query="api_key" type="String" required>
-  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Web Scraping API key will not work for your User Avatar API, for example.
+  Your unique API key. Note that each user has a unique API key for each of Abstract’s APIs, so your Web Scraping API key will not work for your User Avatar API, for example
 </ParamField>
 
 <ParamField query="url" type="String" required>
@@ -107,7 +107,7 @@ This was a successful request, so the information from the provided website is r
 </ParamField>
 
 <ParamField query="render_js" type="Boolean">
-  If true the request will render Javascript on the target site. Note that Javascript is rendered via a Google Chrome headless browser. Defaults to false.
+  If true, the request will render JavaScript on the target site. Note that JavaScript is rendered via a Google Chrome headless browser. Defaults to false.
 </ParamField>
 
 <ParamField query="use_proxy" type="Boolean">
@@ -115,5 +115,23 @@ This was a successful request, so the information from the provided website is r
 </ParamField>
 
 <ParamField query="cookie_jar" type="Array">
-    It can be used to make requests with preloaded cookies. The array can contain multiple objects, each with the following properties: path, value, name, and domain.  
+  It can be used to make requests with preloaded cookies. The array can contain multiple objects, each with the following properties: path, value, name, and domain.  
 </ParamField>
+
+```json
+[
+  {
+    "path": "path",
+    "value": "value",
+    "name": "name",
+    "domain": "domain"
+  },
+  {
+    "path": "path",
+    "value": "value",
+    "name": "name",
+    "domain": "domain"
+  }
+]
+
+
