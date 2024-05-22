@@ -1,6 +1,6 @@
 ---
 title: 'Convert exchange rates'
-description: "The `convert` endpoint is similar to the `live` endpoint, except it allows you to convert an arbitrary amount of currency."
+description: "  The `convert` endpoint is similar to the `live` endpoint but allows you to convert an arbitrary amount from one currency to another."
 api: 'GET https://exchange-rates.abstractapi.com/v1/convert'
 hideApiMarker: true
 ---
@@ -15,10 +15,10 @@ https://exchange-rates.abstractapi.com/v1/convert
 
 ### Validation endpoint
 
-Along with your API key and a base currency, the `convert` endpoint required a `target` parameter.
+Along with your API key and a base currency, the `convert` endpoint requires a `target` parameter.
 
 ```
-https://exchange-rates.abstractapi.com/v1/live
+https://exchange-rates.abstractapi.com/v1/convert
 ? api_key = YOUR_UNIQUE_API_KEY
 & base = USD
 & target = EUR
@@ -33,9 +33,9 @@ This was a successful request and returns a converted amount of 1 USD at its mos
     "base": "USD",
     "target": "EUR",
     "base_amount": 1,
-    "converted_amount": 0.915499,
-    "exchange_rate": 0.915499,
-    "last_updated": 1687266900
+    "converted_amount": 0.923361,
+    "exchange_rate": 0.923361,
+    "last_updated": 1716297300
 }
 ```
 

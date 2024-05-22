@@ -7,32 +7,32 @@ hideApiMarker: true
 ## Getting started
 
 <Card title="Live exchange rates" icon="wave-pulse" href="exchange-rates/live">
-  The `live` endpoint returns the most recent exchange rate(s) for a given set of currencies. The base currency is the currency you're converting FROM, while the target currency or currencies are what you're converting TO.
+  The `live` endpoint returns the most recent exchange rates for a given set of currencies. The base currency is the currency you're converting from, while the target currency or currencies are what you're converting to.
 </Card>
 
 <Card title="Convert exchange rates" icon="money-bill-transfer" href="exchange-rates/convert">
-  The `convert` endpoint is similar to the `live` endpoint, except it allows you to convert an arbitrary amount of currency.
+  The `convert` endpoint is similar to the `live` endpoint but allows you to convert an arbitrary amount from one currency to another.
 </Card>
 
 <Card title="Historical exchange rates (beta)" icon="landmark" href="exchange-rates/historical">
-  The `historical` endpoint functions almost exactly like the /live/ endpoint, except it requires you to request a date parameter, and subsequently returns the returns the most recent exchange rate(s) for a given set of currencies.
+  The `historical` endpoint functions almost exactly like the `live` endpoint, except it requires a date parameter and returns the exchange rates for that specific date for a given set of currencies.
 </Card>
 
 ### REST
 
-The Exchange Rates API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Exchange Rates API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Exchange Rates API requires all communications to be secured TLS 1.2 or greater.
+The Exchange Rates API requires all communications to be secured with TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Exchange Rates API is currently on Version 1.
+All of Abstract's APIs are versioned. The Exchange Rates API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Exchange Rates API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Exchange Rates and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Exchange Rates API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the Exchange Rates and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Code samples and libraries
 
@@ -57,48 +57,57 @@ Whenever you make a request that fails for some reason, an error is returned als
 
 Below are the ISO 4217 codes of supported currencies. If you'd like us to support a currency that's not listed below, please contact hello@abstractapi.com
 
-| Currency code       | Currency name       |
-| ------------------- | ------------------- |
-| ARS | Argentine Peso |
-| AUD | Australian Dollar |
-| BCH | Bitcoin Cash |
-| BGN | Bulgarian Lev |
-| BNB | Binance Coin |
-| BRL | Brazilian Real |
-| BTC | Bitcoin |
-| CAD | Canadian Dollar |
-| CHF | Swiss Franc |
-| CNY | Chinese Yuan |
-| CZK | Czech Republic Koruna |
-| DKK | Danish Krone |
-| DOGE | Dogecoin |
-| DZD | Algerian Dinar |
-| ETH | Ethereum |
-| EUR | Euro |
-| GBP | British Pound Sterling |
-| HKD | Hong Kong Dollar |
-| HRK | Croatian Kuna |
-| HUF | Hungarian Forint |
-| IDR | Indonesian Rupiah |
-| ILS | Israeli New Sheqel |
-| INR | Indian Rupee |
-| ISK | Icelandic Króna |
-| JPY | Japanese Yen |
-| KRW | South Korean Won |
-| LTC | Litecoin |
-| MAD | Moroccan Dirham |
-| MXN | Mexican Peso |
-| MYR | Malaysian Ringgit |
-| NOK | Norwegian Krone |
-| NZD | New Zealand Dollar |
-| PHP | Philippine Peso |
-| PLN | Polish Zloty |
-| RON | Romanian Leu |
-| RUB | Russian Ruble |
-| SEK | Swedish Krona |
-| SGD | Singapore Dollar |
-| THB | Thai Baht |
-| TRY | Turkish Lira |
-| TWD | New Taiwan Dollar |
-| XRP | Ripple |
-| ZAR | South African Rand |
+| Currency code | Currency name                       |
+|---------------|-------------------------------------|
+| ARS           | Argentine Peso                      |
+| AUD           | Australian Dollar                   |
+| BCH           | Bitcoin Cash                        |
+| BGN           | Bulgarian Lev                       |
+| BNB           | Binance Coin                        |
+| BRL           | Brazilian Real                      |
+| BTC           | Bitcoin                             |
+| CAD           | Canadian Dollar                     |
+| CHF           | Swiss Franc                         |
+| CNY           | Chinese Yuan                        |
+| CYP           | Cypriot Pound                       |
+| CZK           | Czech Republic Koruna               |
+| DKK           | Danish Krone                        |
+| DOGE          | Dogecoin                            |
+| DZD           | Algerian Dinar                      |
+| EEK           | Estonian Kroon                      |
+| ETH           | Ethereum                            |
+| EUR           | Euro                                |
+| GBP           | British Pound Sterling              |
+| GRD           | Greek Drachma                       |
+| HKD           | Hong Kong Dollar                    |
+| HRK           | Croatian Kuna                       |
+| HUF           | Hungarian Forint                    |
+| IDR           | Indonesian Rupiah                   |
+| ILS           | Israeli New Sheqel                  |
+| INR           | Indian Rupee                        |
+| ISK           | Icelandic Króna                     |
+| JPY           | Japanese Yen                        |
+| KRW           | South Korean Won                    |
+| LTC           | Litecoin                            |
+| LTL           | Lithuanian Litas                    |
+| LVL           | Latvian Lats                        |
+| MAD           | Moroccan Dirham                     |
+| MTL           | Maltese Lira                        |
+| MXN           | Mexican Peso                        |
+| MYR           | Malaysian Ringgit                   |
+| NOK           | Norwegian Krone                     |
+| NZD           | New Zealand Dollar                  |
+| PHP           | Philippine Peso                     |
+| PLN           | Polish Zloty                        |
+| RON           | Romanian Leu                        |
+| RUB           | Russian Ruble                       |
+| SEK           | Swedish Krona                       |
+| SGD           | Singapore Dollar                    |
+| SIT           | Slovenian Tolar                     |
+| SKK           | Slovak Koruna                       |
+| THB           | Thai Baht                           |
+| TRY           | Turkish Lira                        |
+| TWD           | New Taiwan Dollar                   |
+| USD           | United States Dollar                |
+| XRP           | Ripple                              |
+| ZAR           | South African Rand                  |

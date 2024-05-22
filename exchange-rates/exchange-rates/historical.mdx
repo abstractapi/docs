@@ -1,6 +1,6 @@
 ---
 title: 'Historical exchange rates'
-description: "The `historical` endpoint functions almost exactly like the `live` endpoint, except it requires you to request a date parameter, and subsequently returns the most recent exchange rate(s) for a given set of currencies."
+description: "The `historical` endpoint functions almost exactly like the `live` endpoint, except it requires a date parameter and returns the exchange rates for that specific date for a given set of currencies."
 api: 'GET https://exchange-rates.abstractapi.com/v1/historical'
 hideApiMarker: true
 ---
@@ -17,13 +17,13 @@ https://exchange-rates.abstractapi.com/v1/historical
 
 ### Validation endpoint
 
-The base currency is the currency you're converting FROM, while the target currency or currencies are what you're converting TO. Also, if no target currency or currencies are specified, then all available currencies are returned. You can see a full list of supported currencies [here](getting-started).
+The base currency is the currency you’re converting from, while the target currency or currencies are what you’re converting to. Also, if no target currency or currencies are specified, then all available currencies are returned. You can see a full list of supported currencies [here](getting-started).
 
 ```
 https://exchange-rates.abstractapi.com/v1/historical
 ? api_key = YOUR_UNIQUE_API_KEY
 & base = USD
-& date = 2020-08-31
+& date = 2024-01-01
 ```
 
 This was a successful request, and because no target currency or currencies were included, the exchange rate of all available currencies were included in the response:
@@ -33,51 +33,38 @@ This was a successful request, and because no target currency or currencies were
 ```json
 {
     "base": "USD",
-    "date": "2020-08-31",
+    "date": "2024-01-01",
     "exchange_rates": {
-        "EUR": 0.837521,
-        "JPY": 105.921273,
-        "BGN": 1.638023,
-        "CZK": 21.949749,
-        "DKK": 6.234422,
-        "GBP": 0.750461,
-        "HUF": 296.934673,
-        "PLN": 3.682663,
-        "RON": 4.053434,
-        "SEK": 8.617085,
-        "CHF": 0.902345,
-        "ISK": 137.60469,
-        "NOK": 8.756281,
-        "HRK": 6.304858,
-        "RUB": 73.952513,
-        "TRY": 7.350921,
-        "AUD": 1.357956,
-        "BRL": 5.422027,
-        "CAD": 1.306616,
-        "CNY": 6.843467,
-        "HKD": 7.750084,
-        "IDR": 14576.549414,
-        "ILS": 3.361055,
-        "INR": 73.2567,
-        "KRW": 1185.728643,
-        "MXN": 21.824958,
-        "MYR": 4.165494,
-        "NZD": 1.484757,
-        "PHP": 48.439698,
-        "SGD": 1.359715,
-        "THB": 31.070352,
-        "ZAR": 16.715997,
-        "ARS": 73.957538,
-        "DZD": 127.987018,
-        "MAD": 9.135762,
-        "TWD": 29.371859,
-        "BTC": 0.000086,
-        "ETH": 0.002297,
-        "BNB": 0.043234,
-        "DOGE": 312.659687,
-        "XRP": 3.595519,
-        "BCH": 0.003663,
-        "LTC": 0.016405
+        "EUR": 0.912742,
+        "JPY": 142.095655,
+        "BGN": 1.785141,
+        "CZK": 22.532859,
+        "DKK": 6.804582,
+        "GBP": 0.790845,
+        "HUF": 348.758671,
+        "PLN": 3.989412,
+        "RON": 4.536783,
+        "SEK": 10.181179,
+        "CHF": 0.849306,
+        "ISK": 137.550201,
+        "NOK": 10.297097,
+        "TRY": 29.726543,
+        "AUD": 1.473804,
+        "BRL": 4.888828,
+        "CAD": 1.329409,
+        "CNY": 7.143483,
+        "HKD": 7.813892,
+        "IDR": 15523.603505,
+        "ILS": 3.624042,
+        "INR": 83.319642,
+        "KRW": 1313.234757,
+        "MXN": 17.057959,
+        "MYR": 4.602501,
+        "NZD": 1.594651,
+        "PHP": 55.659912,
+        "SGD": 1.326488,
+        "THB": 34.285323,
+        "ZAR": 18.588536
     }
 }
 ```
