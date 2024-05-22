@@ -12,19 +12,19 @@ It's simple to use: you only need to submit your `api_key` and a two letter coun
 
 ### REST
 
-The Public Holidays API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+The Public Holidays API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The Public Holidays API requires all communications to be secured TLS 1.2 or greater.
+The Public Holidays API requires all communications to be secured with TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's API are versioned. The Public Holidays API is currently on Version 1.
+All of Abstract's APIs are versioned. The Public Holidays API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Public Holidays API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Public Holidays and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Public Holidays API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the Public Holidays and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
@@ -42,7 +42,7 @@ https://holidays.abstractapi.com/v1/
 & country = SG
 ```
 
-This was a successful request, so the public holidays from Singapur and details associated with it are returned below:
+This was a successful request, so the public holidays from Singapore and details associated with it are returned as the example on the right.
 
 <ResponseExample>
 
@@ -144,7 +144,7 @@ This was a successful request, so the public holidays from Singapur and details 
 
 It's also possible to specify the day, month, or year. Note that if you specify a day, you must also include a month and year. If you specify a month, you must also specify the year.
 
-For example, this return all the holidays in the US in January 2021:
+For example, this will return all the holidays in the US in January 2021:
 
 ```
 https://holidays.abstractapi.com/v1/  
