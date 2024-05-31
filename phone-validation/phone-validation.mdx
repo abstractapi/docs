@@ -142,6 +142,15 @@ The API response is returned in a universal and lightweight [JSON format](https:
   The carrier that the number is registered with.
 </ResponseField>
 
+## Bulk upload (CSV)
+
+Here are some best practices when bulk uploading a CSV file:
+
+* Ensure the first column contains the phone numbers to be analyzed.
+* Remove any empty rows from the file.
+* Include only one phone number per row.
+* The maximum file size permitted is 50,000 rows.
+
 ## Response and error codes
 
 Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
