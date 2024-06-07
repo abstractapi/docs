@@ -48,11 +48,11 @@ This was a successful request, so the company details associated with the domain
 
 ```json
 {
-  	"name": "Airbnb",
-    "domain": "airbnb.com",
+  	"domain": "airbnb.com",
+    "company_name": "Airbnb",
     "description": "Airbnb is a company that provides a wide array of accommodations for every type of traveler. With over 7 million vacation rentals and 2 million top-rated guest favorites across more than 220 countries and regions, Airbnb offers a unique and diverse selection of stays worldwide.",
-    "logo": "http://logo.abstractapi.com/e2c991b0f7bb2",
-    "year_founded": 2008,
+    "logo": "https://logo.abstractapi.com/cb6281618-c67a-5004-9c9b-29fc2245a4f7_-airbnb.png",
+    "year_founded": "2008",
     "street_address": "888 Brannan Street", 
     "city": "San Francisco",
     "state": "California",
@@ -61,8 +61,8 @@ This was a successful request, so the company details associated with the domain
     "postal_code" : "94103",
     "latitude": 37.7719568,
     "longitude": -122.4054484 ,
-    "sic_code": 87,
-    "naics_code": 54,
+    "sic_code": "87",
+    "naics_code": "54",
     "industry": "Travel Services",
     "employee_count": 6907,
     "employee_range": "5K-10K",
@@ -72,15 +72,15 @@ This was a successful request, so the company details associated with the domain
     "email_addresses" : ["support@airbnb.com"],
     "type" : "public",
     "ticker" : "ABNB",
-    "exchange" : "XNAS",
+    "exchange" : "Nasdaq",
     "global_ranking" : "7391",
-    "tags": ["Hospitality","Travel", ...],
-    "tech_tags" : ["Google Analytics", "Javascript", "Segment"],
+    "tags": ["Hospitality","Travel"],
+    "technologies" : ["Google Analytics","Javascript","Segment","Mixpanel","Branch","Salesforce","New Relic","Facebook Pixel"],
     "linkedin_url" : "linkedin.com/company/airbnb",
-    "instagram_url" : "instagram.com/airbnb",
     "facebook_url" : "facebook.com/airbnb",
-    "crunchabse_url" : "crunchabse.com/airbnb",
-    "x_url" : "twitter.com/airbnb"
+    "twitter_url" : "twitter.com/airbnb",
+    "instagram_url" : "instagram.com/airbnb",
+    "crunchbase_url" : "crunchbase.com/organization/airbnb"
  }
 ```
 
@@ -106,12 +106,12 @@ This was a successful request, so the company details associated with the domain
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
 
-<ResponseField name="name" type="String">
-  The name of the company.
-</ResponseField>
-
 <ResponseField name="domain" type="String">
   The domain the company website is hosted on.
+</ResponseField>
+
+<ResponseField name="company_name" type="String">
+  The name of the company.
 </ResponseField>
 
 <ResponseField name="description" type="String">
@@ -122,7 +122,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
   The URL to download the company's logo.
 </ResponseField>
 
-<ResponseField name="year_founded" type="Uint32">
+<ResponseField name="year_founded" type="String">
   The year the company was founded.
 </ResponseField>
 
@@ -158,11 +158,11 @@ The API response is returned in a universal and lightweight [JSON format](https:
   Decimal of the longitude.
 </ResponseField>
 
-<ResponseField name="sic_code" type="Float">
+<ResponseField name="sic_code" type="String">
   Code that indicates the industry of the company
 </ResponseField>
 
-<ResponseField name="naics_code" type="Float">
+<ResponseField name="naics_code" type="String">
    Code that indicates the industry of the company
 </ResponseField>
 
@@ -170,11 +170,11 @@ The API response is returned in a universal and lightweight [JSON format](https:
   The industry the company is operating in.
 </ResponseField>
 
-<ResponseField name="employees_count" type="String">
+<ResponseField name="employee_count" type="String">
   The approximate number of employees of the company.
 </ResponseField>
 
-<ResponseField name="employees_range" type="String">
+<ResponseField name="employee_range" type="String">
   The approximate range of employees of the company.
 </ResponseField>
 
@@ -214,12 +214,28 @@ The API response is returned in a universal and lightweight [JSON format](https:
   Array with the company's tags. 
 </ResponseField>
 
-<ResponseField name="tech_tags" type="Array">
+<ResponseField name="technologies" type="Array">
   Array with the company's tech tags. 
 </ResponseField>
 
-<ResponseField name="socials" type="Object">
-  Includes the URLs of the company's social media accounts.
+<ResponseField name="linkedin_url" type="String">
+  Linkedin URL
+</ResponseField>
+
+<ResponseField name="facebook_url" type="String">
+  Facebook URL
+</ResponseField>
+
+<ResponseField name="twitter_url" type="String">
+  Twitter/X URL 
+</ResponseField>
+
+<ResponseField name="instagram_url" type="String">
+  Instagram URL
+</ResponseField>
+
+<ResponseField name="crunchbase_url" type="String">
+  Crunchbase URL
 </ResponseField>
 
 ## Response and error codes
