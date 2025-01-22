@@ -1,96 +1,110 @@
 ---
-title: 'IP Geolocation API'
+title: 'IP Intelligence API'
 icon: 'location-dot'
-description: "Abstract's IP Geolocation API is a fast, lightweight, modern, and RESTful JSON API that determines the location and other details of IP addresses from over 190 countries."
-api: 'GET https://ipgeolocation.abstractapi.com/v1'
+description: "Abstract's IP Intelligence API is a fast, reliable, and RESTful JSON API that provides advanced security and geographical insights about IP addresses worldwide. It identifies VPNs, proxies, TOR usage, abuse potential, hosting services, relays, and mobile IPs."
+api: 'GET https://ipintelligence.abstractapi.com/v1'
 hideApiMarker: true
 ---
 
-It's very simple to use: you only need to submit your API key and an IP address, and the API will respond with the location of that IP including postal code, city, region, country and lat/long data.
+It is very simple to use: you only need to submit your API key and an IP address, and the API will respond with the location of that IP and security details, including VPN detection, proxy status, TOR usage, abuse potential, hosting services, relay status, and mobile IP identification.
 
 ## Getting started
 
 ### REST
 
-The IP Geolocation API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+The IP Intelligence API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
-The IP Geolocation API requires all communications to be secured with TLS 1.2 or greater.
+The IP Intelligence API requires all communications to be secured with TLS 1.2 or greater.
 
 ### API Versions
 
-All of Abstract's APIs are versioned. The IP Geolocation API is currently on Version 1.
+All of Abstract's APIs are versioned. The IP Intelligence API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's IP Geolocation API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IP Geolocation and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's IP Intelligence API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IP Intelligence and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
 ```
-https://ipgeolocation.abstractapi.com/v1/
+https://ipintelligence.abstractapi.com/v1/
 ```
 
 ### Validation endpoint
 
-Abstract's IP Geolocation API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
+Abstract's IP Intelligence API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
 
 ```
-https://ipgeolocation.abstractapi.com/v1/
+https://ipintelligence.abstractapi.com/v1/
 ? api_key = YOUR_UNIQUE_API_KEY
 & ip_address = 166.171.248.255 (optional)
 ```
-
-This was a successful request, so the IP address and details associated with it are returned below:
 
 <ResponseExample>
 
 ```json
 {
-    "ip_address": "166.171.248.255",
-    "city": "San Jose",
-    "city_geoname_id": 5392171,
-    "region": "California",
-    "region_iso_code": "CA",
-    "region_geoname_id": 5332921,
-    "postal_code": "95141",
-    "country": "United States",
-    "country_code": "US",
-    "country_geoname_id": 6252001,
-    "country_is_eu": false,
-    "continent": "North America",
-    "continent_code": "NA",
-    "continent_geoname_id": 6255149,
-    "longitude": -121.7714,
-    "latitude": 37.1835,
-    "security": {
-        "is_vpn": false
+	"ip_address": "185.197.192.65",
+	"security": {
+	    "is_vpn": false,
+	    "is_proxy": true,
+	    "is_tor": false,
+		"is_hosting": false,
+		"is_relay": false,
+		"is_mobile": false,
+		"is_abuse": false,
+	},
+	"asn": {
+	    "asn": 136787,
+	    "name": "PacketHub S.A.",
+	    "domain": "packethub.tech",
+	    "type": "isp",
+    },
+    "company": {
+	    "name": "PacketHub S.A.",
+	    "domain": "packethub.tech",
+	    "type": "isp",
+    },
+    "domains": {
+		"domains": []
+	},
+    "location": {
+	    "city": "Miami",
+	    "city_geoname_id": 4164138,
+	    "region": "Florida",
+	    "region_iso_code": "FL",
+	    "region_geoname_id": 4155751,
+	    "postal_code": "33197",
+	    "country": "United States",
+	    "country_code": "US",
+	    "country_geoname_id": 6252001,
+	    "is_country_eu": false,
+	    "continent": "North America",
+	    "continent_code": "NA",
+	    "continent_geoname_id": 6255149,
+	    "longitude": -80.1946,
+	    "latitude": 25.7689,
     },
     "timezone": {
-        "name": "America/Los_Angeles",
-        "abbreviation": "PDT",
-        "gmt_offset": -7,
-        "current_time": "06:37:41",
-        "is_dst": true
+	    "name": "America/New_York",
+	    "abbreviation": "EST",
+	    "utc_offset": -5,
+	    "local_time": "12:07:51",
+	    "is_dst": false,
     },
     "flag": {
-        "emoji": "🇺🇸",
-        "unicode": "U+1F1FA U+1F1F8",
-        "png": "https://static.abstractapi.com/country-flags/US_flag.png",
-        "svg": "https://static.abstractapi.com/country-flags/US_flag.svg"
-    },
-    "currency": {
-        "currency_name": "USD",
-        "currency_code": "USD"
-    },
-    "connection": {
-        "autonomous_system_number": 20057,
-        "autonomous_system_organization": "ATT-MOBILITY-LLC-AS20057",
-        "connection_type": "Cellular",
-        "isp_name": "AT&T Mobility LLC",
-        "organization_name": "Service Provider Corporation"
-    }
+	    "flag": "🇺🇸",
+	    "unicode": "U+1F1FA U+1F1F8",
+	    "png": "https://static.abstractapi.com/country-flags/US_flag.png",
+	    "svg": "https://static.abstractapi.com/country-flags/US_flag.svg",
+	},
+	"currency": {
+	    "name": "US Dollar",
+	    "iso_code": "USD",
+	    "symbol": "$"
+	}
 }
 ```
 
@@ -99,16 +113,18 @@ This was a successful request, so the IP address and details associated with it 
 ### Request parameters
 
 <ParamField query="api_key" type="String" required>
-  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your IP Geolocation API key will not work for your Email Validation API, for example.
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your IP Intelligence API key will not work for your Email Validation API, for example.
 </ParamField>
 
 <ParamField query="ip_address" type="String">
-  The IP address to geolocate. Both IPv4 and IPv6 addresses are supported. Note that if you leave this parameter blank, the service will geolocate the IP address from which the request was made.
+  The IP address to analyze. Both IPv4 and IPv6 addresses are supported. Note that if you leave this parameter blank, the service will geolocate the IP address from which the request was made.
 </ParamField>
 
 <ParamField query="fields" type="String">
   You can chose to only receive a few fields from the JSON response. To do so, you can include a fields value in the query parameters with a comma separated list of the top-level keys you want to be returned. For example, adding ?fields=city will return only the city in the JSON response.
 </ParamField>
+
+This was a successful request, so the IP address and details associated with it are returned below:
 
 ### Response parameters
 
@@ -118,68 +134,124 @@ The API response is returned in a universal and lightweight [JSON format](https:
   The IP address submitted for geolocation.
 </ResponseField>
 
-<ResponseField name="city" type="String">
+<ResponseField name="security.is_vpn" type="Boolean">
+  Whether the IP address is being used from a VPN
+</ResponseField>
+
+<ResponseField name="security.is_proxy" type="Boolean">
+  Whether the IP address is being used from a Proxy
+</ResponseField>
+
+<ResponseField name="security.is_tor" type="Boolean">
+  Whether the IP address is part of the TOR network.
+</ResponseField>
+
+<ResponseField name="security.is_hosting" type="Boolean">
+  Whether the IP address is an internet service hosting IP address.
+</ResponseField>
+
+<ResponseField name="security.is_relay" type="Boolean">
+  Whether the IP address is being used as a relay server.
+</ResponseField>
+
+<ResponseField name="security.is_mobile" type="Boolean">
+  Whether the IP address belongs to a mobile network.
+</ResponseField>
+
+<ResponseField name="security.is_abuse" type="Boolean">
+  Whether the IP address has been flagged for abusive behavior.
+</ResponseField>
+
+<ResponseField name="asn.asn" type="Integer">
+  The Autonomous System Number (ASN) associated with the IP address.
+</ResponseField>
+
+<ResponseField name="asn.name" type="String">
+  The name of the organization or ISP associated with the ASN.
+</ResponseField>
+
+<ResponseField name="asn.domain" type="String">
+  The domain associated with the ASN.
+</ResponseField>
+
+<ResponseField name="asn.type" type="String">
+  The type of organization, such as ISP or hosting.
+</ResponseField>
+
+<ResponseField name="company.name" type="String">
+  The name of the company associated with the IP address.
+</ResponseField>
+
+<ResponseField name="company.domain" type="String">
+  The company's domain name.
+</ResponseField>
+
+<ResponseField name="company.type" type="String">
+  The type of company, such as ISP or hosting.
+</ResponseField>
+
+<ResponseField name="domains.domains" type="Array">
+  A list of domains associated with the IP address.
+</ResponseField>
+
+<ResponseField name="location.city" type="String">
   City's name.
 </ResponseField>
 
-<ResponseField name="city_geoname_id" type="String">
+<ResponseField name="location.city_geoname_id" type="String">
   City's geoname ID.
 </ResponseField>
 
-<ResponseField name="region" type="String">
+<ResponseField name="location.region" type="String">
   State or province in which the the city is located.
 </ResponseField>
 
-<ResponseField name="region_iso_code" type="Char[2]">
+<ResponseField name="location.region_iso_code" type="Char[2]">
   State or province's ISO 3166-2 code.
 </ResponseField>
 
-<ResponseField name="region_geoname_id" type="String">
+<ResponseField name="location.region_geoname_id" type="String">
   State or province's geoname ID.
 </ResponseField>
 
-<ResponseField name="postal_code" type="String">
+<ResponseField name="location.postal_code" type="String">
   ZIP or postal code.
 </ResponseField>
 
-<ResponseField name="country" type="String">
+<ResponseField name="location.country" type="String">
   Country's name.
 </ResponseField>
 
-<ResponseField name="country_code" type="Char[2]">
+<ResponseField name="location.country_code" type="Char[2]">
   Country's ISO 3166-1 alpha-2 code.
 </ResponseField>
 
-<ResponseField name="country_geoname_id" type="String">
+<ResponseField name="location.country_geoname_id" type="String">
   Country's geoname ID.
 </ResponseField>
 
-<ResponseField name="country_is_eu" type="Boolean">
+<ResponseField name="location.country_is_eu" type="Boolean">
   True if the country is in the EU, false if it is not.
 </ResponseField>
 
-<ResponseField name="continent" type="String">
+<ResponseField name="location.continent" type="String">
   Continent's name.
 </ResponseField>
 
-<ResponseField name="continent_code" type="Char[2]">
+<ResponseField name="location.continent_code" type="Char[2]">
   2 letter continent code: AF, AS, EU, NA, OC, SA, AN.
 </ResponseField>
 
-<ResponseField name="continent_geoname_id" type="String">
+<ResponseField name="location.continent_geoname_id" type="String">
   Continent's geoname ID.
 </ResponseField>
 
-<ResponseField name="longitude" type="Float">
+<ResponseField name="location.longitude" type="Float">
   Decimal of the longitude.
 </ResponseField>
 
-<ResponseField name="latitude" type="Float">
+<ResponseField name="location.latitude" type="Float">
   Decimal of the latitude.
-</ResponseField>
-
-<ResponseField name="security.is_vpn" type="Boolean">
-  Whether the IP address is being used from a VPN or using a proxy
 </ResponseField>
 
 <ResponseField name="timezone.name" type="String">
@@ -190,11 +262,11 @@ The API response is returned in a universal and lightweight [JSON format](https:
   Timezone's abbreviation, also from the IANA Time Zone Database.
 </ResponseField>
 
-<ResponseField name="timezone.gmt_offset" type="String">
-  Timezone's offset from Greenwich Mean Time (GMT).
+<ResponseField name="timezone.utc_offset" type="String">
+  The UTC offset for the timezone.
 </ResponseField>
 
-<ResponseField name="timezone.current_time" type="String">
+<ResponseField name="timezone.local_time" type="String">
   Current time in the local time zone.
 </ResponseField>
 
@@ -202,15 +274,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
   True if the location is currently in Daylight Savings Time (DST).
 </ResponseField>
 
-<ResponseField name="flag.svg" type="String">
-  Link to a hosted version of the country's flag in SVG format.
-</ResponseField>
-
-<ResponseField name="flag.png" type="String">
-  Link to a hosted version of the country's flag in PNG format.
-</ResponseField>
-
-<ResponseField name="flag.emoji" type="String">
+<ResponseField name="flag.flag" type="String">
   Country's flag as an emoji.
 </ResponseField>
 
@@ -218,32 +282,20 @@ The API response is returned in a universal and lightweight [JSON format](https:
   Country's flag in unicode.
 </ResponseField>
 
+<ResponseField name="flag.png" type="String">
+  Link to a hosted version of the country's flag in PNG format.
+</ResponseField>
+
+<ResponseField name="flag.svg" type="String">
+  Link to a hosted version of the country's flag in SVG format.
+</ResponseField>
+
 <ResponseField name="currency.currency_name" type="String">
   The currency's name.
 </ResponseField>
 
-<ResponseField name="currency.currency_code" type="String">
+<ResponseField name="currency.iso_code" type="String">
   The currency's code in ISO 4217 format.
-</ResponseField>
-
-<ResponseField name="connection.connection_type" type="String">
-  Type of network connection: Dialup, Cable/DSL, Cellular, Corporate.
-</ResponseField>
-
-<ResponseField name="connection.autonomous_system_number" type="Uint32">
-  Autonomous System number.
-</ResponseField>
-
-<ResponseField name="connection.autonomous_system_organization" type="String">
-  Autonomous System Organization name.
-</ResponseField>
-
-<ResponseField name="connection.isp_name" type="String">
-  Internet Service Provider (ISP) name.
-</ResponseField>
-
-<ResponseField name="connection.organization_name" type="String">
-  Organization name.
 </ResponseField>
 
 ### Limiting response fields
@@ -252,7 +304,7 @@ You can choose to only receive a few fields from the JSON response. To do so, yo
 
 For example, a request to only get the country and city of an IP will look like this:
 ```
-https://ipgeolocation.abstractapi.com/v1/
+https://ipintelligence.abstractapi.com/v1/
     ? api_key = YOUR_API_KEY
     & ip_address = 166.171.248.255
     & fields = country,city
@@ -265,22 +317,6 @@ The response would look like this:
   "city": "Modesto"
 }
 ```
-
-## Use cases
-
-### Geolocating a website visitor
-
-To request the geolocation from an IP address, simply include your unique API key in the template below.
-
-Note that you don't need to know the IP of the visitor to make the request.
-```
-$.getJSON("https://ipgeolocation.abstractapi.com/v1/?api_key=YOUR_UNIQUE_API_KEY", function(data) {
-       console.log(data.ip_address);
-       console.log(data.country);
-   })
-```
-
-That's all your need to get the geolocation and other data from a visitor! There is only one required parameter: your unique API key.
 
 ## Response and error codes
 

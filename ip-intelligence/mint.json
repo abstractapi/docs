@@ -1,0 +1,50 @@
+{
+  "name": "Abstract API",
+  "logo": {
+    "dark": "/logo/dark.png",
+    "light": "/logo/light.png",
+    "href": "https://www.abstractapi.com/api/ip-intelligence-api"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#181c20",
+    "light": "#f7f7ff",
+    "dark": "#181c20"
+  },
+  "topbarLinks": [
+    {
+      "name": "Pricing",
+      "url": "https://app.abstractapi.com/api/ip-intelligence/pricing/select"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://app.abstractapi.com/api/ip-intelligence/tester"
+  },
+  "anchors": [
+    {
+      "name": "Contact Us",
+      "icon": "envelope",
+      "url": "mailto:team@abstractapi.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "IP Intelligence",
+      "pages": [
+        "ip-intelligence"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "facebook": "https://www.facebook.com/abstractapi",
+    "twitter": "https://twitter.com/abstractapi",
+    "linkedin": "https://www.linkedin.com/company/abstractapi",
+    "website": "https://www.abstractapi.com/"
+  },
+  "analytics": {
+    "mixpanel": {
+        "projectToken": "c39efa9bf07f680d3be6c26cb8a84420"
+    }
+  }
+}
