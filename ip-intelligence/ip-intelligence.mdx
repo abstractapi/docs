@@ -2,7 +2,7 @@
 title: 'IP Intelligence API'
 icon: 'location-dot'
 description: "Abstract's IP Intelligence API is a fast, reliable, and RESTful JSON API that provides advanced security and geographical insights about IP addresses worldwide. It identifies VPNs, proxies, TOR usage, abuse potential, hosting services, relays, and mobile IPs."
-api: 'GET https://ipintelligence.abstractapi.com/v1'
+api: 'GET https://ip-intelligence.abstractapi.com/v1'
 hideApiMarker: true
 ---
 
@@ -29,7 +29,7 @@ Your API key is your unique authentication key to be used to access Abstract's I
 ### Base URL
 
 ```
-https://ipintelligence.abstractapi.com/v1/
+https://ip-intelligence.abstractapi.com/v1/
 ```
 
 ### Validation endpoint
@@ -37,7 +37,7 @@ https://ipintelligence.abstractapi.com/v1/
 Abstract's IP Intelligence API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
 
 ```
-https://ipintelligence.abstractapi.com/v1/
+https://ip-intelligence.abstractapi.com/v1/
 ? api_key = YOUR_UNIQUE_API_KEY
 & ip_address = 166.171.248.255 (optional)
 ```
@@ -304,7 +304,7 @@ You can choose to only receive a few fields from the JSON response. To do so, yo
 
 For example, a request to only get the country and city of an IP will look like this:
 ```
-https://ipintelligence.abstractapi.com/v1/
+https://ip-intelligence.abstractapi.com/v1/
     ? api_key = YOUR_API_KEY
     & ip_address = 166.171.248.255
     & fields = country,city
