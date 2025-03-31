@@ -262,7 +262,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
 
 ### Checking a malformed email
 
-In the example below, we show the request and response for an email does not follow the proper format. If the email fails the `is_valid_format` check, then the other checks will not be performed and will be returned as false
+In the example below, we show the request and response for an email does not follow the proper format. If the email fails the `is_format_valid` check, then the other checks will not be performed and will be returned as false
 
 ```bash
 https://emailreputation.abstractapi.com/v1/
@@ -274,55 +274,55 @@ The request was valid and successful, and so it returns the following:
 
 ```json
 {
-"email_address": "johnsmith",
-"email_deliverability": {
-"status": "undeliverable",
-"status_detail": "invalid_format",
-"is_format_valid": false,
-"is_smtp_valid": false,
-"is_mx_valid": false,
-"mx_records": []
-},
-"email_quality": {
-"score": null,
-"is_free_email": null,
-"is_username_suspicious": null,
-"is_disposable": null,
-"is_catchall": null,
-"is_subaddress": null,
-"is_role": null,
-"is_dmarc_enforced": null,
-"is_spf_strict": null,
-"minimum_age": null
-},
-"email_sender": {
-"first_name": null,
-"last_name": null,
-"email_provider_name": null,
-"organization_name": null,
-"organization_type": null
-},
-"email_domain": {
-"domain": null,
-"domain_age": null,
-"is_live_site": null,
-"registrar": null,
-"registrar_url": null,
-"date_registered": null,
-"date_last_renewed": null,
-"date_expires": null,
-"is_risky_tld": null
-},
-"email_risk": {
-"address_risk_status": null,
-"domain_risk_status": null
-},
-"email_breaches": {
-"total_breaches": null,
-"date_first_breached": null,
-"date_last_breached": null,
-"breached_domains": []
-}
+  "email_address": "johnsmith",
+  "email_deliverability": {
+    "status": "undeliverable",
+    "status_detail": "invalid_format",
+    "is_format_valid": false,
+    "is_smtp_valid": false,
+    "is_mx_valid": false,
+    "mx_records": []
+  },
+  "email_quality": {
+    "score": null,
+    "is_free_email": null,
+    "is_username_suspicious": null,
+    "is_disposable": null,
+    "is_catchall": null,
+    "is_subaddress": null,
+    "is_role": null,
+    "is_dmarc_enforced": null,
+    "is_spf_strict": null,
+    "minimum_age": null
+    },
+  "email_sender": {
+    "first_name": null,
+    "last_name": null,
+    "email_provider_name": null,
+    "organization_name": null,
+    "organization_type": null
+  },
+  "email_domain": {
+    "domain": null,
+    "domain_age": null,
+    "is_live_site": null,
+    "registrar": null,
+    "registrar_url": null,
+    "date_registered": null,
+    "date_last_renewed": null,
+    "date_expires": null,
+    "is_risky_tld": null
+  },
+  "email_risk": {
+    "address_risk_status": null,
+    "domain_risk_status": null
+  },
+  "email_breaches": {
+    "total_breaches": null,
+    "date_first_breached": null,
+    "date_last_breached": null,
+    "breached_domains": []
+  }
 }
 ```
 
