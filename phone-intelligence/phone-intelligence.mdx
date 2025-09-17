@@ -1,0 +1,299 @@
+---
+title: 'Phone Intelligence API'
+description: "Abstract's Phone Intelligence API is a fast, lightweight, modern, and RESTful JSON API for retrieving detailed intelligence about phone numbers, including carrier, location, messaging, registration, risk, and breach data."
+icon: 'phone'
+api: 'GET https://phoneintelligence.abstractapi.com/v1'
+hideApiMarker: true
+---
+
+It's very simple to use: you only need to submit your API key and a phone number, and the API will respond with enriched intelligence data including carrier details, line type, location, messaging gateways, registration info, risk scoring, and breach history.
+
+## Getting started
+
+### REST
+
+The Phone Intelligence API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URL's and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The Phone Intelligence API requires all communications to be secured TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's API are versioned. The Phone Intelligence API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's Phone Intelligence API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Intelligence and Email Reputation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Base URL
+
+```
+https://phoneintelligence.abstractapi.com/v1/
+```
+
+### Validation endpoint
+
+Abstract's Phone Intelligence API simply requires your unique API key and the phone number you'd like to check:
+
+```
+https://phoneintelligence.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& phone = 14154582468
+```
+
+This was a successful request, so the valid phone number and details associated with it are returned below:
+
+<ResponseExample>
+
+```json
+{
+  "phone_number": "14159929960",
+  "phone_format": {
+    "international": "+14159929960",
+    "national": "(415) 992-9960"
+  },
+  "phone_carrier": {
+    "name": "T-Mobile",
+    "line_type": "Wireless",
+    "mcc": "310",
+    "mnc": "160"
+  },
+  "phone_location": {
+    "country_name": "United States",
+    "country_code": "US",
+    "country_prefix": "+1",
+    "region": "California",
+    "city": "San Francisco",
+    "timezone": "America/Los_Angeles"
+  },
+  "phone_messaging": {
+    "sms_domain": "tmomail.net",
+    "sms_email": "14159929960@tmomail.net"
+  },
+  "phone_validation": {
+    "is_valid": true,
+    "line_status": "active",
+    "is_voip": false,
+    "minimum_age": 1888
+  },
+  "phone_registration": {
+    "name": "Sergio Suarez",
+    "type": "consumer"
+  },
+  "phone_risk": {
+    "risk_level": "low",
+    "is_disposable": false,
+    "is_abuse_detected": false
+  },
+  "phone_breaches": {
+    "total_breaches": 1,
+    "date_first_breached": "2018-07-23",
+    "date_last_breached": "2018-07-23",
+    "breached_domains": [
+      {
+        "domain": "facebook.com",
+        "breach_date": "2019-07-23"
+      }
+    ]
+  }
+}
+
+```
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys _for each of
+  Abstract's APIs_, so your Phone Validation API key will not work for your IP
+  Geolocation API, for example.
+</ParamField>
+
+<ParamField query="phone" type="String" required>
+  The phone number to validate and verify.
+</ParamField>
+
+<ParamField query="country" type="String">
+  The country's ISO code. Add this parameter to indicate the phone number's country, and the API will append the corresponding country code to its analysis. For instance, add country=US to indicate that the phone number is from the United States.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="phone_number" type="String">
+  The phone number submitted for analysis.
+</ResponseField>
+
+<ResponseField name="phone_format" type="Object">
+  The object containing the `international` and `national` formats of the submitted number.
+</ResponseField>
+
+<ResponseField name="phone_format.international" type="String">
+  The international format of the submitted phone number (e.g. "+1...").
+</ResponseField>
+
+<ResponseField name="phone_format.national" type="String">
+  The local/national format of the submitted phone number.
+</ResponseField>
+
+<ResponseField name="phone_carrier" type="Object">
+  The object containing details about the carrier.
+</ResponseField>
+
+<ResponseField name="phone_carrier.name" type="String">
+  The carrier that the number is registered with.
+</ResponseField>
+
+<ResponseField name="phone_carrier.line_type" type="String">
+  The type of line. Possible values: `mobile`, `landline`, `voip`, `toll_free`, `personal`, `pager`, `unknown`.
+</ResponseField>
+
+<ResponseField name="phone_carrier.mcc" type="String">
+  Mobile Country Code (MCC).
+</ResponseField>
+
+<ResponseField name="phone_carrier.mnc" type="String">
+  Mobile Network Code (MNC).
+</ResponseField>
+
+<ResponseField name="phone_location" type="Object">
+  Geographic details about the phone number.
+</ResponseField>
+
+<ResponseField name="phone_location.country_name" type="String">
+  The name of the country.
+</ResponseField>
+
+<ResponseField name="phone_location.country_code" type="String">
+  The ISO 3166-1 alpha-2 country code.
+</ResponseField>
+
+<ResponseField name="phone_location.country_prefix" type="String">
+  The calling code prefix.
+</ResponseField>
+
+<ResponseField name="phone_location.region" type="String">
+  The region, province, or state associated with the number.
+</ResponseField>
+
+<ResponseField name="phone_location.city" type="String">
+  The city associated with the number.
+</ResponseField>
+
+<ResponseField name="phone_location.timezone" type="String">
+  The timezone associated with the number.
+</ResponseField>
+
+<ResponseField name="phone_messaging" type="Object">
+  Messaging gateway details for the number.
+</ResponseField>
+
+<ResponseField name="phone_messaging.sms_domain" type="String">
+  The SMS domain associated with the number's carrier.
+</ResponseField>
+
+<ResponseField name="phone_messaging.sms_email" type="String">
+  The email-to-SMS address associated with the number.
+</ResponseField>
+
+<ResponseField name="phone_validation" type="Object">
+  Validation and status information for the number.
+</ResponseField>
+
+<ResponseField name="phone_validation.is_valid" type="Boolean">
+  Whether the number is valid and dialable.
+</ResponseField>
+
+<ResponseField name="phone_validation.line_status" type="String">
+  The line status (e.g. active, inactive).
+</ResponseField>
+
+<ResponseField name="phone_validation.is_voip" type="Boolean">
+  Whether the number is a VOIP line.
+</ResponseField>
+
+<ResponseField name="phone_validation.minimum_age" type="Integer">
+  The minimum estimated age of the number, in days.
+</ResponseField>
+
+<ResponseField name="phone_registration" type="Object">
+  Registration details for the number.
+</ResponseField>
+
+<ResponseField name="phone_registration.name" type="String">
+  The registered name associated with the number.
+</ResponseField>
+
+<ResponseField name="phone_registration.type" type="String">
+  The type of registrant (e.g. consumer, business).
+</ResponseField>
+
+<ResponseField name="phone_risk" type="Object">
+  Risk assessment for the number.
+</ResponseField>
+
+<ResponseField name="phone_risk.risk_level" type="String">
+  The assessed risk level (e.g. low, medium, high).
+</ResponseField>
+
+<ResponseField name="phone_risk.is_disposable" type="Boolean">
+  Whether the number is disposable or temporary.
+</ResponseField>
+
+<ResponseField name="phone_risk.is_abuse_detected" type="Boolean">
+  Whether abuse or spam activity has been detected for this number.
+</ResponseField>
+
+<ResponseField name="phone_breaches" type="Object">
+  Breach history associated with the number.
+</ResponseField>
+
+<ResponseField name="phone_breaches.total_breaches" type="Integer">
+  The total number of known breaches involving this phone number.
+</ResponseField>
+
+<ResponseField name="phone_breaches.date_first_breached" type="String">
+  The date of the first known breach.
+</ResponseField>
+
+<ResponseField name="phone_breaches.date_last_breached" type="String">
+  The date of the most recent known breach.
+</ResponseField>
+
+<ResponseField name="phone_breaches.breached_domains" type="Array">
+  The list of domains where this number appeared in a breach, including the date of the breach.
+</ResponseField>
+
+
+## Bulk upload (CSV)
+
+Here are some best practices when bulk uploading a CSV file:
+
+* Ensure the first column contains the phone numbers to be analyzed.
+* Remove any empty rows from the file.
+* Include only one phone number per row.
+* The maximum file size permitted is 50,000 rows.
+
+## Response and error codes
+
+Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
+
+| Code        | Type                    | Details                                                                                                                                                     |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200         | OK                      | Everything worked as expected.                                                                                                                              |
+| 400         | Bad request	            | Bad request.                                                                                                                                                |
+| 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits. (Free plans)                                                                                       |
+| 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
+| 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
+| 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
+
+## Code samples and libraries
+
+Please see the top of this page for code samples for these languages and more. If we're missing a code sample, or if you'd like to contribute a code sample or library in exchange for free credits, email us at: team@abstractapi.com
+
+## Other notes
+
+A note on metered billing: Each individual phone number you submit counts as a credit used. Credits are also counted per request, not per successful response. So if you submit a request for the (invalid) phone number "kasj8929hs", that still counts as 1 credit.
