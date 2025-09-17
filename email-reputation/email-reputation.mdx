@@ -167,7 +167,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
 </ResponseField>
 
 <ResponseField name="email_quality.minimum_age" type="Integer or Null">
- Is Estimated age of the email address in days, or `null` if unknown.
+ Estimated age of the email address in days, or `null` if unknown.
 </ResponseField>
 
 <ResponseField name="email_sender.first_name" type="String or Null">
@@ -342,10 +342,6 @@ This field provides more information about the deliverability result.
 - **invalid_format**: The email doesn't follow the correct format (e.g., missing `@` or domain).
 - **dns_record_not_found**: We couldn't find MX records for the domain, so we couldn’t complete the SMTP check.
 - **unavailable_server**: The mail server for the domain is currently unreachable.
-
-#### When `status` is `unknown`:
-
-- **null**
 
 ## Bulk upload (CSV)
 
