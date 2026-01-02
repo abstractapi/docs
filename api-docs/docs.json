@@ -22,19 +22,36 @@
             ]
           },
           {
-            "group": "Verify APIs",
+            "group": "Popular APIs",
             "pages": [
               "abstract-api/email-reputation",
-              "abstract-api/email-validation",
-              "abstract-api/phone-validation",
-              "abstract-api/phone-intelligence"
+              "abstract-api/phone-intelligence",
+              "abstract-api/ip-intelligence"
             ]
           },
           {
-            "group": "Look Up APIs",
+            "group": "More APIs",
+            "pages": [
+              "abstract-api/avatars",
+              "abstract-api/company-enrichment",
+              "abstract-api/exchange-rates",
+              "abstract-api/holidays",
+              "abstract-api/iban-validation",
+              "abstract-api/images",
+              "abstract-api/scrape",
+              "abstract-api/timezones",
+              "abstract-api/vat-validation",
+              "abstract-api/validate",
+              "abstract-api/calculate",
+              "abstract-api/categories"
+            ]
+          },
+          {
+            "group": "More APIs",
             "pages": [
               "abstract-api/ip-geolocation",
-              "abstract-api/ip-intelligence"
+              "abstract-api/phone-validation",
+              "abstract-api/email-validation"
             ]
           }
         ]
