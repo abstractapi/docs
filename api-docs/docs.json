@@ -11,9 +11,9 @@
  "navigation": {
     "dropdowns": [
       {
-        "dropdown": "Documentación",
+        "dropdown": "Docs",
         "icon": "book",
-        "description": "Cómo usar el producto de Example Co.",
+        "description": "Learn how to use and implement Abstract APIs",
         "groups": [
           {
             "group": "Introduction",
@@ -26,7 +26,8 @@
             "pages": [
               "abstract-api/email-reputation",
               "abstract-api/phone-intelligence",
-              "abstract-api/ip-intelligence"
+              "abstract-api/ip-intelligence",
+              "abstract-api/company-enrichment"
             ]
           },
           {
@@ -39,7 +40,6 @@
           {
             "group": "APIs to Look up",
             "pages": [
-              "abstract-api/company-enrichment",
               "abstract-api/exchange-rates",
               "abstract-api/holidays",
               "abstract-api/scrape",
@@ -52,14 +52,6 @@
               "abstract-api/avatars",
               "abstract-api/images",
               "abstract-api/scrape"
-            ]
-          },
-          {
-            "group": "Other APIs",
-            "pages": [
-              "abstract-api/ip-geolocation",
-              "abstract-api/phone-validation",
-              "abstract-api/email-validation"
             ]
           }
         ]
@@ -79,7 +71,7 @@
       },
       {
         "label": "Contact us",
-        "href": "https://app.abstractapi.com/dashboard"
+        "href": "https://calendly.com/d/crbk-jpf-9pv?&utm_source=documentation"
       }
     ],
     "primary": {
