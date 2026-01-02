@@ -1,0 +1,85 @@
+---
+title: 'IBAN Validation API'
+icon: 'building-columns'
+description: "Abstract's IBAN Validation API is a fast, lightweight, modern, and RESTful JSON API for determining the validity and other details of the International Bank Account Number (IBAN)."
+api: 'GET https://ibanvalidation.abstractapi.com/v1/'
+hideApiMarker: true
+---
+
+It's very simple to use; you only need to submit your `api_key` and an `iban`, and the API will tell you whether the IBAN is valid or not. Future versions of the API will include more detail about the submitted IBAN if it is valid.
+
+## Getting started
+
+### REST
+
+The IBAN Validation API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The IBAN Validation API requires all communications to be secured with TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's APIs are versioned. The IBAN Validation API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's IBAN Validation API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IBAN Validation and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Base URL
+
+```
+https://ibanvalidation.abstractapi.com/v1/
+```
+
+### Validation endpoint
+
+Abstract's IBAN Validation API simply requires your unique API key and the IBAN number you'd like to check:
+
+```
+https://ibanvalidation.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& iban = BE71096123456769
+```
+
+This was a successful request and the IBAN was valid, so the API will return the following:
+
+```json
+{
+    "iban": "BE71096123456769",
+    "is_valid": true
+}
+```
+
+<ResponseExample>
+
+```json
+{
+    "iban": "BE71096123456769",
+    "is_valid": true
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your IBAN Validation API key will not work for your IP Geolocation API, for example.
+</ParamField>
+
+<ParamField query="iban" type="String" required>
+  The IBAN to validate. Note that the API will accept white spaces, so BE71 0961 2345 6769 is considered as valid as BE71096123456769.
+</ParamField>
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="iban" type="String">
+  The IBAN submitted for validation.
+</ResponseField>
+
+<ResponseField name="is_valid" type="Boolean">
+  Is true if the IBAN submitted is valid and false if it is not.
+</ResponseField>

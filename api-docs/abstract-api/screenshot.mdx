@@ -1,0 +1,85 @@
+---
+title: 'Website Screenshot API'
+icon: 'camera'
+description: "Abstract's Website Screenshot API is a simple yet powerful REST API that allows you to request an image of a given URL. It accepts but does not require various customizations on the image capture and rendering, such as setting a capture delay, injecting custom CSS, and specifying the capture's view port."
+api: 'GET https://screenshot.abstractapi.com/v1'
+hideApiMarker: true
+---
+
+It's very simple to use: you only need to submit your `api_key` and a single `URL`, and the API will respond as an screenshot of the provided website.
+
+## Getting started
+
+### REST
+
+The Website Screenshot API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The Website Screenshot API requires all communications to be secured with TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's API are versioned. The Website Screenshot API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's Website Screenshot API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the Website Screenshot and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Base URL
+
+```
+https://screenshot.abstractapi.com/v1/
+```
+
+### Validation endpoint
+
+Abstract's Website Screenshot API only has two required parameters for the request, your unique API key and a single URL:
+
+```
+https://screenshot.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& url = https://news.ycombinator.com
+```
+
+This was a successful request, so the screenshot from that URL is returned below:
+
+<img alt="YCombinator news page screenshot" src="/assets/screenshot.png"></img>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Website Screenshot API key will not work for your User Avatar API, for example.
+</ParamField>
+
+<ParamField query="url" type="String" required>
+  The URL to get the screenshot of. Note that this parameter should include the full HTTP Protocol (http:// or https://).
+</ParamField>
+
+<ParamField query="capture_full_page" type="Boolean">
+  If true the request will capture the entire height and width of the page. Defaults to true.
+</ParamField>
+
+<ParamField query="width" type="Integer">
+  The width in pixels of the view port to use to capture the image.
+</ParamField>
+
+<ParamField query="height" type="Integer">
+  The height in pixels of the view port to use to capture the image.
+</ParamField>
+
+<ParamField query="delay" type="Integer">
+  The time in seconds to wait between loading the page and taking the screenshot.
+</ParamField>
+
+<ParamField query="css_injection" type="String">
+  A CSS string to inject into the website before capturing the image.
+</ParamField>
+
+<ParamField query="user_agent" type="String">
+  The User Agent to use when capturing the screenshot.
+</ParamField>
+
+<ParamField query="export_format" type="String">
+  The image format to use for the screenshot. Can be jpeg or png, and defaults to jpeg.
+</ParamField>

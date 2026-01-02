@@ -1,0 +1,49 @@
+---
+title: 'Image Processing API'
+description: "Abstract's Image Processing and Optimization API is a simple yet powerful REST API that is used to convert, compress, or optimization an image that is provided via a URL or via POST to the API itself."
+hideApiMarker: true
+---
+
+It's very simple to use: you only need to submit your `api_key` and an image via url or POST to the API, and the API will respond as assessment of its validity, as well as additional details like the carrier details, line type, region and city details, and more.
+
+## Getting started
+
+There are two methods to begin working with an image
+
+<Card title="Upload via URL" icon="link" href="images/url">
+  Upload an image giving the API an URL with a hosted version of your image.
+</Card>
+
+<Card title="Upload via POST" icon="upload" href="images/upload">
+  Upload an image submitting it directly to the API.
+</Card>
+
+### REST
+
+The Image Processing API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The Image Processing API requires all communications to be secured with TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's APIs are versioned. The Image Processing API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's Image Processing API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the Image Processing and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+## Response and error codes
+
+Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
+
+| Code        | Type                    | Details                                                                                                                                                     |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200         | OK                      | Everything worked as expected.                                                                                                                              |
+| 400         | Bad request	            | Bad request.                                                                                                                                                |
+| 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits. (Free plans)                                                                                       |
+| 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
+| 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
+| 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |

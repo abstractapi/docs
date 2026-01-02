@@ -1,0 +1,97 @@
+---
+title: 'Avatars API'
+icon: 'user'
+description: "Abstract's Avatars API is a fast, lightweight, modern, and RESTful JSON API for creating highly customizable avatar images with a person's name or initials to improve your user experience."
+api: 'GET https://avatars.abstractapi.com/v1'
+hideApiMarker: true
+---
+
+It's very simple to use: you only need to submit your `api_key` and a `name`, and the API will generate an avatar image matching the initials of the given name.
+
+## Getting started
+
+### REST
+
+The Avatars API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The Avatars API requires all communications to be secured with TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's APIs are versioned. The Avatars API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's Avatars API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the Avatars and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Base URL
+
+```
+https://avatars.abstractapi.com/v1/
+```
+
+### Validation endpoint
+
+Abstract's Avatars API simply requires your unique API key and the name of the user you'd like to generate an avatar to:
+
+```
+https://avatars.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& name = Claire Florentz
+```
+
+This was a successful request, so the avatar for the provided name is returned below:
+
+<img alt="Avatar for Claire Florentz" src="/assets/cf_avatar.png"></img>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your Avatars API key will not work for your IP Geolocation API, for example.
+</ParamField>
+
+<ParamField query="name" type="String" required>
+  The name you want to create an avatar for. You can submit multiple names (such as first, middle, and last), and the API will default to displaying two letters in the avatar. You can change the number of letters displayed with the char_limit parameter below.
+</ParamField>
+
+<ParamField query="image_size" type="Integer">
+  The size of the square avatar image in pixels. It defaults to 128 pixels, and is available in sizes from 6 to 512 pixels.
+</ParamField>
+
+<ParamField query="image_format" type="String">
+  The desired format of the returned image. It defaults to "png", but can also be specified as "svg".
+</ParamField>
+
+<ParamField query="font_size" type="Float">
+  The size of the font as a percent of the image_size. It defaults to 0.7, but it can be set between 0.1 and 1.0.
+</ParamField>
+
+<ParamField query="char_limit" type="Integer">
+  The maximum number of characters displayed in the avatar. It defaults to 2. The actual number of characters displayed can be less than this number, but it cannot be more. The characters will first be chosen from distinct words, then from the second letter of distinct words.
+</ParamField>
+
+<ParamField query="background_color" type="String">
+  The hex color for the background. It defaults to #335eea. When including a hex color, you do not need to include the "#". So &background_color=e4704a would be valid and &background_color=#e4704a would be invalid.
+</ParamField>
+
+<ParamField query="font_color" type="String">
+  The hex color for the font. It defaults to white, i.e.,ffffff. When including a hex color, you do not need to include the "#". So &font_color=e4704a would be valid and &font_color=#e4704a would be invalid.
+</ParamField>
+
+<ParamField query="is_rounded" type="Boolean">
+  Returns a rounded avatar picture instead of squared one. It defaults to false.
+</ParamField>
+
+<ParamField query="is_uppercase" type="Boolean">
+  Sets the initials in the avatar to all capitals. It defaults to true.
+</ParamField>
+
+<ParamField query="is_italic" type="Boolean">
+  Sets the initials in the avatar to all italics. It defaults to false.
+</ParamField>
+
+<ParamField query="is_bold" type="Boolean">
+  Sets the initials in the avatar to bold. It defaults to false.
+</ParamField>

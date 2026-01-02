@@ -1,0 +1,113 @@
+---
+title: 'Introduction'
+description: "Abstract's Exchange Rates API is a fast, lightweight, modern, and RESTful JSON API for looking up the latest exchange rates for 80+ currencies, getting historical exchange rates, and converting an arbitrary amount from one currency to another."
+hideApiMarker: true
+---
+
+## Getting started
+
+<Card title="Live exchange rates" icon="wave-pulse" href="exchange-rates/live">
+  The `live` endpoint returns the most recent exchange rates for a given set of currencies. The base currency is the currency you're converting from, while the target currency or currencies are what you're converting to.
+</Card>
+
+<Card title="Convert exchange rates" icon="money-bill-transfer" href="exchange-rates/convert">
+  The `convert` endpoint is similar to the `live` endpoint but allows you to convert an arbitrary amount from one currency to another.
+</Card>
+
+<Card title="Historical exchange rates (beta)" icon="landmark" href="exchange-rates/historical">
+  The `historical` endpoint functions almost exactly like the `live` endpoint, except it requires a date parameter and returns the exchange rates for that specific date for a given set of currencies.
+</Card>
+
+### REST
+
+The Exchange Rates API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The Exchange Rates API requires all communications to be secured with TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's APIs are versioned. The Exchange Rates API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's Exchange Rates API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the Exchange Rates and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Code samples and libraries
+
+Please see the top of this page for code samples for these languages and more. If we're missing a code sample, or if you'd like to contribute a code sample or library in exchange for free credits, email us at: team@abstractapi.com
+
+## Response and error codes
+
+Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
+
+| Code        | Type                    | Details                                                                                                                                                     |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200         | OK                      | Everything worked as expected.                                                                                                                              |
+| 204         | OK                      | Their is no location data for the submitted IP.                                                                                                             |
+| 400         | Bad request	            | Bad request.                                                                                                                                                |
+| 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits. (Free plans)                                                                                       |
+| 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
+| 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
+| 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
+
+## Currency codes of supported currencies
+
+Below are the ISO 4217 codes of supported currencies. If you'd like us to support a currency that's not listed below, please contact hello@abstractapi.com
+
+| Currency code | Currency name                       |
+|---------------|-------------------------------------|
+| ARS           | Argentine Peso                      |
+| AUD           | Australian Dollar                   |
+| BCH           | Bitcoin Cash                        |
+| BGN           | Bulgarian Lev                       |
+| BNB           | Binance Coin                        |
+| BRL           | Brazilian Real                      |
+| BTC           | Bitcoin                             |
+| CAD           | Canadian Dollar                     |
+| CHF           | Swiss Franc                         |
+| CNY           | Chinese Yuan                        |
+| CYP           | Cypriot Pound                       |
+| CZK           | Czech Republic Koruna               |
+| DKK           | Danish Krone                        |
+| DOGE          | Dogecoin                            |
+| DZD           | Algerian Dinar                      |
+| EEK           | Estonian Kroon                      |
+| ETH           | Ethereum                            |
+| EUR           | Euro                                |
+| GBP           | British Pound Sterling              |
+| GRD           | Greek Drachma                       |
+| HKD           | Hong Kong Dollar                    |
+| HRK           | Croatian Kuna                       |
+| HUF           | Hungarian Forint                    |
+| IDR           | Indonesian Rupiah                   |
+| ILS           | Israeli New Sheqel                  |
+| INR           | Indian Rupee                        |
+| ISK           | Icelandic Króna                     |
+| JPY           | Japanese Yen                        |
+| KRW           | South Korean Won                    |
+| LTC           | Litecoin                            |
+| LTL           | Lithuanian Litas                    |
+| LVL           | Latvian Lats                        |
+| MAD           | Moroccan Dirham                     |
+| MTL           | Maltese Lira                        |
+| MXN           | Mexican Peso                        |
+| MYR           | Malaysian Ringgit                   |
+| NOK           | Norwegian Krone                     |
+| NZD           | New Zealand Dollar                  |
+| PHP           | Philippine Peso                     |
+| PLN           | Polish Zloty                        |
+| RON           | Romanian Leu                        |
+| RUB           | Russian Ruble                       |
+| SEK           | Swedish Krona                       |
+| SGD           | Singapore Dollar                    |
+| SIT           | Slovenian Tolar                     |
+| SKK           | Slovak Koruna                       |
+| THB           | Thai Baht                           |
+| TRY           | Turkish Lira                        |
+| TWD           | New Taiwan Dollar                   |
+| USD           | United States Dollar                |
+| XRP           | Ripple                              |
+| ZAR           | South African Rand                  |
