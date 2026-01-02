@@ -1,0 +1,79 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Abstract API",
+  "colors": {
+    "primary": "#181c20",
+    "light": "#f7f7ff",
+    "dark": "#181c20"
+  },
+  "favicon": "/favicon.png",
+ "navigation": {
+    "dropdowns": [
+      {
+        "dropdown": "Documentación",
+        "icon": "book",
+        "description": "Cómo usar el producto de Example Co.",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "abstract-api"
+            ]
+          },
+          {
+            "group": "Verify APIs",
+            "pages": [
+              "abstract-api/email-reputation",
+              "abstract-api/email-validation",
+              "abstract-api/phone-validation",
+              "abstract-api/phone-intelligence"
+            ]
+          },
+          {
+            "group": "Look Up APIs",
+            "pages": [
+              "abstract-api/ip-geolocation",
+              "abstract-api/ip-intelligence"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png",
+    "href": "https://www.abstractapi.com"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Pricing",
+        "href": "https://app.abstractapi.com/api/email-reputation/pricing/select"
+      },
+      {
+        "label": "Contact us",
+        "href": "https://app.abstractapi.com/dashboard"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.abstractapi.com/dashboard"
+    }
+  },
+  "footer": {
+    "socials": {
+      "facebook": "https://www.facebook.com/abstractapi",
+      "twitter": "https://twitter.com/abstractapi",
+      "linkedin": "https://www.linkedin.com/company/abstractapi",
+      "website": "https://www.abstractapi.com/"
+    }
+  },
+  "integrations": {
+    "mixpanel": {
+      "projectToken": "c39efa9bf07f680d3be6c26cb8a84420"
+    }
+  }
+}

@@ -1,0 +1,581 @@
+---
+title: 'IP Intelligence API'
+icon: 'location-dot'
+description: "Abstract's IP Intelligence API is a fast, reliable, and RESTful JSON API that provides advanced security and geographical insights about IP addresses worldwide. It identifies VPNs, proxies, TOR usage, abuse potential, hosting services, relays, and mobile IPs."
+api: 'GET https://ip-intelligence.abstractapi.com/v1'
+hideApiMarker: true
+---
+
+It is very simple to use: you only need to submit your API key and an IP address, and the API will respond with the location of that IP and security details, including VPN detection, proxy status, TOR usage, abuse potential, hosting services, relay status, and mobile IP identification.
+
+## Getting started
+
+### REST
+
+The IP Intelligence API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+
+### HTTPS
+
+The IP Intelligence API requires all communications to be secured with TLS 1.2 or greater.
+
+### API Versions
+
+All of Abstract's APIs are versioned. The IP Intelligence API is currently on Version 1.
+
+### Your API Key
+
+Your API key is your unique authentication key to be used to access Abstract's IP Intelligence API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IP Intelligence and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+
+### Base URL
+
+```
+https://ip-intelligence.abstractapi.com/v1/
+```
+
+### Validation endpoint
+
+Abstract's IP Intelligence API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
+
+```
+https://ip-intelligence.abstractapi.com/v1/
+? api_key = YOUR_UNIQUE_API_KEY
+& ip_address = 166.171.248.255 (optional)
+```
+
+<ResponseExample>
+
+```json
+{
+	"ip_address": "185.197.192.65",
+	"security": {
+	    "is_vpn": false,
+	    "is_proxy": true,
+	    "is_tor": false,
+		"is_hosting": false,
+		"is_relay": false,
+		"is_mobile": false,
+		"is_abuse": false,
+	},
+	"asn": {
+	    "asn": 136787,
+	    "name": "PacketHub S.A.",
+	    "domain": "packethub.tech",
+	    "type": "isp",
+    },
+    "company": {
+	    "name": "PacketHub S.A.",
+	    "domain": "packethub.tech",
+	    "type": "isp",
+    },
+    "domains": {
+		"domains": []
+	},
+    "location": {
+	    "city": "Miami",
+	    "city_geoname_id": 4164138,
+	    "region": "Florida",
+	    "region_iso_code": "FL",
+	    "region_geoname_id": 4155751,
+	    "postal_code": "33197",
+	    "country": "United States",
+	    "country_code": "US",
+	    "country_geoname_id": 6252001,
+	    "is_country_eu": false,
+	    "continent": "North America",
+	    "continent_code": "NA",
+	    "continent_geoname_id": 6255149,
+	    "longitude": -80.1946,
+	    "latitude": 25.7689,
+    },
+    "timezone": {
+	    "name": "America/New_York",
+	    "abbreviation": "EST",
+	    "utc_offset": -5,
+	    "local_time": "12:07:51",
+	    "is_dst": false,
+    },
+    "flag": {
+	    "flag": "🇺🇸",
+	    "unicode": "U+1F1FA U+1F1F8",
+	    "png": "https://static.abstractapi.com/country-flags/US_flag.png",
+	    "svg": "https://static.abstractapi.com/country-flags/US_flag.svg",
+	},
+	"currency": {
+	    "name": "US Dollar",
+	    "iso_code": "USD",
+	    "symbol": "$"
+	}
+}
+```
+
+</ResponseExample>
+
+### Request parameters
+
+<ParamField query="api_key" type="String" required>
+  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your IP Intelligence API key will not work for your Email Validation API, for example.
+</ParamField>
+
+<ParamField query="ip_address" type="String">
+  The IP address to analyze. Both IPv4 and IPv6 addresses are supported. Note that if you leave this parameter blank, the service will geolocate the IP address from which the request was made.
+</ParamField>
+
+<ParamField query="fields" type="String">
+  You can chose to only receive a few fields from the JSON response. To do so, you can include a fields value in the query parameters with a comma separated list of the top-level keys you want to be returned. For example, adding ?fields=city will return only the city in the JSON response.
+</ParamField>
+
+This was a successful request, so the IP address and details associated with it are returned below:
+
+### Response parameters
+
+The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
+
+<ResponseField name="ip_address" type="String">
+  The IP address submitted for geolocation.
+</ResponseField>
+
+<ResponseField name="security.is_vpn" type="Boolean">
+  Whether the IP address is being used from a VPN.
+</ResponseField>
+
+<ResponseField name="security.is_proxy" type="Boolean">
+  Whether the IP address is being used from a Proxy.
+</ResponseField>
+
+<ResponseField name="security.is_tor" type="Boolean">
+  Whether the IP address is part of the TOR network.
+</ResponseField>
+
+<ResponseField name="security.is_hosting" type="Boolean">
+  Whether the IP address is an internet service hosting IP address.
+</ResponseField>
+
+<ResponseField name="security.is_relay" type="Boolean">
+  Whether the IP address is being used as a relay server.
+</ResponseField>
+
+<ResponseField name="security.is_mobile" type="Boolean">
+  Whether the IP address belongs to a mobile network.
+</ResponseField>
+
+<ResponseField name="security.is_abuse" type="Boolean">
+  Whether the IP address has been flagged for abusive behavior.
+</ResponseField>
+
+<ResponseField name="asn.asn" type="Integer">
+  The Autonomous System Number (ASN) associated with the IP address.
+</ResponseField>
+
+<ResponseField name="asn.name" type="String">
+  The name of the organization or ISP associated with the ASN.
+</ResponseField>
+
+<ResponseField name="asn.domain" type="String">
+  The domain associated with the ASN.
+</ResponseField>
+
+<ResponseField name="asn.type" type="String">
+  The type of organization, such as ISP or hosting.
+</ResponseField>
+
+<ResponseField name="company.name" type="String">
+  The name of the company associated with the IP address.
+</ResponseField>
+
+<ResponseField name="company.domain" type="String">
+  The company's domain name.
+</ResponseField>
+
+<ResponseField name="company.type" type="String">
+  The type of company, such as ISP or hosting.
+</ResponseField>
+
+<ResponseField name="domains.domains" type="Array">
+  A list of domains associated with the IP address.
+</ResponseField>
+
+<ResponseField name="location.city" type="String">
+  City's name.
+</ResponseField>
+
+<ResponseField name="location.city_geoname_id" type="String">
+  City's geoname ID.
+</ResponseField>
+
+<ResponseField name="location.region" type="String">
+  State or province in which the the city is located.
+</ResponseField>
+
+<ResponseField name="location.region_iso_code" type="Char[2]">
+  State or province's ISO 3166-2 code.
+</ResponseField>
+
+<ResponseField name="location.region_geoname_id" type="String">
+  State or province's geoname ID.
+</ResponseField>
+
+<ResponseField name="location.postal_code" type="String">
+  ZIP or postal code.
+</ResponseField>
+
+<ResponseField name="location.country" type="String">
+  Country's name.
+</ResponseField>
+
+<ResponseField name="location.country_code" type="Char[2]">
+  Country's ISO 3166-1 alpha-2 code.
+</ResponseField>
+
+<ResponseField name="location.country_geoname_id" type="String">
+  Country's geoname ID.
+</ResponseField>
+
+<ResponseField name="location.country_is_eu" type="Boolean">
+  True if the country is in the EU, false if it is not.
+</ResponseField>
+
+<ResponseField name="location.continent" type="String">
+  Continent's name.
+</ResponseField>
+
+<ResponseField name="location.continent_code" type="Char[2]">
+  2 letter continent code: AF, AS, EU, NA, OC, SA, AN.
+</ResponseField>
+
+<ResponseField name="location.continent_geoname_id" type="String">
+  Continent's geoname ID.
+</ResponseField>
+
+<ResponseField name="location.longitude" type="Float">
+  Decimal of the longitude.
+</ResponseField>
+
+<ResponseField name="location.latitude" type="Float">
+  Decimal of the latitude.
+</ResponseField>
+
+<ResponseField name="timezone.name" type="String">
+  Timezone's name from the IANA Time Zone Database.
+</ResponseField>
+
+<ResponseField name="timezone.abbreviation" type="String">
+  Timezone's abbreviation, also from the IANA Time Zone Database.
+</ResponseField>
+
+<ResponseField name="timezone.utc_offset" type="String">
+  The UTC offset for the timezone.
+</ResponseField>
+
+<ResponseField name="timezone.local_time" type="String">
+  Current time in the local time zone.
+</ResponseField>
+
+<ResponseField name="timezone.is_dst" type="Boolean">
+  True if the location is currently in Daylight Savings Time (DST).
+</ResponseField>
+
+<ResponseField name="flag.flag" type="String">
+  Country's flag as an emoji.
+</ResponseField>
+
+<ResponseField name="flag.unicode" type="String">
+  Country's flag in unicode.
+</ResponseField>
+
+<ResponseField name="flag.png" type="String">
+  Link to a hosted version of the country's flag in PNG format.
+</ResponseField>
+
+<ResponseField name="flag.svg" type="String">
+  Link to a hosted version of the country's flag in SVG format.
+</ResponseField>
+
+<ResponseField name="currency.currency_name" type="String">
+  The currency's name.
+</ResponseField>
+
+<ResponseField name="currency.iso_code" type="String">
+  The currency's code in ISO 4217 format.
+</ResponseField>
+
+### Limiting response fields
+
+You can choose to only receive a few fields from the JSON response. To do so, you can include a fields value in the query parameters with a comma separated list of the top-level keys you want to be returned.
+
+For example, a request to only get the country and city of an IP will look like this:
+```
+https://ip-intelligence.abstractapi.com/v1/
+    ? api_key = YOUR_API_KEY
+    & ip_address = 166.171.248.255
+    & fields = country,city
+```
+
+The response would look like this:
+```json
+{
+  "country": "United States",
+  "city": "Modesto"
+}
+```
+
+## Response and error codes
+
+Whenever you make a request that fails for some reason, an error is returned also in the JSON format. The errors include an error code and description, which you can find in detail below.
+
+| Code        | Type                    | Details                                                                                                                                                     |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200         | OK                      | Everything worked as expected.                                                                                                                              |
+| 204         | OK                      | Their is no location data for the submitted IP.                                                                                                             |
+| 400         | Bad request	            | Bad request.                                                                                                                                                |
+| 401         | Unauthorized            | The request was unacceptable. Typically due to the API key missing or incorrect.                                                                            |
+| 422         | Quota reached	          | The request was aborted due to insufficient API credits. (Free plans)                                                                                     |
+| 429         | Too many requests       | The request was aborted due to the number of allowed requests per second being reached. This happens on free plans as requests are limited to 1 per second. |
+| 500         | Internal server error	  | The request could not be completed due to an error on the server side.                                                                                      |
+| 503         | Service unavailable	    | The server was unavailable.                                                                                                                                 |
+
+## Country Codes
+
+Below is a list of two-letter ISO 3166 Alpha 2 country codes that are used in the response. View this list in a [CSV](https://docs.google.com/spreadsheets/d/1w4VMneDoL6JW2NaUp2SjTOyvRcD4rlXDI0XpqKS2PeQ/view?usp=sharing).
+
+| Country name        | Country code        |
+| ------------------- | ------------------- |
+| Afghanistan | AF |
+| Albania | AL |
+| Algeria | DZ |
+| American Samoa | AS |
+| Andorra | AD |
+| Angola | AO |
+| Anguilla | AI |
+| Antigua and Barbuda | AG |
+| Argentina | AR |
+| Armenia | AM |
+| Aruba | AW |
+| Australia | AU |
+| Austria | AT |
+| Azerbaijan | AZ |
+| Bahrain | BH |
+| Bangladesh | BD |
+| Barbados | BB |
+| Belarus | BY |
+| Belgium | BE |
+| Belize | BZ |
+| Benin | BJ |
+| Bermuda | BM |
+| Bhutan | BT |
+| Bolivia | BO |
+| Bosnia and Herzegovina | BA |
+| Botswana | BW |
+| Brazil | BR |
+| British Virgin Islands | VG |
+| Brunei | BN |
+| Bulgaria | BG |
+| Burkina Faso | BF |
+| Burundi | BI |
+| Cabo Verde | CV |
+| Cambodia | KH |
+| Cameroon | CM |
+| Canada | CA |
+| Cayman Islands | KY |
+| Central African Republic | CF |
+| Chad | TD |
+| Chile | CL |
+| China | CN |
+| Colombia | CO |
+| Comoros | KM |
+| Congo | CG |
+| Congo Democratic Republic | CD |
+| Cook Islands | CK |
+| Costa Rica | CR |
+| Cote d'Ivoire | CI |
+| Croatia | HR |
+| Cuba | CU |
+| Curaçao | CW |
+| Cyprus | CY |
+| Czechia | CZ |
+| Denmark | DK |
+| Djibouti | DJ |
+| Dominica | DM |
+| Dominican Republic | DO |
+| East Timor | TL |
+| Ecuador | EC |
+| Egypt | EG |
+| El Salvador | SV |
+| Equatorial Guinea | GQ |
+| Eritrea | ER |
+| Estonia | EE |
+| eSwatini | SZ |
+| Ethiopia | ET |
+| Falkland Islands | FK |
+| Faroe Islands | FO |
+| Fiji | FJ |
+| Finland | FI |
+| France | FR |
+| French Guiana | GF |
+| French Polynesia | PF |
+| Gabon | GA |
+| Gambia | GM |
+| Georgia | GE |
+| Germany | DE |
+| Ghana | GH |
+| Gibraltar | GI |
+| Greece | GR |
+| Greenland | GL |
+| Grenada | GD |
+| Guadeloupe | GP |
+| Guam | GU |
+| Guatemala | GT |
+| Guernsey | GG |
+| Guinea | GN |
+| Guinea-Bissau | GW |
+| Guyana | GY |
+| Haiti | HT |
+| Honduras | HN |
+| Hong Kong | HK |
+| Hungary | HU |
+| Iceland | IS |
+| India | IN |
+| Indonesia | ID |
+| Iran | IR |
+| Iraq | IQ |
+| Ireland | IE |
+| Isle of Man | IM |
+| Israel | IL |
+| Italy | IT |
+| Jamaica | JM |
+| Japan | JP |
+| Jersey | JE |
+| Jordan | JO |
+| Kazakhstan | KZ |
+| Kenya | KE |
+| Kiribati | KI |
+| Kosovo | XK |
+| Kuwait | KW |
+| Kyrgyzstan | KG |
+| Laos | LA |
+| Latvia | LV |
+| Lebanon | LB |
+| Lesotho | LS |
+| Liberia | LR |
+| Libya | LY |
+| Liechtenstein | LI |
+| Lithuania | LT |
+| Luxembourg | LU |
+| Macau | MO |
+| Madagascar | MG |
+| Malawi | MW |
+| Malaysia | MY |
+| Maldives | MV |
+| Mali | ML |
+| Malta | MT |
+| Marshall Islands | MH |
+| Martinique | MQ |
+| Mauritania | MR |
+| Mauritius | MU |
+| Mayotte | YT |
+| Mexico | MX |
+| Micronesia | FM |
+| Moldova | MD |
+| Monaco | MC |
+| Mongolia | MN |
+| Montenegro | ME |
+| Montserrat | MS |
+| Morocco | MA |
+| Mozambique | MZ |
+| Myanmar | MM |
+| Namibia | NA |
+| Nauru | NR |
+| Nepal | NP |
+| Netherlands | NL |
+| New Caledonia | NC |
+| New Zealand | NZ |
+| Nicaragua | NI |
+| Niger | NE |
+| Nigeria | NG |
+| North Korea | KP |
+| North Macedonia | MK |
+| Northern Mariana Islands | MP |
+| Norway | NO |
+| Oman | OM |
+| Pakistan | PK |
+| Palau | PW |
+| Panama | PA |
+| Papua New Guinea | PG |
+| Paraguay | PY |
+| Peru | PE |
+| Philippines | PH |
+| Poland | PL |
+| Portugal | PT |
+| Puerto Rico | PR |
+| Qatar | QA |
+| Reunion | RE |
+| Romania | RO |
+| Russia | RE |
+| Rwanda | RW |
+| Saint Helena | SH |
+| Saint Kitts and Nevis | KN |
+| Saint Lucia | LC |
+| Saint Martin | MF |
+| Saint Pierre and Miquelon | PM |
+| Saint Vincent and the Grenadines | VC |
+| Samoa | WS |
+| San Marino | SM |
+| Sao Tome and Principe | ST |
+| Saudi Arabia | SA |
+| Senegal | SN |
+| Serbia | RS |
+| Seychelles | SC |
+| Sierra Leone | SL |
+| Singapore | SG |
+| Sint Maarten | SX |
+| Slovakia | SK |
+| Slovenia | SI |
+| Solomon Islands | SB |
+| Somalia | SO |
+| South Africa | ZA |
+| South Korea | KR |
+| South Sudan | SS |
+| Spain | ES |
+| Sri Lanka | LK |
+| St. Barts | BL |
+| Sudan | SD |
+| Suriname | SR |
+| Sweden | SE |
+| Switzerland | CH |
+| Syria | SY |
+| Taiwan | TW |
+| Tajikistan | TJ |
+| Tanzania | TZ |
+| Thailand | TH |
+| The Bahamas | BH |
+| Togo | TG |
+| Tonga | TO |
+| Trinidad and Tobago | TT |
+| Tunisia | TN |
+| Turkey | TR |
+| Turkmenistan | TM |
+| Turks and Caicos Islands | TC |
+| Tuvalu | TV |
+| Uganda | UG |
+| Ukraine | UA |
+| United Arab Emirates | AE |
+| United Kingdom | GB |
+| United States | US |
+| Uruguay | UY |
+| US Virgin Islands | VI |
+| Uzbekistan | UZ |
+| Vanuatu | VU |
+| Vatican City (Holy See) | VA |
+| Venezuela | VE |
+| Vietnam | VN |
+| Wallis and Futuna | WF |
+| Yemen | YE |
+| Zambia | ZM |
+| Zimbabwe | ZW |
+
+## Code samples and libraries
+
+Please see the top of this page for code samples for these languages and more. If we're missing a code sample, or if you'd like to contribute a code sample or library in exchange for free credits, email us at: team@abstractapi.com
+
+## Other notes
+
+A note on metered billing: Each individual IP you submit counts as a credit used. Credits are also counted per request, not per successful response. So if you submit a request for the (invalid) IP address "kasj8929hs", that still counts as 1 credit.
