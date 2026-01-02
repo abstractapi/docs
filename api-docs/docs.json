@@ -30,24 +30,32 @@
             ]
           },
           {
-            "group": "More APIs",
+            "group": "APIs to verify",
             "pages": [
-              "abstract-api/avatars",
-              "abstract-api/company-enrichment",
-              "abstract-api/exchange-rates",
-              "abstract-api/holidays",
               "abstract-api/iban-validation",
-              "abstract-api/images",
-              "abstract-api/scrape",
-              "abstract-api/timezones",
-              "abstract-api/vat-validation",
-              "abstract-api/validate",
-              "abstract-api/calculate",
-              "abstract-api/categories"
+              "abstract-api/vat-validation"
             ]
           },
           {
-            "group": "More APIs",
+            "group": "APIs to Look up",
+            "pages": [
+              "abstract-api/company-enrichment",
+              "abstract-api/exchange-rates",
+              "abstract-api/holidays",
+              "abstract-api/scrape",
+              "abstract-api/timezones"
+            ]
+          },
+          {
+            "group": "APIs to create",
+            "pages": [
+              "abstract-api/avatars",
+              "abstract-api/images",
+              "abstract-api/scrape"
+            ]
+          },
+          {
+            "group": "Other APIs",
             "pages": [
               "abstract-api/ip-geolocation",
               "abstract-api/phone-validation",
