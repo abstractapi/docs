@@ -24,34 +24,34 @@
           {
             "group": "Popular APIs",
             "pages": [
-              "abstract-api/email-reputation",
-              "abstract-api/phone-intelligence",
-              "abstract-api/ip-intelligence",
-              "abstract-api/company-enrichment"
+              "api/email-reputation",
+              "api/phone-intelligence",
+              "api/ip-intelligence",
+              "api/company-enrichment"
             ]
           },
           {
             "group": "APIs to verify",
             "pages": [
-              "abstract-api/iban-validation",
-              "abstract-api/vat-validation"
+              "api/iban-validation",
+              "api/vat-validation"
             ]
           },
           {
             "group": "APIs to Look up",
             "pages": [
-              "abstract-api/exchange-rates",
-              "abstract-api/holidays",
-              "abstract-api/scrape",
-              "abstract-api/timezones"
+              "api/exchange-rates",
+              "api/holidays",
+              "api/scrape",
+              "api/timezones"
             ]
           },
           {
             "group": "APIs to create",
             "pages": [
-              "abstract-api/avatars",
-              "abstract-api/images",
-              "abstract-api/scrape"
+              "api/avatars",
+              "api/images",
+              "api/scrape"
             ]
           }
         ]
