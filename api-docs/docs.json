@@ -42,7 +42,6 @@
             "pages": [
               "api/exchange-rates",
               "api/holidays",
-              "api/scrape",
               "api/timezones"
             ]
           },
@@ -51,7 +50,8 @@
             "pages": [
               "api/avatars",
               "api/images",
-              "api/scrape"
+              "api/scrape",
+              "api/screenshot"
             ]
           }
         ]
