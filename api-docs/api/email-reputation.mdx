@@ -98,6 +98,55 @@ This was a successful request, and all available details about that email were r
   The email address to validate.
 </ParamField>
 
+## Authentication Methods
+
+The Email Reputation API supports multiple ways to authenticate your requests. You can use whichever method best fits your application.
+
+### Query parameter (default)
+
+Pass your API key as a query parameter. This is the simplest method and is shown in the Getting Started example above.
+
+```bash
+curl 'https://emailreputation.abstractapi.com/v1/?api_key=YOUR_UNIQUE_API_KEY&email=johnsmith@gmail.com'
+```
+
+### Bearer token header
+
+Instead of passing `api_key` as a query parameter, you can send it in the `Authorization` header as a Bearer token. This keeps your API key out of URLs and server logs.
+
+```bash
+curl -X GET 'https://emailreputation.abstractapi.com/v1/?email=johnsmith@gmail.com' \
+  -H 'Authorization: Bearer YOUR_UNIQUE_API_KEY'
+```
+
+When using header-based authentication, omit `api_key` from the query string — only the `email` parameter is needed.
+
+## POST Method
+
+In addition to GET requests, you can send POST requests to the Email Reputation API. This is useful when you prefer to send parameters in the request body rather than the URL.
+
+### POST with form-encoded data
+
+Send both `api_key` and `email` as form-encoded fields in the request body:
+
+```bash
+curl -X POST 'https://emailreputation.abstractapi.com/v1/' \
+  -d 'email=johnsmith@gmail.com' \
+  -d 'api_key=YOUR_UNIQUE_API_KEY'
+```
+
+### POST with Bearer token and JSON body
+
+Authenticate via the `Authorization` header and send `email` in a JSON request body:
+
+```bash
+curl -X POST 'https://emailreputation.abstractapi.com/v1/' \
+  -H 'Authorization: Bearer YOUR_UNIQUE_API_KEY' \
+  -d '{ "email": "johnsmith@gmail.com" }'
+```
+
+When using the Bearer token with POST, the body only needs to contain the `email` field.
+
 ### Response parameters
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
@@ -340,7 +389,7 @@ This field provides more information about the deliverability result.
 - **invalid_mailbox**: The email address doesn't exist or is no longer active. It can't receive new emails.
 - **full_mailbox**: The email exists but its mailbox is full, so new emails will bounce.
 - **invalid_format**: The email doesn't follow the correct format (e.g., missing `@` or domain).
-- **dns_record_not_found**: We couldn't find MX records for the domain, so we couldn’t complete the SMTP check.
+- **dns_record_not_found**: We couldn't find MX records for the domain, so we couldn't complete the SMTP check.
 - **unavailable_server**: The mail server for the domain is currently unreachable.
 
 ## Bulk upload (CSV)
