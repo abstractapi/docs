@@ -15,7 +15,7 @@ If you have an existing list of addresses that were collected before validation 
 
 The CSV uploader in your dashboard is the fastest path. It handles batches up to 50,000 addresses, applies the same checks as the API, and emails you the results when ready. No code to write.
 
-For batches larger than 50,000, split the file into chunks and upload them sequentially. Or use the API with controlled concurrency, see [Advanced docs](https://docs.abstractapi.com/email-reputation/advanced) for a rate-limit-aware batch pattern.
+For batches larger than 50,000, split the file into chunks and upload them sequentially. Or use the API with controlled concurrency, see [Advanced docs](https://docs.abstractapi.com/api/email-reputation/advanced) for a rate-limit-aware batch pattern.
 
 When cleaning an existing list, the key question isn't just "which addresses are undeliverable?" It's also "which addresses should I suppress from future sends?" Build your suppression logic around:
 
