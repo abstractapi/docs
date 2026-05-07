@@ -1,0 +1,116 @@
+---
+title: 'Email Reputation: Production guide'
+description: 'What to handle before going live: bulk list cleaning, fail-open error handling, API key security, and monitoring your usage in production.'
+---
+
+## Overview
+
+This guide covers what to handle before you ship Email Reputation to production: the edge cases and infrastructure decisions that don't surface until you're handling real users.
+
+---
+
+## Bulk list cleaning
+
+If you have an existing list of addresses that were collected before validation was in place, clean them before migrating to a production system.
+
+The CSV uploader in your dashboard is the fastest path. It handles batches up to 50,000 addresses, applies the same checks as the API, and emails you the results when ready. No code to write.
+
+For batches larger than 50,000, split the file into chunks and upload them sequentially. Or use the API with controlled concurrency, see [Advanced docs](https://docs.abstractapi.com/email-reputation/advanced) for a rate-limit-aware batch pattern.
+
+When cleaning an existing list, the key question isn't just "which addresses are undeliverable?" It's also "which addresses should I suppress from future sends?" Build your suppression logic around:
+
+- `email_deliverability.status = "undeliverable"`: remove from all lists. Exception: if `status_detail` is `"mailbox_full"`, the address is real; hold it from your next send rather than suppressing permanently.
+- `email_quality.is_disposable = true`: remove from all lists (Professional tier)
+- `email_risk.address_risk_status = "high"`: suppress from marketing sends, keep for manual review (Professional tier)
+
+---
+
+## Fail-open error handling
+
+Never block a user action because the Email Reputation API is unreachable. This is the single most important production rule.
+
+In practice: set an explicit timeout on every request (2 seconds is reasonable), catch network exceptions, and treat any error response the same as `unknown`: allow the user through.
+
+The example below assumes Professional (or Free for testing) since it reads `email_quality.is_disposable`. On Starter or Standard, drop the `is_disposable` check and rely on `email_deliverability.status` alone.
+
+```python
+import requests
+
+def validate_for_signup(email: str, api_key: str) -> str:
+    """Returns 'allow', 'block', or 'unknown'. Never raises."""
+    try:
+        r = requests.get(
+            "https://emailreputation.abstractapi.com/v1/",
+            params={"api_key": api_key, "email": email},
+            timeout=2,
+        )
+        if r.status_code != 200:
+            return "allow"  # fail open on any API error
+        
+        data = r.json()
+        status = data["email_deliverability"]["status"]
+        is_disposable = data["email_quality"]["is_disposable"]
+        
+        if is_disposable:
+            return "block"
+        if status == "undeliverable":
+            status_detail = data["email_deliverability"].get("status_detail", "")
+            if status_detail == "mailbox_full":
+                return "allow"
+            return "block"
+        return "allow"
+    
+    except Exception:
+        return "allow"  # fail open on network error or parse error
+```
+
+The `except Exception` is intentional here. In a signup or checkout flow, an unexpected error in the validation step should never take down the user experience.
+
+---
+
+## Domain and IP whitelisting
+
+Domain and IP whitelisting is a security measure that restricts which clients can use your API key. Configure it in your dashboard under API key settings. No code required.
+
+You can whitelist by domain, by IP address, or both:
+
+- **Domain whitelist**: specify the domains your integration runs on. The API checks the `Origin` header of each incoming request against your list. If the origin isn't on the list, the request is rejected, even if the API key is valid.
+- **IP whitelist**: specify the server IP addresses allowed to call the API. Requests from any other IP are rejected.
+
+This protects you if your API key is leaked or exposed in client-side code. An attacker with your key can't use it from an unauthorized domain or IP: the API blocks the request before any usage is counted.
+
+To set up whitelisting, go to your dashboard, open the settings for the relevant API key, and add your allowed domains or IP addresses.
+
+---
+
+## Monitoring in production
+
+Abstract processes each request live and returns the result. No email address or response data is stored. Block rates, `unknown` rates, and per-result breakdowns are metrics you need to build on your end. Log the API response alongside each validation event in your own system.
+
+Three things worth tracking:
+
+**Block rate.** What percentage of submissions are blocked? A sudden spike may indicate an influx of throwaway accounts (expected) or a validation issue causing false positives (worth investigating).
+
+**`unknown` rate.** A sustained `unknown` rate above ~15% may indicate catch-all domains are common in your user base, or that SMTP checks are timing out. Neither is an error, but it's useful signal.
+
+**API error rate.** HTTP 429 responses mean you're hitting your rate limit. Either optimize your request pattern or upgrade your plan.
+
+### Usage in your dashboard
+
+Abstract tracks one thing: your request volume. The Usage section of your dashboard shows:
+
+- **Requests by day**: a chart covering the last 20 days, broken down by API key.
+- **Usage by API key**: total requests per key for the current billing period and each key's share of total usage.
+- **Plan consumption**: total requests used against your plan limit for the current billing period.
+- **API key table**: per-key breakdown with usage count, share of total, last used date, and status.
+
+If you use multiple API keys to separate environments or teams, the per-key breakdown shows which key is driving volume and flags any that have gone inactive.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/email-reputation/integration): the core integration pattern
+- [Use cases](https://docs.abstractapi.com/email-reputation/use-cases): deliverability verification, lead scoring, and fraud detection
+- [Advanced docs](https://docs.abstractapi.com/email-reputation/advanced): premium fields by tier and batch processing
+- [API reference](https://docs.abstractapi.com/email-reputation): full response schema and error codes

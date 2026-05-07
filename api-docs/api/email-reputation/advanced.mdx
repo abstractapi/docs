@@ -1,0 +1,150 @@
+---
+title: 'Email Reputation: Advanced docs'
+description: 'Processing large lists, premium fields by tier, request budget optimization, and accuracy methodology for Email Reputation.'
+---
+
+## Overview
+
+This page covers what's available beyond the basic integration: processing lists of up to 50,000 addresses via the CSV uploader or one at a time via the API, the full field set across plan tiers, and how to get the most out of your request budget.
+
+---
+
+## Processing large lists
+
+You have two options for processing a list: the CSV uploader in your dashboard (no code, up to 50,000 addresses) or the API, one address at a time.
+
+### CSV uploader (simplest)
+
+The CSV uploader in your dashboard handles batches up to 50,000 addresses. Upload a file with one email per row, and the results are sent to your email when ready. No code required, no rate limit concerns. Use this for periodic list cleaning, import validation, or one-off hygiene passes.
+
+Formatting requirements:
+- First column: email addresses to validate
+- One address per row
+- No empty rows
+- Maximum 50,000 rows per file
+
+### Processing a list via the API
+
+The API validates one address per request. There is no batch endpoint. To process a list programmatically, loop through your addresses sequentially and pace the delay between requests to match your plan's requests per second (RPS) limit.
+
+Before you start: check your RPS limit in your dashboard. Sending requests faster than your limit returns a `429` error. Free plans allow 1 request per second.
+
+```python
+import requests
+import time
+
+def validate_list(emails: list[str], api_key: str, rps: int = 1) -> list[dict]:
+    results = []
+    delay = 1.0 / rps
+
+    for email in emails:
+        response = requests.get(
+            "https://emailreputation.abstractapi.com/v1/",
+            params={"api_key": api_key, "email": email},
+            timeout=3,
+        )
+        results.append({"email": email, "data": response.json()})
+        time.sleep(delay)
+
+    return results
+```
+
+Set `rps` to match your plan's limit. At 1 request per second, 1,000 addresses take about 17 minutes. For lists larger than 50,000 addresses, the CSV uploader in your dashboard is faster.
+
+---
+
+## Premium fields by tier
+
+Email Reputation returns more data on higher plans. Each tier builds on the previous one. The Free tier includes all fields for testing, so you can prototype against the full payload before deciding which paid tier matches your production needs.
+
+### Starter: Email deliverability
+
+Know whether an address is real and reachable before it enters your system. Returns the submitted address and the full `email_deliverability` object:
+
+| Field | Description |
+|---|---|
+| `email_address` | The email address submitted |
+| `email_deliverability.status` | `deliverable`, `undeliverable`, or `unknown` |
+| `email_deliverability.is_format_valid` | Validates the address syntax |
+| `email_deliverability.is_smtp_valid` | Confirms the mailbox exists |
+| `email_deliverability.is_mx_valid` | Confirms the domain accepts mail |
+| `email_deliverability.mx_records` | List of MX records for the domain |
+
+### Standard: Sender and domain intelligence
+
+Go beyond deliverability to understand who sent the address and whether their domain is legitimate. Adds sender identity and domain metadata on top of everything in Starter:
+
+| Field | Description |
+|---|---|
+| `email_sender.first_name` | First name tied to the address |
+| `email_sender.last_name` | Last name tied to the address |
+| `email_sender.email_provider_name` | Provider name (Google, Microsoft, etc.) |
+| `email_sender.organization_name` | Company associated with the domain |
+| `email_sender.organization_type` | `company` or individual |
+| `email_domain.domain_age` | Domain age in days |
+| `email_domain.is_live_site` | Domain has a live website |
+| `email_domain.registrar` | Domain registrar |
+| `email_domain.date_registered` | Registration date |
+| `email_domain.date_expires` | Expiration date |
+| `email_domain.is_risky_tld` | TLD associated with elevated risk |
+
+### Professional and Enterprise: All fields
+
+The full picture for fraud prevention and account security. Returns all fields, including everything above plus quality signals, risk scoring, and breach history:
+
+| Field | Description |
+|---|---|
+| `email_quality.score` | 0.01–0.99 confidence score for overall quality |
+| `email_quality.is_free_email` | Consumer vs. business provider |
+| `email_quality.is_disposable` | Throwaway address check |
+| `email_quality.is_role` | Role address check (`info@`, `support@`, etc.) |
+| `email_quality.is_catchall` | Domain accepts all addresses |
+| `email_quality.is_username_suspicious` | Suspicious or auto-generated username pattern |
+| `email_quality.minimum_age` | Estimated age of the address in days |
+| `email_quality.is_dmarc_enforced` | Domain enforces DMARC |
+| `email_quality.is_spf_strict` | Domain enforces strict SPF |
+| `email_quality.is_subaddress` | Subaddress format (e.g., `user+label@domain.com`) |
+| `email_risk.address_risk_status` | Risk level of the address: `low`, `medium`, `high` |
+| `email_risk.domain_risk_status` | Risk level of the domain: `low`, `medium`, `high` |
+| `email_breaches.total_breaches` | Number of known data breaches |
+| `email_breaches.date_first_breached` | Date of first known breach |
+| `email_breaches.date_last_breached` | Date of most recent breach |
+| `email_breaches.breached_domains` | List of breach sources with dates |
+
+---
+
+## Request budget optimization
+
+Four ways to get more out of your request budget without upgrading your plan:
+
+**Validate at entry, not in advance.** Validating addresses as users submit them is more efficient than pre-validating a list. Users who never finish the form don't cost you a request.
+
+**Use `is_format_valid` as a pre-filter.** If you're building a form, do a client-side format check before calling the API. This catches obvious typos (missing `@`, incomplete domain) without using a request.
+
+**Cache results for known-good addresses.** If a business domain has already passed validation, you can cache that result for a short period. Individual addresses should be validated fresh (mailboxes get deactivated), but for domain-level signals like `is_live_site` or `domain_age`, caching for 24–48 hours is reasonable.
+
+**Prioritize high-value entry points.** If you can't validate everywhere, validate where bad data costs you the most: checkout, account creation, and trial activation. Skip validation on secondary contact forms.
+
+---
+
+## Accuracy methodology
+
+Email Reputation's deliverability check involves several stages:
+
+1. **Format validation:** syntax check against RFC 5321 and RFC 5322 standards
+2. **DNS lookup:** confirms MX records exist for the domain
+3. **SMTP verification:** connects to the mail server and verifies the mailbox exists without sending a message
+
+SMTP verification is the most accurate check available without sending a real email, but two edge cases are worth understanding.
+
+**Catch-all domains.** Some mail servers accept all incoming SMTP connections regardless of whether the mailbox exists. For these, the API returns `deliverable` (the domain is real and accepting mail), but the individual mailbox can't be confirmed. To detect this case, check `email_quality.is_catchall`. If it returns `true`, use the rest of the `email_quality` fields to decide whether to accept the address.
+
+**SMTP timeout.** When the mail server doesn't respond within the allowed time, the API returns `unknown`. Retry the request once or twice; timeouts are often transient. If the result stays `unknown`, use the other fields in the response (`email_deliverability`, `email_quality`, `email_domain`) to assess whether the address is worth accepting.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/email-reputation/integration): adding Email Reputation to your signup flow
+- [Use cases](https://docs.abstractapi.com/email-reputation/use-cases): deliverability verification, lead scoring, and fraud detection patterns
+- [API reference](https://docs.abstractapi.com/email-reputation): full request and response reference

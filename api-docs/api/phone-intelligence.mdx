@@ -55,9 +55,9 @@ This was a successful request, so the valid phone number and details associated 
   },
   "phone_carrier": {
     "name": "T-Mobile",
-    "line_type": "Wireless",
-    "mcc": "310",
-    "mnc": "160"
+    "line_type": "mobile",
+    "mcc": 310,
+    "mnc": 160
   },
   "phone_location": {
     "country_name": "United States",
@@ -150,11 +150,11 @@ The API response is returned in a universal and lightweight [JSON format](https:
   The type of line. Possible values: `mobile`, `landline`, `voip`, `toll_free`, `personal`, `pager`, `unknown`.
 </ResponseField>
 
-<ResponseField name="phone_carrier.mcc" type="String">
+<ResponseField name="phone_carrier.mcc" type="Integer">
   Mobile Country Code (MCC).
 </ResponseField>
 
-<ResponseField name="phone_carrier.mnc" type="String">
+<ResponseField name="phone_carrier.mnc" type="Integer">
   Mobile Network Code (MNC).
 </ResponseField>
 

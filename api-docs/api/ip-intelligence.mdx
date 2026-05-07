@@ -95,14 +95,14 @@ https://ip-intelligence.abstractapi.com/v1/
 	    "is_dst": false,
     },
     "flag": {
-	    "flag": "🇺🇸",
+	    "emoji": "🇺🇸",
 	    "unicode": "U+1F1FA U+1F1F8",
 	    "png": "https://static.abstractapi.com/country-flags/US_flag.png",
 	    "svg": "https://static.abstractapi.com/country-flags/US_flag.svg",
 	},
 	"currency": {
 	    "name": "US Dollar",
-	    "iso_code": "USD",
+	    "code": "USD",
 	    "symbol": "$"
 	}
 }
@@ -198,7 +198,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
   City's name.
 </ResponseField>
 
-<ResponseField name="location.city_geoname_id" type="String">
+<ResponseField name="location.city_geoname_id" type="Integer">
   City's geoname ID.
 </ResponseField>
 
@@ -210,7 +210,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
   State or province's ISO 3166-2 code.
 </ResponseField>
 
-<ResponseField name="location.region_geoname_id" type="String">
+<ResponseField name="location.region_geoname_id" type="Integer">
   State or province's geoname ID.
 </ResponseField>
 
@@ -226,11 +226,11 @@ The API response is returned in a universal and lightweight [JSON format](https:
   Country's ISO 3166-1 alpha-2 code.
 </ResponseField>
 
-<ResponseField name="location.country_geoname_id" type="String">
+<ResponseField name="location.country_geoname_id" type="Integer">
   Country's geoname ID.
 </ResponseField>
 
-<ResponseField name="location.country_is_eu" type="Boolean">
+<ResponseField name="location.is_country_eu" type="Boolean">
   True if the country is in the EU, false if it is not.
 </ResponseField>
 
@@ -242,7 +242,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
   2 letter continent code: AF, AS, EU, NA, OC, SA, AN.
 </ResponseField>
 
-<ResponseField name="location.continent_geoname_id" type="String">
+<ResponseField name="location.continent_geoname_id" type="Integer">
   Continent's geoname ID.
 </ResponseField>
 
@@ -274,7 +274,7 @@ The API response is returned in a universal and lightweight [JSON format](https:
   True if the location is currently in Daylight Savings Time (DST).
 </ResponseField>
 
-<ResponseField name="flag.flag" type="String">
+<ResponseField name="flag.emoji" type="String">
   Country's flag as an emoji.
 </ResponseField>
 
@@ -290,12 +290,16 @@ The API response is returned in a universal and lightweight [JSON format](https:
   Link to a hosted version of the country's flag in SVG format.
 </ResponseField>
 
-<ResponseField name="currency.currency_name" type="String">
+<ResponseField name="currency.name" type="String">
   The currency's name.
 </ResponseField>
 
-<ResponseField name="currency.iso_code" type="String">
+<ResponseField name="currency.code" type="String">
   The currency's code in ISO 4217 format.
+</ResponseField>
+
+<ResponseField name="currency.symbol" type="String">
+  The currency's symbol (e.g. "$", "€", "¥").
 </ResponseField>
 
 ### Limiting response fields

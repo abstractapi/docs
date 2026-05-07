@@ -1,0 +1,148 @@
+---
+title: 'Phone Intelligence: Advanced docs'
+description: 'Processing large lists, premium fields by tier, rate limit optimization, and international coverage details for Phone Intelligence.'
+---
+
+## Overview
+
+This page covers what's available beyond the basic integration: processing large lists via the CSV uploader or the API, the full field set across plan tiers, and what to know about international number coverage.
+
+---
+
+## Processing large lists
+
+If you have an existing database of phone numbers collected without validation, clean them before using them in outbound campaigns or routing pipelines.
+
+You have two options for processing a list: the CSV uploader in your dashboard (no code, up to 50,000 numbers) or the API, one number at a time.
+
+### CSV uploader (simplest)
+
+The CSV uploader in your dashboard handles batches up to 50,000 numbers. Upload a file with one number per row, and the results are emailed to you when ready. No code required, no rate limit concerns. Use this for periodic database cleaning, import validation, or one-off hygiene passes.
+
+Formatting requirements:
+- First column: phone numbers in E.164 format (e.g., `14152007986`)
+- One number per row
+- No empty rows
+- Maximum 50,000 rows per file
+
+Numbers not in E.164 format may return unexpected results. Strip all non-digit characters and prepend the country code before uploading.
+
+For lists larger than 50,000 numbers, split the file into chunks and upload them sequentially.
+
+### Processing a list via the API
+
+The API validates one number per request. There is no batch endpoint. To process a list programmatically, loop through your numbers sequentially and pace the delay between requests to match your plan's requests per second (RPS) limit.
+
+Before you start: check your RPS limit in your dashboard. Sending requests faster than your limit returns a `429` error. Free plans allow 1 request per second.
+
+```python
+import requests
+import time
+
+def validate_list(phones: list[str], api_key: str, rps: int = 1) -> list[dict]:
+    results = []
+    delay = 1.0 / rps
+
+    for phone in phones:
+        response = requests.get(
+            "https://phoneintelligence.abstractapi.com/v1/",
+            params={"api_key": api_key, "phone": phone},
+            timeout=3,
+        )
+        results.append({"phone": phone, "data": response.json()})
+        time.sleep(delay)
+
+    return results
+```
+
+Set `rps` to match your plan's limit. At 1 request per second, 1,000 numbers take about 17 minutes. For lists larger than 50,000 numbers, the CSV uploader in your dashboard is faster.
+
+---
+
+## Premium fields by tier
+
+Phone Intelligence returns progressively richer data on higher plans. The Free tier includes all fields for testing, so you can prototype against the full payload before deciding which paid tier matches your production needs.
+
+### Starter: Validation, carrier, and location
+
+The baseline: number validity, line type, carrier name, and geographic data.
+
+| Field | Description |
+|---|---|
+| `phone_validation.is_valid` | Whether the number is valid and dialable |
+| `phone_validation.line_status` | `active` or `inactive` |
+| `phone_validation.is_voip` | Whether the number is a VoIP line |
+| `phone_validation.minimum_age` | Estimated age of the number in days |
+| `phone_carrier.name` | Carrier name (T-Mobile, Verizon, etc.) |
+| `phone_carrier.line_type` | `mobile`, `landline`, `voip`, `toll_free`, `personal`, `pager`, `unknown` |
+| `phone_carrier.mcc` | Mobile Country Code |
+| `phone_carrier.mnc` | Mobile Network Code |
+| `phone_location.country_name` | Country associated with the number |
+| `phone_location.country_code` | ISO country code |
+| `phone_location.country_prefix` | International dialing prefix (e.g., `+1`) |
+| `phone_location.region` | Region or state |
+| `phone_location.city` | City |
+| `phone_location.timezone` | IANA timezone name |
+| `phone_format.international` | E.164 formatted number |
+| `phone_format.national` | Local formatted number |
+
+### Standard: Messaging platform data
+
+Standard plans add SMS gateway information for carrier-based messaging:
+
+| Field | Description |
+|---|---|
+| `phone_messaging.sms_domain` | Email-to-SMS gateway domain for the carrier |
+| `phone_messaging.sms_email` | Full email-to-SMS address for this number |
+
+These fields are available when the carrier exposes SMS gateway data. Not all carriers or all line types return messaging data, so check for null before using.
+
+### Professional: Registration, risk scoring, and breach history
+
+Professional plans add the highest-signal data for fraud prevention and identity verification:
+
+| Field | Description |
+|---|---|
+| `phone_registration.name` | Registered name associated with the number |
+| `phone_registration.type` | `consumer` or `business` |
+| `phone_risk.risk_level` | `low`, `medium`, or `high` |
+| `phone_risk.is_disposable` | Whether the number is from a disposable provider |
+| `phone_risk.is_abuse_detected` | Spam or abuse activity flagged for this number |
+| `phone_breaches.total_breaches` | Count of known data breaches involving this number |
+| `phone_breaches.date_first_breached` | Date of first breach |
+| `phone_breaches.date_last_breached` | Date of most recent breach |
+| `phone_breaches.breached_domains` | List of breach sources with dates |
+
+---
+
+## Rate limit optimization
+
+**Validate at collection, not on every request.** A number's carrier and line type rarely change. Validate when the user first provides the number, store the result, and re-validate only when the number changes or on a periodic refresh (30-day intervals are reasonable for most use cases).
+
+**Separate real-time and batch workloads.** Real-time validation at signup uses a different request budget than batch database cleaning. If you're cleaning a large database, use the CSV uploader so it doesn't eat into your live request capacity.
+
+**Cache aggressively.** `line_type`, `carrier.name`, and `location` data are stable for weeks. `line_status` is the only field that changes with meaningful frequency. For applications where active/inactive status matters, refresh it periodically.
+
+---
+
+## International coverage
+
+Phone Intelligence covers numbers in over 190 countries. A few things to know about international validation:
+
+**Always use E.164 format.** The API accepts the full international format with or without the `+` prefix: country code followed by subscriber number. `14152007986` and `+14152007986` are both accepted.
+
+**Use the `country` parameter for ambiguous inputs.** If users submit numbers without country codes, add `country=XX` with the ISO country code to help the API parse the number correctly.
+
+**Granularity varies by country.** Location data (city, region) is more granular for North America, Western Europe, and parts of Asia. Numbers from some regions return country-level location only.
+
+**Carrier data gaps for prepaid numbers.** Prepaid and MVNO numbers in some markets don't expose full carrier metadata. `carrier.name` may be the MVNO host rather than the underlying network operator.
+
+**VoIP identification accuracy.** VoIP detection is probabilistic. Numbers from established VoIP providers (Google Voice, Twilio, Bandwidth) are reliably identified. Emerging or regional providers may not be in the database yet.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/phone-intelligence/integration): adding Phone Intelligence to your application
+- [Use cases](https://docs.abstractapi.com/phone-intelligence/use-cases): identity verification, carrier routing, and fraud prevention
+- [API reference](https://docs.abstractapi.com/phone-intelligence): full request and response reference

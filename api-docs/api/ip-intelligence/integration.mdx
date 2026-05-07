@@ -1,0 +1,161 @@
+---
+title: 'IP Intelligence: Integration guide'
+description: 'Add IP Intelligence to your application. Covers geolocation and security checks, caching strategies, when to check security flags, and IPv6 handling.'
+---
+
+## Overview
+
+This guide shows you how to integrate IP Intelligence into a real application. It assumes you haven't integrated yet, so it starts from the beginning.
+
+The core pattern: receive a request, extract the IP address, call the API, read location and security data, and make a routing or access-control decision.
+
+---
+
+## A working integration
+
+```python
+import requests
+
+ABSTRACT_API_KEY = "YOUR_API_KEY"
+
+def check_ip(ip_address: str) -> dict:
+    try:
+        response = requests.get(
+            "https://ip-intelligence.abstractapi.com/v1/",
+            params={"api_key": ABSTRACT_API_KEY, "ip_address": ip_address},
+            timeout=2,
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException:
+        # Fail open: if the API is unreachable, allow the request
+        return {"action": "allow", "reason": "api_unavailable"}
+
+    data = response.json()
+    
+    is_vpn = data["security"]["is_vpn"]
+    is_proxy = data["security"]["is_proxy"]
+    is_tor = data["security"]["is_tor"]
+    country_code = data["location"]["country_code"]
+    is_eu = data["location"]["is_country_eu"]
+
+    # Example: block Tor exit nodes, flag VPN/proxy
+    if is_tor:
+        return {"action": "block", "reason": "tor_exit_node"}
+
+    security_flag = None
+    if is_vpn or is_proxy:
+        security_flag = "anonymous_connection"
+
+    return {
+        "action": "allow",
+        "country_code": country_code,
+        "is_eu": is_eu,
+        "security_flag": security_flag,
+    }
+```
+
+### What the response looks like
+
+```json
+{
+  "ip_address": "185.197.192.65",
+  "security": {
+    "is_vpn": false,
+    "is_proxy": true,
+    "is_tor": false,
+    "is_hosting": false,
+    "is_relay": false,
+    "is_mobile": false,
+    "is_abuse": false
+  },
+  "location": {
+    "city": "Miami",
+    "region": "Florida",
+    "country": "United States",
+    "country_code": "US",
+    "is_country_eu": false,
+    "continent": "North America",
+    "longitude": -80.1946,
+    "latitude": 25.7689
+  },
+  "timezone": {
+    "name": "America/New_York",
+    "utc_offset": -5
+  },
+  "currency": {
+    "name": "US Dollar",
+    "iso_code": "USD",
+    "symbol": "$"
+  },
+  "company": {
+    "name": "PacketHub S.A.",
+    "domain": "packethub.tech",
+    "type": "isp"
+  }
+}
+```
+
+---
+
+## Four things to get right
+
+### 1. Cache IP-to-location data aggressively
+
+IP-to-location data is the most cacheable of Abstract's products. Abstract's database is updated continuously, but a given IP address typically points to the same location across a 24-hour window, making it safe to cache for short periods.
+
+Cache key: the IP address string. TTL: 24 hours. This keeps cached data fresh while substantially reducing your request volume.
+
+```python
+import functools
+
+# Simple in-memory cache for illustration
+# Use Redis or a similar cache in production
+_cache = {}
+
+def get_ip_data(ip: str) -> dict:
+    if ip in _cache:
+        return _cache[ip]
+    
+    data = check_ip(ip)  # your API call function
+    _cache[ip] = data
+    return data
+```
+
+For log analysis pipelines processing millions of IP addresses, caching is what makes the budget math work.
+
+### 2. Check security flags at authentication, not on every request
+
+Security signals like `is_vpn` and `is_proxy` are meaningful at the moment a user authenticates or takes a sensitive action (account creation, password reset, checkout). Checking them on every page load is expensive and doesn't add proportional value, since a user's IP address typically doesn't change mid-session.
+
+The right pattern: check security flags at session creation, store the result in the session, and act on it throughout. Re-check on high-value actions within the session.
+
+### 3. Localhost and private IPs return empty results
+
+Testing with `127.0.0.1` or any RFC 1918 private address (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) returns an empty or null response, since these addresses have no geolocation data. In development, either use a real public IP address for testing or add a check that skips the API call for private IPs:
+
+```python
+import ipaddress
+
+def is_private_ip(ip: str) -> bool:
+    try:
+        return ipaddress.ip_address(ip).is_private
+    except ValueError:
+        return False
+
+def check_ip_safe(ip: str) -> dict | None:
+    if is_private_ip(ip):
+        return None  # skip validation for private IPs
+    return check_ip(ip)
+```
+
+### 4. IPv6 is supported, with caveats
+
+The API accepts IPv6 addresses. The `location` data for IPv6 is typically country-level; city and region precision is lower than for IPv4. Security flags (`is_vpn`, `is_proxy`) are also less comprehensive for IPv6, as most threat intelligence databases have better IPv4 coverage. Plan for this in your logic. Don't block based on a missing security flag that might simply be a data gap.
+
+---
+
+## Related
+
+- [Explore use cases](https://docs.abstractapi.com/ip-intelligence/use-cases): geolocation, company identification, and security threat detection patterns
+- [Advanced docs](https://docs.abstractapi.com/ip-intelligence/advanced): caching, processing large IP lists, and field comparison by tier
+- [API reference](https://docs.abstractapi.com/ip-intelligence): full response schema and error codes

@@ -1,0 +1,98 @@
+---
+title: 'Phone Intelligence: Production guide'
+description: 'What to handle before going live: line-type branching at scale, international number formatting, and batch validation for existing databases.'
+---
+
+## Overview
+
+Your first request worked. This guide covers what breaks at scale or in edge cases: the decisions worth making before you ship to production.
+
+---
+
+## Line-type branching logic at scale
+
+In development, a simple `if line_type == "mobile"` check is enough. In production, you need to account for the full range of `line_type` values your application will encounter.
+
+The complete set: `mobile`, `landline`, `voip`, `toll_free`, `personal`, `pager`, `unknown`.
+
+Build the routing as a lookup rather than chained conditionals:
+
+```python
+def route_by_line_type(phone_data: dict) -> str:
+    line_type = (
+        phone_data.get("phone_carrier", {}).get("line_type") or "unknown"
+    )
+    routing = {
+        "mobile": "sms",
+        "landline": "voice",
+        "voip": "voice",
+        "toll_free": "voice",
+        "personal": "voice",
+        "pager": "skip",
+        "unknown": "voice",
+    }
+    return routing.get(line_type, "voice")
+```
+
+Map "voice" vs. "sms" to your actual delivery provider calls. For VoIP lines, you may also want to set a flag for downstream review. Don't do it inline in the routing function; handle it as a separate concern.
+
+---
+
+## International number formatting
+
+Format inconsistencies are the leading cause of unexpected API behavior for international deployments.
+
+**Enforce E.164 before calling the API.** Accept whatever format users type, normalize to E.164 before validation:
+
+```python
+import re
+
+def to_e164(phone: str, default_country_code: str = "1") -> str:
+    # Strip everything except digits and leading +
+    digits = re.sub(r"[^\d+]", "", phone)
+    
+    if digits.startswith("+"):
+        return digits  # already international format
+    
+    if len(digits) == 10 and default_country_code == "1":
+        return f"+1{digits}"  # US/Canada 10-digit
+    
+    if not digits.startswith("+"):
+        return f"+{default_country_code}{digits}"
+    
+    return digits
+```
+
+For applications serving multiple countries, ask users to select their country and append the correct country code. Don't try to infer it from the number pattern alone, since many country codes share prefixes.
+
+**Use the `country` parameter as a fallback.** If you're not sure whether a user included their country code, pass `country=XX` to the API. The API will attempt to normalize the number against that country's numbering plan:
+
+```
+https://phoneintelligence.abstractapi.com/v1/
+  ? api_key = YOUR_API_KEY
+  & phone = 4152007986
+  & country = US
+```
+
+---
+
+## Batch validation for existing databases
+
+Before enabling phone-based features for existing users (SMS notifications, two-factor authentication, carrier routing), validate the numbers already in your database.
+
+The CSV uploader in your dashboard is the only path for batch validation. It handles batches up to 50,000 numbers, applies the same checks as the API, and emails you the results when ready. No code to write.
+
+For batches larger than 50,000, split the file into chunks and upload them sequentially. The Phone Intelligence API validates one number per request and isn't designed for high-volume batch processing, so the dashboard uploader is the right tool for any backfill or list-cleaning work.
+
+Store the validation results alongside the numbers. You don't need to re-validate every time: line type and carrier are stable for weeks. Re-validate when a user explicitly updates their phone number, or on a periodic basis (monthly is reasonable for `line_status` checks).
+
+**What to do with invalid numbers:** don't delete them from your database immediately. Mark them as `unverified` and suppress them from outbound campaigns. Give users a chance to update their number through a self-service flow. Hard-delete only after a reasonable grace period (30-60 days) with no user response.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/phone-intelligence/integration): the core integration pattern
+- [Use cases](https://docs.abstractapi.com/phone-intelligence/use-cases): identity verification, carrier routing, and fraud prevention
+- [Advanced docs](https://docs.abstractapi.com/phone-intelligence/advanced): premium fields by tier and international coverage
+- [API reference](https://docs.abstractapi.com/phone-intelligence): full response schema and error codes

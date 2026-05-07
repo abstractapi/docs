@@ -1,0 +1,96 @@
+---
+title: 'Phone Intelligence: Use cases'
+description: 'Three concrete patterns teams build with Phone Intelligence: identity verification, carrier-based routing, and fraud prevention.'
+---
+
+## Overview
+
+Phone Intelligence returns validation status, line type, carrier data, location, messaging gateways, registration details, risk scores, and breach history, all in a single request. The three patterns below cover the most common ways teams use those signals.
+
+---
+
+## 1. Identity verification
+
+Confirming that a real phone number is attached to a real person is one of the most reliable signals in a signup or account verification flow. A mobile number registered to a person, active for over a year, is a much stronger identity signal than a VoIP line created this week.
+
+The key distinction isn't just "is this a valid number?" It's "does this number suggest a real person with an established account?"
+
+### Fields to use
+
+| Field | Signal |
+|---|---|
+| `phone_validation.is_valid` | Whether the number is dialable |
+| `phone_validation.line_status` | `active` or `inactive` (an inactive number is a red flag) |
+| `phone_carrier.line_type` | Mobile lines are the strongest identity signal |
+| `phone_validation.is_voip` | VoIP lines are easier to create and discard |
+| `phone_validation.minimum_age` | Age in days (very new numbers carry more risk) |
+
+### The pattern
+
+For account creation or verification steps, check `is_valid` first. Then use `line_type` and `minimum_age` together: a mobile number that's been active for 6+ months (180+ days) is a strong identity anchor. A VoIP number created in the last 30 days warrants additional verification: a second factor, a brief delay, or a manual review step. It's not a hard block, but it's a signal worth acting on.
+
+---
+
+## 2. Carrier-based routing
+
+Sending a message to the wrong channel doesn't just fail. It trains your users to ignore you. An SMS to a landline never arrives. A voice call to a mobile user at 9 AM is an interruption, not a service.
+
+Routing by carrier and line type at the moment you collect the number means you always use the right channel for every user.
+
+### Fields to use
+
+| Field | Signal |
+|---|---|
+| `phone_carrier.line_type` | `mobile`, `landline`, `voip`, `toll_free`, `personal`, `pager`, `unknown` |
+| `phone_carrier.name` | Carrier name (T-Mobile, Verizon, AT&T, etc.) |
+| `phone_messaging.sms_domain` | Email-to-SMS gateway domain for the carrier |
+| `phone_messaging.sms_email` | Full email-to-SMS address for this specific number |
+| `phone_location.timezone` | Timezone for the number; use for scheduling calls and messages |
+
+### The pattern
+
+Build your routing logic around `line_type` at the time of collection. Store the result alongside the number so you don't need to re-validate every time you contact the user:
+
+- Mobile: eligible for SMS, push notification, voice
+- Landline: voice only
+- VoIP: voice only, apply additional scrutiny for high-value flows
+- Toll-free: inbound only; don't initiate outbound contact
+
+Use `phone_location.timezone` to schedule outbound communications in the user's local time. A carrier lookup returns the timezone associated with the number's area code, accurate enough for scheduling purposes even if the user has moved.
+
+---
+
+## 3. Fraud prevention
+
+Phone numbers are increasingly used as fraud vectors. Disposable VoIP services let bad actors generate fresh numbers on demand. Compromised phone accounts appear in breach databases. High-risk numbers cluster around specific carriers and area codes.
+
+For high-value transactions (checkout, enterprise trial activation, account recovery), phone risk signals give you an additional layer of defense that doesn't depend on email or device fingerprinting.
+
+The risk, registration, and breach fields below require Professional. The Free tier includes all fields for testing.
+
+### Fields to use
+
+| Field | Signal | Tier |
+|---|---|---|
+| `phone_validation.is_voip` | VoIP line; easier to create and discard | All tiers |
+| `phone_validation.minimum_age` | Age of the number in days | All tiers |
+| `phone_risk.is_disposable` | Number from a known disposable provider | Professional |
+| `phone_risk.risk_level` | Risk assessment: `low`, `medium`, `high` | Professional |
+| `phone_risk.is_abuse_detected` | Spam or abuse activity flagged for this number | Professional |
+| `phone_registration.type` | `consumer` or `business` (unexpected business registration can be a signal) | Professional |
+| `phone_breaches.total_breaches` | Number appeared in known data breaches | Professional |
+| `phone_breaches.breached_domains` | Which breaches (useful for assessing credential stuffing risk) | Professional |
+
+### The pattern
+
+At checkout or account creation with a payment method, check `is_voip` and `minimum_age` first; both are available on all plans. If a number is VoIP and under 30 days old, apply a higher-friction verification step. On Professional plans, add `phone_risk.risk_level` to your scoring function: any number with `high` risk should trigger manual review or additional friction, regardless of other signals.
+
+For platforms with persistent fraud problems, breach data (`phone_breaches`) lets you identify numbers that have appeared in credential dumps, a strong predictor of account takeover attempts.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/phone-intelligence/integration): how to add Phone Intelligence to your application
+- [Advanced docs](https://docs.abstractapi.com/phone-intelligence/advanced): batch validation, premium fields by tier, international coverage
+- [API reference](https://docs.abstractapi.com/phone-intelligence): full response schema

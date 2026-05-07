@@ -1,0 +1,137 @@
+---
+title: 'IP Intelligence: Production guide'
+description: 'What to handle before going live: setting up a caching layer, where to check security flags in the request lifecycle, and batch processing patterns for log analysis.'
+---
+
+## Overview
+
+Your first request worked. This guide covers what matters before you ship to production: the caching layer that keeps you within rate limits, the right place in your request lifecycle to run security checks, and how to process historical log data.
+
+---
+
+## Setting up the caching layer
+
+For production use, you need a caching layer in front of the API. Without it, a spike in traffic will exhaust your request budget and trigger 429 errors. With it, you can handle high traffic volumes with a fraction of the API requests.
+
+The cache should sit between your application code and the Abstract API call:
+
+```
+Inbound request → IP extraction → Cache lookup → (miss) → Abstract API → Cache write → Result
+                                                → (hit) → Result
+```
+
+Use Redis for the cache in production. The implementation pattern from [Advanced docs](https://docs.abstractapi.com/ip-intelligence/advanced) works directly:
+
+```python
+import json
+import redis
+import requests
+
+r = redis.Redis(host="localhost", port=6379, db=0)
+
+def get_ip_data(ip: str, api_key: str) -> dict:
+    cached = r.get(f"ip:{ip}")
+    if cached:
+        return json.loads(cached)
+    
+    try:
+        resp = requests.get(
+            "https://ip-intelligence.abstractapi.com/v1/",
+            params={"api_key": api_key, "ip_address": ip},
+            timeout=2,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            r.setex(f"ip:{ip}", 86400, json.dumps(data))  # 24-hour TTL
+            return data
+    except Exception:
+        pass
+    
+    return {}  # fail open on any error
+```
+
+Set the TTL to 24 hours as a starting point. If your use case requires fresh security flags (for authentication flows where VPN detection matters), use a shorter TTL for security-specific data and a longer TTL for location data. You can cache them separately with different keys and TTLs if needed.
+
+---
+
+## Where to check security flags in the request lifecycle
+
+Security checks are not all equal in urgency. Running `is_vpn`/`is_proxy` on every page load is expensive and unnecessary. The right places to check:
+
+**Always check at:**
+- Account creation: flag anonymous connections before a new account is established
+- Authentication: check if the login IP matches the user's usual location and connection type
+- Payment initiation: any anonymous connection (VPN, proxy, Tor) before a payment is a risk signal
+- Password reset: Tor and proxy IPs requesting resets warrant additional verification
+
+**Check optionally at:**
+- Trial activation: Tor/proxy signals are worth logging for abuse pattern detection
+- API key generation: hosting IPs generating keys may be bots or automation
+
+**Don't check at:**
+- Regular page loads: too expensive, too much noise
+- CDN-cached content: the IP may be the CDN edge node, not the user
+
+The pattern: run the security check once at the event that matters, store the result in the session or user record, and use it downstream without re-calling the API.
+
+```python
+def handle_signup(ip: str, email: str, api_key: str) -> dict:
+    ip_data = get_ip_data(ip, api_key)
+    security = ip_data.get("security", {})
+    
+    risk_flags = {
+        "is_vpn": security.get("is_vpn", False),
+        "is_proxy": security.get("is_proxy", False),
+        "is_tor": security.get("is_tor", False),
+        "is_abuse": security.get("is_abuse", False),
+    }
+    
+    # Store risk flags on the account for downstream use
+    return {
+        "email": email,
+        "signup_ip": ip,
+        "signup_country": ip_data.get("location", {}).get("country_code"),
+        "risk_flags": risk_flags,
+        "requires_review": security.get("is_tor", False) or security.get("is_abuse", False),
+    }
+```
+
+---
+
+## Enriching historical logs
+
+If you're retroactively enriching historical log data with IP intelligence, the volume is typically too large to process synchronously. The API processes one IP per request and has no bulk endpoint, so the pattern is to dedupe, hit the cache, and call the API only for the misses. Process it as a background job:
+
+1. Deduplicate the IP list. Most logs contain many repeats. A 1M-row log file might have 50,000 unique IPs.
+2. Check your cache first. IPs you've already enriched don't need another request.
+3. Loop through cache misses, calling the API once per IP and pacing requests to your plan's RPS limit.
+4. Write results back to the cache and your data store.
+
+```python
+def enrich_log_ips(unique_ips: list[str], api_key: str) -> dict[str, dict]:
+    cache_hits = {}
+    cache_misses = []
+
+    for ip in unique_ips:
+        cached = r.get(f"ip:{ip}")
+        if cached:
+            cache_hits[ip] = json.loads(cached)
+        else:
+            cache_misses.append(ip)
+
+    # Call the API once per cache miss; see Advanced docs for the per-IP loop pattern
+    fresh = enrich_uncached_ips(cache_misses, api_key)
+    
+    return {**cache_hits, **fresh}
+```
+
+For large historical datasets, expect cache miss rates of 40-70% on the first pass (many historical IPs won't be in your cache). On subsequent runs over the same time period, cache hit rates will be much higher.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/ip-intelligence/integration): the core integration pattern
+- [Use cases](https://docs.abstractapi.com/ip-intelligence/use-cases): geolocation, company identification, and security threat detection
+- [Advanced docs](https://docs.abstractapi.com/ip-intelligence/advanced): full caching patterns, processing large IP lists, and plan tier comparison
+- [API reference](https://docs.abstractapi.com/ip-intelligence): full response schema and error codes

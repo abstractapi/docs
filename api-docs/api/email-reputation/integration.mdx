@@ -1,0 +1,114 @@
+---
+title: 'Email Reputation: Integration guide'
+description: 'Add Email Reputation to a real application. Covers the core pass/fail pattern, fail-open error handling, rate limits for batch imports, and B2B vs. consumer routing.'
+---
+
+## Overview
+
+This guide shows you how to add Email Reputation to a signup form, lead import pipeline, or checkout flow. It assumes you haven't integrated the API in code yet, so it starts from the beginning.
+
+The core pattern: collect an email address, call the API, read `email_deliverability.status`, decide what to do next.
+
+---
+
+## A working integration
+
+The example below reads `email_deliverability` (Starter+) and `email_quality` (Professional, or Free for testing) to demonstrate the full pattern. If you're on Starter or Standard, the `email_quality` block won't be returned in production; remove the `is_disposable` and `is_free_email` checks, or upgrade to Professional. The Free tier returns all fields, so this code runs end to end during development.
+
+```python
+import requests
+
+ABSTRACT_API_KEY = "YOUR_API_KEY"
+
+def check_email(email: str) -> dict:
+    try:
+        response = requests.get(
+            "https://emailreputation.abstractapi.com/v1/",
+            params={"api_key": ABSTRACT_API_KEY, "email": email},
+            timeout=2,
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException:
+        # Fail open: if the API is unreachable, let the user through
+        return {"action": "allow", "reason": "api_unavailable"}
+
+    data = response.json()
+    status = data["email_deliverability"]["status"]
+    is_free = data["email_quality"]["is_free_email"]
+    is_disposable = data["email_quality"]["is_disposable"]
+
+    if status == "undeliverable":
+        status_detail = data["email_deliverability"].get("status_detail", "")
+        if status_detail == "mailbox_full":
+            return {"action": "allow", "reason": "mailbox_full"}
+        return {"action": "block", "reason": "undeliverable"}
+
+    if is_disposable:
+        return {"action": "block", "reason": "disposable"}
+
+    if status == "deliverable":
+        signup_type = "consumer" if is_free else "business"
+        return {"action": "allow", "signup_type": signup_type}
+
+    # status == "unknown": fail open
+    return {"action": "allow", "reason": "unknown"}
+```
+
+### What the response looks like
+
+```json
+{
+  "email_address": "sarah@acmecorp.com",
+  "email_deliverability": {
+    "status": "deliverable",
+    "status_detail": "valid_email",
+    "is_format_valid": true,
+    "is_smtp_valid": true,
+    "is_mx_valid": true
+  },
+  "email_quality": {
+    "score": 0.85,
+    "is_free_email": false,
+    "is_disposable": false,
+    "is_role": false
+  }
+}
+```
+
+### The three `status` values
+
+| Value | Meaning | Recommended action |
+|---|---|---|
+| `deliverable` | Address is valid and the mailbox is reachable | Allow |
+| `undeliverable` | Address doesn't exist, is malformed, or the domain rejects mail. If `status_detail` is `mailbox_full`, the address is real; treat it as a soft failure | Block or prompt correction (check `status_detail` first) |
+| `unknown` | SMTP check was inconclusive | Fail open: allow the user through |
+
+`email_deliverability.status` is the primary field your integration logic branches on. The other fields add signal, but this is the primary pass/fail gate.
+
+---
+
+## Three things to get right
+
+### 1. Fail open, not closed
+
+If the Email Reputation API returns an error or times out, let the user proceed. Blocking signups on API errors costs you real users and revenue.
+
+Handle this explicitly in your code. Check the HTTP status code before reading the response body. If you get a non-200 response or a network exception, treat it the same as `unknown` and allow the request through.
+
+### 2. Rate limits when validating in bulk
+
+For real-time signup validation, one request per user is fine. For batch imports or list cleaning, free plans cap at 1 request per second. You'll need to add delays between requests or use the CSV bulk uploader in your dashboard, which handles rate limiting for you and emails you the results when done.
+
+### 3. Route signups by sender and quality signals
+
+For B2B/consumer routing, two fields are useful depending on your plan. On Standard, use `email_sender.organization_type` to distinguish company accounts from individual accounts. On Professional, `email_quality.is_free_email` is `true` for Gmail, Yahoo, Hotmail, and similar consumer providers, which is the most direct B2B/consumer split. Most B2B teams use one of these at signup to segment leads immediately: business addresses route to a sales-qualified pipeline, consumer addresses go to a self-serve onboarding flow.
+
+The Free tier returns all fields for testing, so you can prototype this routing on Free before deciding which paid tier matches your needs.
+
+---
+
+## Related
+
+- [Explore use cases](https://docs.abstractapi.com/email-reputation/use-cases): three patterns teams build with Email Reputation
+- [Advanced docs](https://docs.abstractapi.com/email-reputation/advanced): batch processing, premium fields by tier, and accuracy methodology
+- [API reference](https://docs.abstractapi.com/email-reputation): full response schema and error codes

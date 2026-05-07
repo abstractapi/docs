@@ -1,0 +1,123 @@
+---
+title: 'IP Intelligence: Use cases'
+description: 'Three concrete patterns teams build with IP Intelligence: geolocation and localization, security threat detection, and domain associations for IP reputation analysis.'
+---
+
+## Overview
+
+IP Intelligence returns location data, timezone, currency, security signals, company classification, and reverse-domain associations in a single request. The three patterns below cover the dominant use cases. The highest-value applications tend to be infrastructure, compliance, and security workflows, not just geo-targeting.
+
+---
+
+## 1. Geolocation and localization
+
+Delivering the right experience for every user's location requires more than knowing their country. Currency, timezone, language preference, regional compliance obligations (GDPR, data residency), and content availability rules all depend on accurate location data at the IP level.
+
+### Fields to use
+
+| Field | Signal |
+|---|---|
+| `location.country` | Country name |
+| `location.country_code` | ISO 3166-1 alpha-2 code (the standard format for localization logic) |
+| `location.is_country_eu` | `true` for EU member states (simplifies GDPR jurisdiction checks) |
+| `location.region` | State or province (for regional compliance or content rules) |
+| `location.city` | City (for local content, branch routing, or estimated timezone) |
+| `timezone.name` | IANA timezone name (e.g., `America/New_York`); use for scheduling and display |
+| `timezone.utc_offset` | UTC offset in hours |
+| `currency.iso_code` | ISO 4217 currency code; set the default display currency for the session |
+| `currency.symbol` | Currency symbol |
+
+### The pattern
+
+On session creation, call the API with the user's IP address and store the location result for the duration of the session. Set the currency, timezone, and locale from the response. If `is_country_eu` is `true`, apply GDPR consent flows and data residency rules.
+
+For content availability or export control restrictions, check `country_code` against your jurisdiction blocklist. The IP-level check isn't a substitute for your legal controls, but it provides an automated first layer before the user gets further into a restricted flow.
+
+Cache the result for the session duration. The location of an IP address doesn't change mid-session.
+
+---
+
+## 2. Security and threat detection
+
+Every request to your application comes from somewhere. For most requests, the source doesn't matter. For authentication endpoints, account recovery flows, payment processing, and high-privilege admin actions, the source matters significantly.
+
+Knowing whether an IP belongs to a VPN, proxy, Tor exit node, or known abuse network before processing a sensitive request gives you a decision point that's invisible to the user and very difficult to circumvent without changing the network path entirely.
+
+This is a Professional-tier feature, not included on Starter or Standard. The Free tier includes all fields for testing.
+
+### Fields to use
+
+| Field | Signal |
+|---|---|
+| `security.is_vpn` | VPN service (connection origin is obscured) |
+| `security.is_proxy` | Proxy server (traffic is routed through an intermediary) |
+| `security.is_tor` | Tor exit node (highest anonymity signal) |
+| `security.is_hosting` | Cloud hosting IP (AWS, GCP, Azure, etc.); unusual for legitimate end users |
+| `security.is_relay` | Relay server (e.g., Apple Private Relay) |
+| `security.is_mobile` | Mobile network IP |
+| `security.is_abuse` | IP flagged for abusive behavior |
+
+### The pattern
+
+Security flags are probabilistic, not binary. A VPN IP might show `is_vpn: false` if the VPN provider hasn't been catalogued yet. A legitimate user might browse through a corporate proxy that shows `is_proxy: true`. Don't block on any single flag in isolation.
+
+The right approach is additive risk scoring: combine multiple signals with the context of the action being taken.
+
+```python
+def compute_security_risk(security: dict, action: str) -> str:
+    """Returns 'low', 'medium', or 'high'."""
+    flags = sum([
+        security.get("is_vpn", False),
+        security.get("is_proxy", False),
+        security.get("is_tor", False),
+        security.get("is_abuse", False),
+        security.get("is_hosting", False),
+    ])
+
+    if security.get("is_tor"):
+        return "high"  # Tor is always high-risk for authenticated flows
+
+    if flags >= 2:
+        return "high" if action in ("payment", "account_creation") else "medium"
+
+    if flags == 1:
+        return "medium" if action in ("payment", "account_creation") else "low"
+
+    return "low"
+```
+
+Use `high` risk to trigger additional friction (MFA prompt, CAPTCHA, manual review queue). Use `medium` risk for logging and monitoring. Don't block on `medium` alone, or you'll block too many legitimate users.
+
+For **jurisdiction compliance** (access control based on geographic restrictions), combine `location.country_code` with `security.is_vpn`. A user claiming to be in Germany via VPN is a VPN user, not necessarily a German user. Flag the combination for your compliance team to evaluate.
+
+---
+
+## 3. Domain associations and IP reputation
+
+When evaluating an IP as part of a security review, fraud investigation, or asset inventory, knowing what domains resolve to it gives you context the security flags alone don't provide. A flagged IP that hosts a cluster of unrelated low-quality domains is a stronger signal than the flag in isolation. A previously unknown domain co-hosted with a known-bad one is a lead.
+
+This is a Professional-tier field, not included on Starter or Standard. The Free tier includes all fields for testing.
+
+### Fields to use
+
+| Field | Signal |
+|---|---|
+| `domains.domains` | List of domains whose DNS records resolve to this IP address |
+
+### The pattern
+
+Use `domains.domains` to enrich an IP under review with the other domains that share it. Three common applications:
+
+- **Shared hosting detection**: a long list of unrelated domains usually indicates shared hosting (cheap VPS, shared cPanel, a CDN edge). Treat the IP's reputation as inherited from its worst neighbor, not its best one.
+- **Asset discovery**: when investigating an IP from your own infrastructure, the domain list shows everything else co-hosted there. Useful for catching forgotten test sites, abandoned subdomains, or shadow IT.
+- **Threat enrichment**: when an IP is flagged by `security.is_abuse` or surfaces in a suspicious access pattern, the co-hosted domains often reveal related infrastructure that's part of the same campaign.
+
+`domains.domains` is strongest when combined with the security flags from use case 2. A flagged IP with a list of unrelated low-quality domains is a much stronger signal than either alone. For most inbound traffic IPs (corporate offices, residential ISPs, mobile networks), the field is empty or short, since these IPs rarely host public domains. The signal is strongest in investigation and pipeline contexts, not in real-time inbound checks.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/ip-intelligence/integration): how to add IP Intelligence to your application
+- [Advanced docs](https://docs.abstractapi.com/ip-intelligence/advanced): caching strategy, processing large IP lists, and field comparison by tier
+- [API reference](https://docs.abstractapi.com/ip-intelligence): full response schema

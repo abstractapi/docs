@@ -1,0 +1,160 @@
+---
+title: 'Phone Intelligence: Integration guide'
+description: 'Add Phone Intelligence to your application. Covers the core validation and routing pattern, E.164 formatting, line-type branching, and carrier data caching.'
+---
+
+## Overview
+
+This guide shows you how to integrate Phone Intelligence into a real application. It assumes you haven't sent your first request yet, so it starts from the beginning.
+
+The core pattern: your app collects a phone number, sends a request, reads `phone_validation.is_valid` and `phone_carrier.line_type`, and routes accordingly.
+
+---
+
+## A working integration
+
+```python
+import requests
+
+ABSTRACT_API_KEY = "YOUR_API_KEY"
+
+def check_phone(phone: str) -> dict:
+    try:
+        response = requests.get(
+            "https://phoneintelligence.abstractapi.com/v1/",
+            params={"api_key": ABSTRACT_API_KEY, "phone": phone},
+            timeout=2,
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException:
+        # Fail open: if the API is unreachable, let the user through
+        return {"action": "allow", "reason": "api_unavailable"}
+
+    data = response.json()
+    is_valid = data["phone_validation"]["is_valid"]
+    line_type = data["phone_carrier"]["line_type"]
+
+    if not is_valid:
+        return {"action": "block", "reason": "invalid_number"}
+
+    # Route by line type
+    if line_type == "mobile":
+        return {"action": "allow", "channel": "sms"}
+    elif line_type == "landline":
+        return {"action": "allow", "channel": "voice"}
+    elif line_type == "voip":
+        return {"action": "allow", "channel": "voice", "flag": "voip_review"}
+    else:
+        return {"action": "allow", "channel": "voice"}
+```
+
+### What the response looks like
+
+```json
+{
+  "phone_number": "14152007986",
+  "phone_format": {
+    "international": "+1 415-200-7986",
+    "national": "(415) 200-7986"
+  },
+  "phone_carrier": {
+    "name": "T-mobile USA Inc.",
+    "line_type": "mobile",
+    "mcc": 310,
+    "mnc": 160
+  },
+  "phone_location": {
+    "country_name": "United States",
+    "country_code": "US",
+    "country_prefix": "+1",
+    "region": "California",
+    "city": "San Francisco",
+    "timezone": "America/Los_Angeles"
+  },
+  "phone_messaging": {
+    "sms_domain": "tmomail.net",
+    "sms_email": "4152007986@tmomail.net"
+  },
+  "phone_validation": {
+    "is_valid": true,
+    "line_status": "active",
+    "is_voip": false,
+    "minimum_age": null
+  },
+  "phone_registration": {
+    "name": null,
+    "type": null
+  },
+  "phone_risk": {
+    "risk_level": "low",
+    "is_disposable": false,
+    "is_abuse_detected": false
+  },
+  "phone_breaches": {
+    "total_breaches": null,
+    "date_first_breached": null,
+    "date_last_breached": null,
+    "breached_domains": []
+  }
+}
+```
+
+### Line type routing
+
+| `line_type` | Route to |
+|---|---|
+| `mobile` | SMS messaging |
+| `landline` | Voice calls |
+| `voip` | Voice calls, flag for review |
+| `toll_free` | Voice calls |
+| `personal` | Voice calls |
+| `pager` | Do not message |
+| `unknown` | Voice calls, fail open |
+
+VoIP numbers are not invalid; they're a real line type. Many legitimate users have VoIP numbers. Flag them for review in high-risk contexts (account creation with payment, for example), but don't block them by default.
+
+---
+
+## Three things to get right
+
+### 1. Always use E.164 format
+
+The API expects phone numbers in E.164 format: country code + number, no spaces, no dashes. `14152007986` not `415-200-7986` or `(415) 200-7986`.
+
+If you're collecting international numbers, include the country code. If users might omit it, either prompt them to select their country or use the optional `country` parameter to tell the API which country to assume:
+
+```
+https://phoneintelligence.abstractapi.com/v1/
+  ? api_key = YOUR_API_KEY
+  & phone = 4152007986
+  & country = US
+```
+
+Formatting issues are the most common reason a valid number returns unexpected results.
+
+### 2. Route SMS by carrier, not just by line type
+
+For SMS delivery, `phone_messaging.sms_domain` gives you the email-to-SMS gateway for the carrier. This is useful if you send SMS via email gateway rather than a dedicated SMS provider:
+
+```json
+"phone_messaging": {
+  "sms_domain": "tmomail.net",
+  "sms_email": "4152007986@tmomail.net"
+}
+```
+
+Not all carriers expose this field, so check for null before using it.
+
+### 3. Cache carrier data
+
+Carrier data changes rarely. Once you've looked up a number's carrier and line type, that result is stable for weeks or months. Cache the carrier response aggressively. It's safe to reuse for 30+ days for line type and carrier name.
+
+Don't cache `phone_validation.line_status`. A number's active/inactive status can change, and you want fresh data for that signal.
+
+---
+
+## Related
+
+- [Explore use cases](https://docs.abstractapi.com/phone-intelligence/use-cases): identity verification, carrier routing, and fraud prevention patterns
+- [Advanced docs](https://docs.abstractapi.com/phone-intelligence/advanced): batch validation, premium fields by tier, international coverage
+- [API reference](https://docs.abstractapi.com/phone-intelligence): full response schema and error codes

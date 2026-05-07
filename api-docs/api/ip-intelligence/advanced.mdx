@@ -1,0 +1,149 @@
+---
+title: 'IP Intelligence: Advanced docs'
+description: 'Caching strategy, processing large IP lists, and field comparison across plan tiers for IP Intelligence.'
+---
+
+## Overview
+
+IP-to-location data is highly cacheable: a given IP address typically points to the same location across a 24-hour window. This page covers how to use that to your advantage, how to process large lists of IP addresses, and what each plan tier unlocks.
+
+---
+
+## Caching strategy
+
+IP-to-location data is highly cacheable. Abstract's database is updated continuously, but a given IP address typically points to the same location across a 24-hour window, so caching aggressively for short periods is necessary for high-traffic applications.
+
+### Recommended TTL
+
+Use a 24-hour TTL across all cached fields. Abstract's database refreshes continuously and IP assignments can shift day to day, so anything longer risks serving stale routing or access-control decisions. Anything shorter cuts into the cache benefit without meaningful accuracy gain.
+
+For a request pipeline handling 10,000 requests / hour with a 10% unique IP rate, a 24-hour cache cuts your API requests by ~90% while keeping data fresh.
+
+### Implementation pattern
+
+Use Redis or any key-value store with TTL support:
+
+```python
+import json
+import redis
+import requests
+
+r = redis.Redis(host="localhost", port=6379, db=0)
+
+def get_ip_intelligence(ip: str, api_key: str, ttl_seconds: int = 86400) -> dict:
+    cache_key = f"ip:{ip}"
+    cached = r.get(cache_key)
+    
+    if cached:
+        return json.loads(cached)
+    
+    response = requests.get(
+        "https://ip-intelligence.abstractapi.com/v1/",
+        params={"api_key": api_key, "ip_address": ip},
+        timeout=2,
+    )
+    
+    if response.status_code == 200:
+        data = response.json()
+        r.setex(cache_key, ttl_seconds, json.dumps(data))
+        return data
+    
+    return {}
+```
+
+---
+
+## Processing large IP lists
+
+For log analysis, security audits, or data enrichment pipelines, you'll need to process large lists of IP addresses. The API processes one IP per request. There is no bulk endpoint, so the pattern is to loop through your list and call the API once per IP, with controlled concurrency to stay within your plan's RPS limit.
+
+```python
+import requests
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+def enrich_ip_list(
+    ips: list[str],
+    api_key: str,
+    max_workers: int = 3,
+    rate_limit_delay: float = 0.4,
+) -> dict[str, dict]:
+    results = {}
+
+    def fetch(ip: str) -> tuple[str, dict]:
+        try:
+            r = requests.get(
+                "https://ip-intelligence.abstractapi.com/v1/",
+                params={"api_key": api_key, "ip_address": ip},
+                timeout=3,
+            )
+            return ip, r.json() if r.status_code == 200 else {}
+        except Exception:
+            return ip, {}
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(fetch, ip): ip for ip in ips}
+        for future in as_completed(futures):
+            ip, data = future.result()
+            results[ip] = data
+            time.sleep(rate_limit_delay)
+
+    return results
+```
+
+Adjust `max_workers` and `rate_limit_delay` based on your plan's requests per second limit. For free plans (1 RPS), set `max_workers=1` and `rate_limit_delay=1.0`.
+
+**Deduplicate before processing.** Log files typically contain many repeated IP addresses. Deduplicate the list first, enrich each unique IP once, then apply the results back to the full log. This alone usually reduces request volume by 60-80%.
+
+---
+
+## Field comparison by plan tier
+
+The Free tier includes all fields below for testing. Production paid tiers gate fields as described.
+
+### Starter: Location and ASN
+
+| Category | Fields |
+|---|---|
+| Location | `city`, `region`, `region_iso_code`, `country`, `country_code`, `is_country_eu`, `continent`, `continent_code`, `longitude`, `latitude`, `postal_code` |
+| Timezone | `name`, `abbreviation`, `utc_offset`, `local_time`, `is_dst` |
+| Currency | `name`, `iso_code`, `symbol` |
+| Flag | `flag`, `unicode`, `png`, `svg` |
+| ASN | `asn`, `name`, `domain`, `type` |
+
+### Standard: Company identification
+
+Standard adds the `company` object:
+
+| Field | Description |
+|---|---|
+| `company.name` | Company name associated with the IP address |
+| `company.domain` | Company's domain |
+| `company.type` | `isp`, `hosting`, `business`, `education` |
+
+The signal is most useful when `company.type` is `business` or `education`, indicating a corporate or institutional network rather than a consumer ISP (`isp`) or cloud hosting provider (`hosting`). For typical inbound visitors on residential ISPs, `company.*` returns the ISP name rather than an end-user company.
+
+### Professional: Security and domain associations
+
+Professional adds the `security` object and reverse IP lookup data:
+
+| Field | Description |
+|---|---|
+| `security.is_vpn` | IP belongs to a VPN service |
+| `security.is_proxy` | IP belongs to a proxy server |
+| `security.is_tor` | IP is a Tor exit node |
+| `security.is_hosting` | IP belongs to a cloud hosting provider (AWS, GCP, Azure, etc.) |
+| `security.is_relay` | IP belongs to a relay service (e.g., Apple Private Relay) |
+| `security.is_mobile` | IP is on a mobile network |
+| `security.is_abuse` | IP flagged for abusive behavior |
+| `domains.domains` | List of domains whose DNS records resolve to the IP address |
+
+This is the tier for fraud prevention, authentication risk scoring, and threat intelligence workflows.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/ip-intelligence/integration): adding IP Intelligence to your application
+- [Use cases](https://docs.abstractapi.com/ip-intelligence/use-cases): geolocation, company identification, and security threat detection
+- [API reference](https://docs.abstractapi.com/ip-intelligence): full request and response reference

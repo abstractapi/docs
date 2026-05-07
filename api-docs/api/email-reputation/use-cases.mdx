@@ -1,0 +1,87 @@
+---
+title: 'Email Reputation: Use cases'
+description: 'Three concrete patterns teams build with Email Reputation: deliverability verification at entry, lead scoring and routing, and fraud detection.'
+---
+
+## Overview
+
+Email Reputation returns a layered view of every email address: deliverability status, quality signals, sender identity, domain intelligence, risk flags, and breach history. The three patterns below cover the most common ways teams use those signals in production.
+
+---
+
+## 1. Deliverability verification at point of entry
+
+Validate addresses when you collect them (at signup forms, lead import, or checkout) before they enter your database or email queue.
+
+A bounce rate above 2% hurts your sender reputation. A list padded with undeliverable addresses inflates your CRM and ESP costs. A signup form that accepts anything is an open door for throwaway accounts.
+
+### Fields to use
+
+| Field | Signal | Tier |
+|---|---|---|
+| `email_deliverability.status` | Primary pass/fail gate: `deliverable`, `undeliverable`, `unknown` | Starter+ |
+| `email_deliverability.status_detail` | Explains the reason behind the status. Check this before blocking an `undeliverable` result: `mailbox_full` means the address is real but the inbox is temporarily over capacity | Starter+ |
+| `email_deliverability.is_format_valid` | Catches typos before you hit the network | Starter+ |
+| `email_deliverability.is_smtp_valid` | Confirms the mailbox actually exists | Starter+ |
+| `email_deliverability.is_mx_valid` | Confirms the domain accepts mail | Starter+ |
+| `email_quality.is_disposable` | Flags throwaway addresses from Mailinator, Yopmail, etc. | Professional |
+
+### The pattern
+
+Call the API at the moment of entry. Before acting on an `undeliverable` result, check `status_detail`: a `mailbox_full` value means the address is real; the inbox is temporarily over capacity. Treat that as a soft failure, not a permanent block: allow the user through, or queue for retry. For all other `undeliverable` results, block. Block on `is_disposable` as well. Pass through on `deliverable` and `unknown`, always failing open when the result is ambiguous. Return a clear error when you block so the user can correct their address: "That email address doesn't look right. Please check for typos."
+
+---
+
+## 2. Lead scoring and routing
+
+Not every email address that passes deliverability validation is equally valuable. `is_free_email`, quality scores, and domain intelligence let you prioritize leads before they reach your sales team.
+
+A marketing lead at `sarah@gmail.com` and one at `sarah@acmecorp.com` both have deliverable addresses. But they're different buyers. Routing them the same way means your sales team wastes time on low-intent consumer signups, and high-value enterprise leads wait longer than they should.
+
+### Fields to use
+
+| Field | Signal | Tier |
+|---|---|---|
+| `email_sender.organization_name` | Company name tied to the email address | Standard+ |
+| `email_sender.organization_type` | Distinguishes company accounts from individual accounts | Standard+ |
+| `email_domain.domain_age` | Newer domains carry more risk; established domains signal legitimacy | Standard+ |
+| `email_quality.is_free_email` | `true` for Gmail, Yahoo, and consumer providers (the primary B2B/consumer split) | Professional |
+| `email_quality.score` | 0.01–0.99 confidence score for overall email quality | Professional |
+| `email_quality.is_role` | `true` for `info@`, `sales@`, `support@`; often lower intent | Professional |
+
+### The pattern
+
+At signup, set `is_free_email` as the first routing fork. Business email addresses go to your sales-qualified pipeline. Consumer addresses go to self-serve onboarding. From there, use `email_quality.score` and domain intelligence to further prioritize: high-scoring business addresses from established domains get fast-tracked; low-scoring addresses or very new domains get flagged for review.
+
+---
+
+## 3. Fraud detection and risk assessment
+
+Fraud doesn't always look like fraud at the format level. Disposable domains, compromised accounts, spam trap patterns, and high-risk email providers all pass basic validation. Catching them requires signals that go beyond deliverability.
+
+The fields below go beyond format and deliverability to surface the signals that most fraud patterns leave behind. They require Professional; the Free tier returns them all for testing.
+
+### Fields to use
+
+| Field | Signal | Tier |
+|---|---|---|
+| `email_quality.is_disposable` | Throwaway addresses from known disposable providers | Professional |
+| `email_quality.is_username_suspicious` | Auto-generated or randomized usernames | Professional |
+| `email_risk.address_risk_status` | Risk level of the address: `low`, `medium`, `high` | Professional |
+| `email_risk.domain_risk_status` | Risk level of the domain: `low`, `medium`, `high` | Professional |
+| `email_quality.is_dmarc_enforced` | Domain enforces DMARC; signals a legitimate, established sending setup | Professional |
+| `email_quality.minimum_age` | Estimated age of the address in days; very new addresses carry more risk | Professional |
+| `email_breaches.total_breaches` | Number of known data breaches involving this email | Professional |
+| `email_breaches.breached_domains` | List of breach sources, useful for assessing account takeover risk | Professional |
+
+### The pattern
+
+Build a risk scoring function that aggregates these signals into a single score or tier. A `high` address risk status, combined with a suspicious username and zero days of minimum age, is a strong fraud signal even if the address is technically deliverable. For high-value transactions (account creation with payment, enterprise trial activation), use breach data to flag accounts that have appeared in known credential dumps.
+
+---
+
+## Related
+
+- [Integration guide](https://docs.abstractapi.com/email-reputation/integration): how to add Email Reputation to your signup flow
+- [Advanced docs](https://docs.abstractapi.com/email-reputation/advanced): batch processing, premium fields by tier, rate limit optimization
+- [API reference](https://docs.abstractapi.com/email-reputation): full response schema
