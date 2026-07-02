@@ -23,6 +23,7 @@ This was a successful request, and all available details about that email were r
 ```json
 {
   "email_address": "benjamin.richard@abstractapi.com",
+  "suggested_correction": null,
   "email_deliverability": {
     "status": "deliverable",
     "status_detail": "valid_email",
@@ -153,6 +154,12 @@ The API response is returned in a universal and lightweight [JSON format](https:
 
 <ResponseField name="email_address" type="String">
   The email address you submitted for analysis.
+</ResponseField>
+
+<ResponseField name="suggested_correction" type="String or Null">
+  If a typo has been detected, this returns a suggestion of the correct email
+  (e.g., `johnsmith@gmial.com` => `johnsmith@gmail.com`). If no typo is detected,
+  this is `null`.
 </ResponseField>
 
 <ResponseField name="email_deliverability.status" type="String">
@@ -324,6 +331,7 @@ The request was valid and successful, and so it returns the following:
 ```json
 {
   "email_address": "johnsmith",
+  "suggested_correction": null,
   "email_deliverability": {
     "status": "undeliverable",
     "status_detail": "invalid_format",
