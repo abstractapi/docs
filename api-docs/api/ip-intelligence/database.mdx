@@ -1,0 +1,274 @@
+---
+title: 'IP database downloads'
+icon: 'database'
+description: "Abstract's IP data as a downloadable database. Covers the three available databases, both delivery formats, the record schema, refresh cadence, and how database answers differ from the API."
+---
+
+## Overview
+
+Some workloads cannot call an API for every address. If you are enriching billions of rows in a warehouse, running inside an air-gapped network, or working against a latency budget that leaves no room for a network round trip, a per-request lookup is the wrong shape.
+
+For those cases you can license Abstract's IP data as a database and run lookups locally, from a file you host yourself, with no rate limits and no per-request latency. How the file relates to the API is covered in [How the database compares to the API](#how-the-database-compares-to-the-api) below.
+
+[Talk to our sales team](https://calendly.com/d/crbk-jpf-9pv?a4=IP%20Geolocation%20and%20Intelligence&utm_source=documentation&utm_campaign=database_downloads) to get access to the database downloads.
+
+---
+
+## Available databases
+
+Three databases are available. You can license them individually or together.
+
+| Database | What it answers |
+|---|---|
+| IP to Geolocation | Where a network is: continent, country, region, city, postal code, coordinates, and time zone |
+| IP to ASN | Which autonomous system announces a network, and who operates it |
+| IP to Security | Whether a network is a VPN, proxy, Tor node, hosting provider, relay, mobile network, or a known abuse source |
+
+Each database is a standalone file with its own schema. Licensing geolocation does not include ASN or security data.
+
+---
+
+## Delivery formats
+
+Every database ships in two formats. Your license covers the database, so you can take either format, or both.
+
+| Format | Archive | Use it when |
+|---|---|---|
+| MMDB | `abstract-ip-<database>.tar.gz` | You need fast lookups by IP address in a running application. The format resolves an address to its network in a single indexed read. |
+| CSV | `abstract-ip-<database>-csv.tar.gz` | You are loading into a warehouse, a relational database, or a data pipeline, or you want to inspect the data directly. |
+
+Each archive contains three files: the database itself, a SHA-256 checksum of it, and a README describing that database.
+
+Builds are reproducible. Two builds from identical inputs are byte-identical, so if you re-download an unchanged build you get the same checksum.
+
+---
+
+## Downloading the database
+
+Once your organization is entitled to a database, you request a download link from the API and then fetch the archive from that link.
+
+```
+GET https://api.abstractapi.com/v1/database/download/
+  ? api_key  = YOUR_API_KEY
+  & database = ip-geolocation   (optional)
+  & format   = mmdb             (optional)
+```
+
+<ParamField query="api_key" type="String" required>
+  An API key belonging to the organization that licensed the database. This is the same key you use for your IP Intelligence requests.
+</ParamField>
+
+<ParamField query="database" type="String">
+  Which database to download: `ip-geolocation`, `ip-asn`, or `ip-security`. Defaults to `ip-geolocation`. Your organization must be entitled to the database you ask for.
+</ParamField>
+
+<ParamField query="format" type="String">
+  Which delivery format to download: `mmdb` or `csv`. Defaults to `mmdb`. Your license covers every format of a database you are entitled to, so this parameter is free to change.
+</ParamField>
+
+### Response
+
+A successful request returns a temporary download link, not the file itself:
+
+```json
+{
+  "url": "https://<storage-host>/abstract-ip-geolocation.tar.gz?X-Amz-Algorithm=...",
+  "expires_in": 604800
+}
+```
+
+<ResponseField name="url" type="String">
+  A time-limited link to the current build of the database. Treat it as a secret: anyone holding it can download your file until it expires.
+</ResponseField>
+
+<ResponseField name="expires_in" type="Integer">
+  How long the link stays valid, in seconds. The maximum is 604800, which is 7 days.
+</ResponseField>
+
+Request a fresh link each time you pull a build rather than storing one. Links expire on their own, which is what keeps an old link from outliving your agreement.
+
+### A complete download
+
+```sh
+# 1. Ask for a link
+curl "https://api.abstractapi.com/v1/database/download/?api_key=YOUR_API_KEY&database=ip-geolocation&format=mmdb"
+
+# 2. Fetch the archive from the "url" field of that response
+curl -o abstract-ip-geolocation.tar.gz "PRESIGNED_URL"
+
+# 3. Extract and verify (explained in the next section)
+tar -xzf abstract-ip-geolocation.tar.gz
+shasum -a 256 -c abstract-ip-geolocation.mmdb.sha256
+```
+
+### Response and error codes
+
+| Code | Type | Details |
+| --- | --- | --- |
+| 200 | OK | The link was issued. |
+| 400 | Bad request | The `api_key` parameter is missing. |
+| 403 | Forbidden | The key is not entitled to download this database. The same response covers an unknown, disabled, or revoked key, an organization without an active entitlement, and a database or format you did not license. |
+| 503 | Service unavailable | Downloads are temporarily unavailable. Retry, and contact support if it persists. |
+
+---
+
+## Verifying your download
+
+These files are large, and a download that is truncated or corrupted in transit will still open and still return answers, just wrong ones for part of the address space. The checksum separates a broken download from a genuine data question, before you spend time debugging the wrong thing.
+
+Each archive ships a `.sha256` file next to the database. It holds a fingerprint of the exact bytes the build produced. Comparing it against the file you received confirms the two match.
+
+Extract the archive first:
+
+```sh
+tar -xzf abstract-ip-geolocation-csv.tar.gz
+```
+
+Then, from the folder holding both files, run:
+
+```sh
+shasum -a 256 -c abstract-ip-geolocation.csv.sha256
+```
+
+An intact download prints:
+
+```
+abstract-ip-geolocation.csv: OK
+```
+
+Anything else means the file did not arrive as it was built. Download it again and verify once more before you look at the data itself.
+
+---
+
+## Reading the MMDB
+
+The `.mmdb` files use the standard MMDB binary format with a flat, string-valued record per network. Open one with any MMDB reader library for your language and use the reader's generic lookup by IP address:
+
+```python
+import maxminddb
+
+reader = maxminddb.open_database("abstract-ip-geolocation.mmdb")
+reader.get("73.158.0.5")
+# {"city": "San Francisco", "country_code": "US", "latitude": "37.7484", ...}
+```
+
+The record layout is flat key/value. Reader helper classes that expect a nested layout do not apply to these files, so use the generic lookup rather than a typed convenience method.
+
+### Conventions
+
+These hold across every database and both formats:
+
+- **All values are strings**, including `latitude`, `longitude`, `asn`, and the boolean-looking fields (`country_is_eu` and the security flags are `"True"` / `"False"`).
+- **A field with no value is absent** from the MMDB record and **empty** in the CSV row. There are no null sentinels, so check for absence rather than comparing against a placeholder.
+- **Place names are in English.** Localized name variants are not available in this version.
+- **Private, reserved, and multicast ranges are filtered out** at build time. They have no records, so a lookup against one returns nothing rather than a partial answer.
+
+---
+
+## Schema: IP to Geolocation
+
+One record per network block, IPv4 and IPv6. In the CSV, `network` is the first column. In the MMDB it is the key you look up rather than a field inside the record, so a lookup returns the 16 fields listed below.
+
+| Field | Description |
+|---|---|
+| `network` | CIDR block the record applies to |
+| `country` | Country name, in English |
+| `country_code` | ISO 3166-1 alpha-2 country code |
+| `country_is_eu` | Whether the country is an EU member |
+| `continent` | Continent name, in English |
+| `continent_code` | Two-letter continent code |
+| `region` | Region or subdivision name, in English |
+| `region_iso_code` | ISO 3166-2 subdivision code |
+| `city` | City name, in English |
+| `postal_code` | Postal code |
+| `latitude` | Decimal latitude of the location |
+| `longitude` | Decimal longitude of the location |
+| `timezone_name` | IANA time zone name, for example `America/Los_Angeles` |
+| `country_geoname_id` | GeoNames identifier of the country |
+| `continent_geoname_id` | GeoNames identifier of the continent |
+| `region_geoname_id` | GeoNames identifier of the region |
+| `city_geoname_id` | GeoNames identifier of the city |
+
+Country-level fields resolve for effectively every network. The finer a field is, the more often it is absent: not every routed network has a publishable city or postal code, and the GeoNames identifiers are the sparsest fields in the file. Read every field as optional and fall back to the country when the finer ones are missing.
+
+---
+
+## Schema: IP to ASN
+
+One record per routed network block, IPv4 and IPv6, built by Abstract from public BGP routing data.
+
+| Field | Description |
+|---|---|
+| `network` | CIDR block the record applies to |
+| `asn` | Autonomous system number announcing the range |
+| `autonomous_system_organization` | Organization operating the ASN |
+| `asn_country` | Country the ASN is registered in, as an ISO 3166-1 alpha-2 code |
+
+---
+
+## Schema: IP to Security
+
+One record per network carrying at least one flag. A network absent from this database carries none of them.
+
+| Field | Description |
+|---|---|
+| `network` | CIDR block the record applies to |
+| `is_vpn` | The range is used by a VPN service |
+| `is_proxy` | The range is used as a proxy |
+| `is_tor` | The range is part of the Tor network |
+| `is_hosting` | The range belongs to a hosting or cloud provider |
+| `is_relay` | The range is used as a relay service |
+| `is_mobile` | The range belongs to a mobile network |
+| `is_abuse` | The range has been flagged for abusive behavior |
+
+These are the same seven signals the `security` object returns in an IP Intelligence response.
+
+---
+
+## Refresh cadence
+
+| Database | Rebuilt |
+|---|---|
+| IP to Geolocation | Weekly |
+| IP to ASN | Weekly |
+| IP to Security | Daily |
+
+Security data moves fastest, so it rebuilds daily. VPN and proxy ranges change from one day to the next, and a security snapshot ages badly.
+
+Geolocation and ASN change more slowly. In practice builds often land sooner, but weekly is the schedule to design against.
+
+---
+
+## How the database compares to the API
+
+The database and the API are built to answer the same question, and for the overwhelming majority of addresses they return the same answer. Two differences are worth knowing before you choose.
+
+**The database carries static data only.** Fields that IP Intelligence computes at request time are not in the file: currency, country flag assets, and the local time and DST state for the resolved time zone. You get `timezone_name`, and you derive the clock yourself.
+
+**A small share of addresses can differ.** The API consults live sources on some requests that a static file cannot reproduce. Where that happens, the database answers from its own build instead. The share is small, and if you need it quantified for your evaluation, ask our sales team for the current figure.
+
+If your workload needs the runtime-derived fields, or you need the freshest possible answer on individual addresses, use the API. If you need volume, local latency, or offline operation, use the database. You can also run both: the database for bulk enrichment, the API on the request path.
+
+---
+
+## Licensing and redistribution
+
+Each database is licensed under a commercial agreement with Abstract. The agreement sets what you are entitled to: which databases, which formats, and how you may use the data inside your own products and services.
+
+Redistribution outside those terms is not permitted. That covers republishing the data, reselling it, or otherwise making it available to a third party, whether as the original file or as a dataset derived from it.
+
+Using the data without a license, or beyond the terms of yours, breaches Abstract's terms of service and can result in suspended access and legal action. The same terms are restated in the README inside every archive.
+
+If you are not sure whether a particular use is covered, ask our sales team before you build on it.
+
+---
+
+## Getting access
+
+Database downloads are licensed per database under an enterprise agreement, not sold on a self-serve plan. Access is tied to your organization and granted for the databases you license.
+
+Come with the databases you need, the formats you want, and your expected refresh schedule, and you will get pricing and terms on the call.
+
+[Book a call with our sales team](https://calendly.com/d/crbk-jpf-9pv?a4=IP%20Geolocation%20and%20Intelligence&utm_source=documentation&utm_campaign=database_downloads)
+
+You can also select the databases you are interested in from the [Data downloads section](https://app.abstractapi.com/api/ip-intelligence/database-downloads) of your dashboard, which books the same call.
