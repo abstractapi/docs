@@ -24,7 +24,7 @@ All of Abstract's API are versioned. The Phone Intelligence API is currently on 
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's Phone Intelligence API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Intelligence and Email Reputation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's Phone Intelligence API. Note that each of Abstract's API has a unique API key, so you will need different keys to access the Phone Intelligence and Email Reputation APIs, for example. You can send it as a query parameter or in an `Authorization` header: see [Authentication methods](#authentication-methods).
 
 ### Base URL
 
@@ -32,7 +32,30 @@ Your API key is your unique authentication key to be used to access Abstract's P
 https://phoneintelligence.abstractapi.com/v1/
 ```
 
-### Validation endpoint
+## Authentication methods
+
+The Phone Intelligence API supports multiple ways to authenticate your requests. You can use whichever method best fits your application.
+
+### Query parameter (default)
+
+Pass your API key as a query parameter. This is the simplest method and is shown in the Getting Started example above.
+
+```bash
+curl 'https://phoneintelligence.abstractapi.com/v1/?api_key=YOUR_UNIQUE_API_KEY&phone=14154582468'
+```
+
+### Bearer token header
+
+Instead of passing `api_key` as a query parameter, you can send it in the `Authorization` header as a Bearer token. This keeps your API key out of URLs and server logs.
+
+```bash
+curl -X GET 'https://phoneintelligence.abstractapi.com/v1/?phone=14154582468' \
+  -H 'Authorization: Bearer YOUR_UNIQUE_API_KEY'
+```
+
+When using header-based authentication, omit `api_key` from the query string. Only the `phone` parameter is needed.
+
+## Validation endpoint
 
 Abstract's Phone Intelligence API simply requires your unique API key and the phone number you'd like to check:
 
@@ -41,8 +64,6 @@ https://phoneintelligence.abstractapi.com/v1/
 ? api_key = YOUR_UNIQUE_API_KEY
 & phone = 14154582468
 ```
-
-This was a successful request, so the valid phone number and details associated with it are returned below:
 
 <ResponseExample>
 
@@ -102,7 +123,34 @@ This was a successful request, so the valid phone number and details associated 
 ```
 </ResponseExample>
 
-### Request parameters
+## POST method
+
+In addition to GET requests, you can send POST requests to the Phone Intelligence API. This is useful when you prefer to send parameters in the request body rather than the URL.
+
+### POST with form-encoded data
+
+Send both `api_key` and `phone` as form-encoded fields in the request body:
+
+```bash
+curl -X POST 'https://phoneintelligence.abstractapi.com/v1/' \
+  -d 'phone=14154582468' \
+  -d 'api_key=YOUR_UNIQUE_API_KEY'
+```
+
+### POST with Bearer token and JSON body
+
+Authenticate via the `Authorization` header and send `phone` in a JSON request body:
+
+```bash
+curl -X POST 'https://phoneintelligence.abstractapi.com/v1/' \
+  -H 'Authorization: Bearer YOUR_UNIQUE_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{ "phone": "14154582468" }'
+```
+
+When using the Bearer token with POST, the body only needs to contain the `phone` field, plus `country` if you use it. Send the `Content-Type: application/json` header with a JSON body, otherwise the body is read as form data and `phone` is not detected.
+
+## Request parameters
 
 <ParamField query="api_key" type="String" required>
   Your unique API key. Note that each user has unique API keys _for each of
@@ -118,7 +166,7 @@ This was a successful request, so the valid phone number and details associated 
   The country's ISO code. Add this parameter to indicate the phone number's country, and the API will append the corresponding country code to its analysis. For instance, add country=US to indicate that the phone number is from the United States.
 </ParamField>
 
-### Response parameters
+## Response parameters
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
 
