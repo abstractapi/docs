@@ -16,8 +16,6 @@ https://emailreputation.abstractapi.com/v1/
 & email = johnsmith@gmail.com
 ```
 
-This was a successful request, and all available details about that email were returned:
-
 <ResponseExample>
 
 ```json
@@ -87,18 +85,6 @@ This was a successful request, and all available details about that email were r
 
 </ResponseExample>
 
-### Request parameters
-
-<ParamField query="api_key" type="string" required>
-  Your unique API key. Note that each user has unique API keys _for each of
-  Abstract's APIs_, so your Email Validation API key will not work for your IP
-  Geolocation API, for example.
-</ParamField>
-
-<ParamField query="email" type="String" required>
-  The email address to validate.
-</ParamField>
-
 ## Authentication Methods
 
 The Email Reputation API supports multiple ways to authenticate your requests. You can use whichever method best fits your application.
@@ -143,12 +129,25 @@ Authenticate via the `Authorization` header and send `email` in a JSON request b
 ```bash
 curl -X POST 'https://emailreputation.abstractapi.com/v1/' \
   -H 'Authorization: Bearer YOUR_UNIQUE_API_KEY' \
+  -H 'Content-Type: application/json' \
   -d '{ "email": "johnsmith@gmail.com" }'
 ```
 
-When using the Bearer token with POST, the body only needs to contain the `email` field.
+When using the Bearer token with POST, the body only needs to contain the `email` field. Send the `Content-Type: application/json` header with a JSON body, otherwise the body is read as form data and `email` is not detected.
 
-### Response parameters
+## Request parameters
+
+<ParamField query="api_key" type="string" required>
+  Your unique API key. Note that each user has unique API keys _for each of
+  Abstract's APIs_, so your Email Validation API key will not work for your IP
+  Geolocation API, for example.
+</ParamField>
+
+<ParamField query="email" type="String" required>
+  The email address to validate.
+</ParamField>
+
+## Response parameters
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
 

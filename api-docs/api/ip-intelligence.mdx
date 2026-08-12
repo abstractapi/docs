@@ -24,7 +24,7 @@ All of Abstract's APIs are versioned. The IP Intelligence API is currently on Ve
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's IP Intelligence API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IP Intelligence and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract's IP Intelligence API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IP Intelligence and Email Validation APIs, for example. You can send it as a query parameter or in an `Authorization` header: see [Authentication methods](#authentication-methods).
 
 ### Base URL
 
@@ -32,7 +32,30 @@ Your API key is your unique authentication key to be used to access Abstract's I
 https://ip-intelligence.abstractapi.com/v1/
 ```
 
-### Validation endpoint
+## Authentication methods
+
+The IP Intelligence API supports multiple ways to authenticate your requests. You can use whichever method best fits your application.
+
+### Query parameter (default)
+
+Pass your API key as a query parameter. This is the simplest method and is shown in the Getting Started example above.
+
+```bash
+curl 'https://ip-intelligence.abstractapi.com/v1/?api_key=YOUR_UNIQUE_API_KEY&ip_address=166.171.248.255'
+```
+
+### Bearer token header
+
+Instead of passing `api_key` as a query parameter, you can send it in the `Authorization` header as a Bearer token. This keeps your API key out of URLs and server logs.
+
+```bash
+curl -X GET 'https://ip-intelligence.abstractapi.com/v1/?ip_address=166.171.248.255' \
+  -H 'Authorization: Bearer YOUR_UNIQUE_API_KEY'
+```
+
+When using header-based authentication, omit `api_key` from the query string. Only the `ip_address` parameter is needed.
+
+## Validation endpoint
 
 Abstract's IP Intelligence API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
 
@@ -110,7 +133,34 @@ https://ip-intelligence.abstractapi.com/v1/
 
 </ResponseExample>
 
-### Request parameters
+## POST method
+
+In addition to GET requests, you can send POST requests to the IP Intelligence API. This is useful when you prefer to send parameters in the request body rather than the URL.
+
+### POST with form-encoded data
+
+Send both `api_key` and `ip_address` as form-encoded fields in the request body:
+
+```bash
+curl -X POST 'https://ip-intelligence.abstractapi.com/v1/' \
+  -d 'ip_address=166.171.248.255' \
+  -d 'api_key=YOUR_UNIQUE_API_KEY'
+```
+
+### POST with Bearer token and JSON body
+
+Authenticate via the `Authorization` header and send `ip_address` in a JSON request body:
+
+```bash
+curl -X POST 'https://ip-intelligence.abstractapi.com/v1/' \
+  -H 'Authorization: Bearer YOUR_UNIQUE_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{ "ip_address": "166.171.248.255" }'
+```
+
+When using the Bearer token with POST, the body only needs to contain the `ip_address` field. Send the `Content-Type: application/json` header with a JSON body, otherwise the body is read as form data and `ip_address` is not detected.
+
+## Request parameters
 
 <ParamField query="api_key" type="String" required>
   Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your IP Intelligence API key will not work for your Email Validation API, for example.
@@ -124,9 +174,7 @@ https://ip-intelligence.abstractapi.com/v1/
   You can chose to only receive a few fields from the JSON response. To do so, you can include a fields value in the query parameters with a comma separated list of the top-level keys you want to be returned. For example, adding ?fields=city will return only the city in the JSON response.
 </ParamField>
 
-This was a successful request, so the IP address and details associated with it are returned below:
-
-### Response parameters
+## Response parameters
 
 The API response is returned in a universal and lightweight [JSON format](https://www.json.org/json-en.html).
 
