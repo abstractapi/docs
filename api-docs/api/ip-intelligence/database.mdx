@@ -205,10 +205,9 @@ These hold across every database and both formats:
 
 - **All values are strings**, including `latitude`, `longitude`, and `asn`.
 - **A field with no value is absent** from the MMDB record and **empty** in the CSV row. There are no null sentinels, so check for absence rather than comparing against a placeholder.
-- **In the MMDB, the security flags only ever appear as `"True"`.** A false flag is absent from the record rather than set to `"False"`, so testing `record.get("is_vpn") == "False"` never matches — test for presence instead. The security CSV is different: every row carries all seven flag columns with an explicit `"True"` or `"False"`, and a non-empty `"False"` is truthy in most languages, so compare the value rather than testing the column for emptiness. In the geolocation database, `country_is_eu` likewise carries a literal `"False"`.
+- **In the MMDB, the security flags only ever appear as `"True"`.** A false flag is absent from the record rather than set to `"False"`, so testing `record.get("is_vpn") == "False"` never matches. Test for presence instead. The security CSV is different: every row carries all seven flag columns with an explicit `"True"` or `"False"`, and a non-empty `"False"` is truthy in most languages, so compare the value rather than testing the column for emptiness. In the geolocation database, `country_is_eu` likewise carries a literal `"False"`.
 - **Place names are in English.** Localized name variants are not available in this version.
 - **Private, reserved, and multicast ranges are filtered out** at build time. A lookup against one returns nothing rather than a partial answer.
-- **A small number of rows carry only a `network`** and no other value. Treat a record with no usable fields the same as no record at all.
 
 ## Schema: IP to Geolocation
 
@@ -236,7 +235,7 @@ One record per network block, IPv4 and IPv6. The rows below are in the order the
 
 Country-level fields resolve for effectively every network. Everything finer is optional: not every routed network has a publishable region, city, or postal code. Read every field as optional and fall back to the country when the finer ones are missing.
 
-`region_iso_code` is not uniform across the file. Most values carry the country prefix (`US-CA`), the rest are bare (`CA`). Normalize on your side before you key anything on it.
+`region_iso_code` carries the full ISO 3166-2 code, country prefix included (`US-CA`), on every row that has one.
 
 ## Schema: IP to ASN
 
@@ -294,7 +293,7 @@ The database and the API are built to answer the same question, and for the over
 | `asn.asn` | `asn` (IP to ASN) |
 | not returned | `asn_country` (IP to ASN) |
 
-`region_iso_code` also differs in format, not just in name. The database mostly returns the prefixed form (`US-CA`), while the API returns the bare subdivision (`CA`). Normalize before joining on it.
+`region_iso_code` also differs in format, not just in name. The database returns the full ISO 3166-2 code (`US-CA`), while the API returns the bare subdivision (`CA`). Strip the prefix before joining on it.
 
 **A small share of addresses can differ.** The API consults live sources on some requests that a static file cannot reproduce. Where that happens, the database answers from its own build instead. The share is small, and if you need it quantified for your evaluation, ask our sales team for the current figure.
 
