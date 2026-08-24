@@ -52,8 +52,8 @@ Plan disk and load time against the extracted size, not the archive.
 | IP to Geolocation | CSV | ~80 MB | ~850 MB | ~6.7M |
 | IP to ASN | MMDB | ~9 MB | ~17 MB | ~1.4M |
 | IP to ASN | CSV | ~10 MB | ~70 MB | ~1.4M |
-| IP to Security | MMDB | ~31 MB | ~66 MB | ~2.7M |
-| IP to Security | CSV | ~9 MB | ~150 MB | ~2.7M |
+| IP to Security | MMDB | ~33 MB | ~76 MB | ~3.0M |
+| IP to Security | CSV | ~9 MB | ~150 MB | ~3.0M |
 
 The `.sha256` inside your archive identifies the exact build you received.
 
@@ -175,11 +175,12 @@ import maxminddb
 
 reader = maxminddb.open_database("abstract-ip-geolocation.mmdb")
 reader.get("73.158.0.5")
-# {'city': 'Berkeley', 'country': 'United States', 'country_code': 'US',
-#  'country_is_eu': 'False', 'continent': 'North America', 'continent_code': 'NA',
-#  'region': 'California', 'region_iso_code': 'US-CA', 'postal_code': '94703',
-#  'latitude': '37.8922', 'longitude': '-122.2708',
-#  'timezone_name': 'America/Los_Angeles', 'city_geoname_id': '5327684'}
+# {'country': 'United States', 'country_code': 'US', 'country_is_eu': 'False',
+#  'continent': 'North America', 'continent_code': 'NA',
+#  'region': 'California', 'region_iso_code': 'US-CA',
+#  'city': 'Berkeley', 'city_geoname_id': '5327684', 'postal_code': '94707',
+#  'latitude': '37.8922', 'longitude': '-122.2729',
+#  'timezone_name': 'America/Los_Angeles'}
 ```
 
 A record carries only the fields that have a value, so the number of keys varies by address. The lookup above returns 13 of the 16; a lookup on an address with no city or postal code returns fewer.
@@ -192,7 +193,7 @@ The CSV carries the same data with one header row and one row per network:
 
 ```
 network,country,country_code,country_geoname_id,country_is_eu,continent,continent_code,continent_geoname_id,region,region_iso_code,region_geoname_id,city,city_geoname_id,postal_code,latitude,longitude,timezone_name
-1.0.1.0/24,China,CN,,False,Asia,AS,,,,,,1814991,,34.7732,113.7220,Asia/Shanghai
+1.0.1.0/24,China,CN,1814991,False,Asia,AS,,,,,,,,34.7732,113.7220,Asia/Shanghai
 1.0.112.0/20,Japan,JP,,False,Asia,AS,,Shimane,JP-32,,Matsue,1857550,690-0801,35.4785,133.0489,Asia/Tokyo
 ```
 
@@ -204,7 +205,7 @@ These hold across every database and both formats:
 
 - **All values are strings**, including `latitude`, `longitude`, and `asn`.
 - **A field with no value is absent** from the MMDB record and **empty** in the CSV row. There are no null sentinels, so check for absence rather than comparing against a placeholder.
-- **The security flags only ever appear as `"True"`.** A false flag is absent from the MMDB record rather than set to `"False"`, so testing `record.get("is_vpn") == "False"` never matches. Test for presence instead. In the CSV the column is present but empty, and `country_is_eu` is the one field that does carry a literal `"False"`.
+- **In the MMDB, the security flags only ever appear as `"True"`.** A false flag is absent from the record rather than set to `"False"`, so testing `record.get("is_vpn") == "False"` never matches — test for presence instead. The security CSV is different: every row carries all seven flag columns with an explicit `"True"` or `"False"`, and a non-empty `"False"` is truthy in most languages, so compare the value rather than testing the column for emptiness. In the geolocation database, `country_is_eu` likewise carries a literal `"False"`.
 - **Place names are in English.** Localized name variants are not available in this version.
 - **Private, reserved, and multicast ranges are filtered out** at build time. A lookup against one returns nothing rather than a partial answer.
 - **A small number of rows carry only a `network`** and no other value. Treat a record with no usable fields the same as no record at all.
@@ -263,7 +264,7 @@ One record per network carrying at least one flag. A network absent from this da
 | `is_mobile` | The range belongs to a mobile network |
 | `is_abuse` | The range has been flagged for abusive behavior |
 
-These are the same seven signals the `security` object returns in an IP Intelligence response. Unlike the API, which returns every flag as a boolean, the database carries a flag only when it is true. In the MMDB a record holds just the flags that apply, so a network flagged only as hosting returns one key, not seven.
+These are the same seven signals the `security` object returns in an IP Intelligence response. The two formats encode a false flag differently: the MMDB record holds just the flags that apply, so a network flagged only as hosting returns one key, not seven, while the CSV carries all seven columns on every row with an explicit `"True"` or `"False"`.
 
 ## Refresh cadence
 
