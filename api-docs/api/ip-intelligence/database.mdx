@@ -1,7 +1,7 @@
 ---
 title: 'IP database downloads'
 icon: 'database'
-description: "Abstract's IP data as a downloadable database. Covers the three available databases, both delivery formats, the record schema, refresh cadence, and how database answers differ from the API."
+description: "Abstract's IP data as a downloadable database. Covers the three available databases, both delivery formats, nested CIDRs and longest-prefix match, the record schema, refresh cadence, and how database answers differ from the API."
 ---
 
 ## Overview
@@ -28,7 +28,7 @@ Each database is a standalone file with its own schema. Licensing geolocation do
 
 Every database ships in two formats. Your license covers the database, so you can take either format, or both.
 
-**MMDB** suits fast lookups by IP address in a running application: the format resolves an address to its network in a single indexed read. **CSV** suits loading into a warehouse, a relational database, or a data pipeline, and inspecting the data directly.
+**MMDB** suits fast lookups by IP address in a running application: the format resolves an address to its **most specific** network in a single indexed read. **CSV** suits loading into a warehouse, a relational database, or a data pipeline, and inspecting the data directly. Nested CIDRs are valid in both formats; see [Overlapping networks](#overlapping-networks).
 
 | Database | MMDB archive | CSV archive |
 |---|---|---|
@@ -187,6 +187,8 @@ A record carries only the fields that have a value, so the number of keys varies
 
 The record layout is flat key/value. Reader helper classes that expect a nested layout do not apply to these files, so use the generic lookup rather than a typed convenience method.
 
+`get()` already applies [longest-prefix match](#overlapping-networks): it returns the most specific network that contains the address, so an MMDB lookup never yields two locations.
+
 ### Reading the CSV
 
 The CSV carries the same data with one header row and one row per network:
@@ -199,7 +201,54 @@ network,country,country_code,country_geoname_id,country_is_eu,continent,continen
 
 Parse it with a real CSV reader, not by splitting on commas. Place names containing commas are quoted per RFC 4180, and thousands of rows in the geolocation file are affected.
 
-### Conventions
+A CSV query that tests "does this IP fall in the row's network?" can return more than one row. That is expected. See [Overlapping networks](#overlapping-networks) for the rule that picks the answer.
+
+## Overlapping networks
+
+A more-specific CIDR can sit inside a broader one, and both records ship. The inner block is a more precise answer for a subset of the outer block, not a duplicate.
+
+```
+172.58.64.0/22   Oklahoma     (172.58.64.0 – 172.58.67.255)
+172.58.64.0/21   California   (172.58.64.0 – 172.58.71.255)
+```
+
+CIDR blocks never overlap only in part: two prefixes are either disjoint, or one contains the other. Lookups use **longest-prefix match**, the same rule IP routing uses. Among the records whose network contains the IP, the one with the longest prefix is the answer. `/22` beats `/21`.
+
+| Address | Matching rows | Answer |
+|---|---|---|
+| `172.58.64.10` | `/22` Oklahoma and `/21` California | Oklahoma |
+| `172.58.68.10` | `/21` California only | California |
+
+**MMDB.** The reader's `get()` applies this rule and returns one record. You do not have to resolve overlaps yourself.
+
+**CSV.** A containment query can return every covering row. Keep the row with the largest prefix length. Do not pick at random, combine the two locations, or drop one row as a duplicate.
+
+Python:
+
+```python
+import ipaddress
+
+addr = ipaddress.ip_address("172.58.64.10")
+matches = [
+    row for row in rows
+    if addr in ipaddress.ip_network(row["network"])
+]
+winner = max(matches, key=lambda r: ipaddress.ip_network(r["network"]).prefixlen)
+```
+
+PostgreSQL:
+
+```sql
+SELECT *
+FROM geo
+WHERE inet '172.58.64.10' <<= network::inet
+ORDER BY masklen(network::inet) DESC
+LIMIT 1;
+```
+
+This rule applies to all three databases. For IP to Security, the most specific row already carries the [union of enclosing flags](#schema-ip-to-security), so keeping that row is also how you get the complete flag set.
+
+## Conventions
 
 These hold across every database and both formats:
 
@@ -208,6 +257,7 @@ These hold across every database and both formats:
 - **In the MMDB, the security flags only ever appear as `"True"`.** A false flag is absent from the record rather than set to `"False"`, so testing `record.get("is_vpn") == "False"` never matches. Test for presence instead. The security CSV is different: every row carries all seven flag columns with an explicit `"True"` or `"False"`, and a non-empty `"False"` is truthy in most languages, so compare the value rather than testing the column for emptiness. In the geolocation database, `country_is_eu` likewise carries a literal `"False"`.
 - **Place names are in English.** Localized name variants are not available in this version.
 - **Private, reserved, and multicast ranges are filtered out** at build time. A lookup against one returns nothing rather than a partial answer.
+- **Nested CIDRs are valid.** A more-specific block inside a broader one is a hole with its own answer, not a duplicate. MMDB lookups resolve this automatically; CSV lookups must keep the most specific matching row. See [Overlapping networks](#overlapping-networks).
 
 ## Schema: IP to Geolocation
 
@@ -264,6 +314,8 @@ One record per network carrying at least one flag. A network absent from this da
 | `is_abuse` | The range has been flagged for abusive behavior |
 
 These are the same seven signals the `security` object returns in an IP Intelligence response. The two formats encode a false flag differently: the MMDB record holds just the flags that apply, so a network flagged only as hosting returns one key, not seven, while the CSV carries all seven columns on every row with an explicit `"True"` or `"False"`.
+
+A more-specific network inside a larger flagged range carries the **union** of its own flags and the enclosing range's. Nested CIDRs are valid; keep the [most specific covering row](#overlapping-networks), which already includes the enclosing flags.
 
 ## Refresh cadence
 
