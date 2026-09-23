@@ -52,12 +52,12 @@ mintlify dev       # local preview at http://localhost:3000
 
 ### Issue tracker
 
-Linear (via the workspace's `linear` MCP server, declared in [`abstractapi/abstract-claude-workspace`](https://github.com/abstractapi/abstract-claude-workspace)'s `.mcp.json`). Conventions live at the workspace level: see [`docs/agents/issue-tracker.md`](https://github.com/abstractapi/abstract-claude-workspace/blob/main/docs/agents/issue-tracker.md).
+Linear (via the workspace's `linear` MCP server, declared in [`abstractapi/abstract-workspace`](https://github.com/abstractapi/abstract-workspace)'s `.mcp.json`). Conventions live at the workspace level: see [`docs/agents/issue-tracker.md`](https://github.com/abstractapi/abstract-workspace/blob/main/docs/agents/issue-tracker.md).
 
 ### Triage labels
 
-Default mattpocock vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). Label creation in Linear deferred until first use. Conventions live at the workspace level: see [`docs/agents/triage-labels.md`](https://github.com/abstractapi/abstract-claude-workspace/blob/main/docs/agents/triage-labels.md).
+Default mattpocock vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). Label creation in Linear deferred until first use. Conventions live at the workspace level: see [`docs/agents/triage-labels.md`](https://github.com/abstractapi/abstract-workspace/blob/main/docs/agents/triage-labels.md).
 
 ### Domain docs
 
-Single-context — [`CONTEXT.md`](./CONTEXT.md) at the repo root (once added). Domain conventions live at the workspace level: see [`docs/agents/domain.md`](https://github.com/abstractapi/abstract-claude-workspace/blob/main/docs/agents/domain.md).
+Single-context — [`CONTEXT.md`](./CONTEXT.md) at the repo root (once added). Domain conventions live at the workspace level: see [`docs/agents/domain.md`](https://github.com/abstractapi/abstract-workspace/blob/main/docs/agents/domain.md).
