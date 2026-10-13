@@ -26,7 +26,14 @@
             "pages": [
               "api/email-reputation",
               "api/phone-intelligence",
-              "api/ip-intelligence",
+              {
+                "group": "IP Intelligence API",
+                "icon": "location-dot",
+                "root": "api/ip-intelligence",
+                "pages": [
+                  "api/ip-intelligence/database"
+                ]
+              },
               "api/company-enrichment"
             ]
           },
