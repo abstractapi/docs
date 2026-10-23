@@ -18,7 +18,7 @@
           {
             "group": "Introduction",
             "pages": [
-              "api"
+              "introduction"
             ]
           },
           {
@@ -95,6 +95,12 @@
       "website": "https://www.abstractapi.com/"
     }
   },
+  "redirects": [
+    {
+      "source": "/api",
+      "destination": "/introduction"
+    }
+  ],
   "integrations": {
     "mixpanel": {
       "projectToken": "c39efa9bf07f680d3be6c26cb8a84420"
