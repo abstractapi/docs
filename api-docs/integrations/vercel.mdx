@@ -1,0 +1,252 @@
+---
+title: 'Vercel integration'
+sidebarTitle: 'Vercel'
+description: "How the Abstract API integration for Vercel works: the environment variables it adds to your projects, and how to call Email Intelligence, Phone Intelligence and IP Intelligence from a Next.js app on Vercel. Written for developers and coding agents."
+icon: 'triangle'
+---
+
+<Note>
+  This page explains the Vercel integration and how to use the keys it installs. Field-by-field API details live in the [Email Reputation](/api/email-reputation), [Phone Intelligence](/api/phone-intelligence) and [IP Intelligence](/api/ip-intelligence) references.
+</Note>
+
+## Summary for coding agents
+
+If you are an AI coding agent adding Abstract checks to a project on Vercel, these are the facts and rules to follow:
+
+- The integration adds up to three environment variables to the selected Vercel projects, one per product the user picked. Only call a product when its variable is set.
+- Call the APIs **from server code only**: Server Actions, Route Handlers or other server-side functions. Never import the keys into a Client Component, never prefix them with `NEXT_PUBLIC_`, and never log them.
+- Send the key in the `Authorization: Bearer <key>` header. Do not put it in the URL.
+- Run the checks you need **in parallel** with `Promise.all`, each with a **5 second timeout**.
+- **Fail open.** If a variable is missing, a call times out, or the API returns an error, skip that check and continue. Never block a user because a check could not run.
+- Check the **visitor's** IP address, taken from the `x-forwarded-for` request header on Vercel, never the server's own IP.
+- Send phone numbers with their country code, digits only (for example `14155550123`). A 10-digit number without a country code can be read as a number from another country.
+- Keep the decision logic (allow, review, block) in one place so the user can tune it.
+- After you change environment variables, or the user adds products in the integration, the project needs a **redeploy** for running deployments to see the new values.
+
+## What the integration does
+
+The Abstract API integration connects a Vercel team to an Abstract account and writes Abstract API keys into the Vercel projects you choose. It does not change your code: you call the APIs from your application with the keys it installs.
+
+Install it from [vercel.com/integrations/abstract-api](https://vercel.com/integrations/abstract-api). During the install you sign in to Abstract (or create a free account), pick the products, and pick the Vercel projects.
+
+### Environment variables
+
+| Variable | Product | Endpoint | Reference |
+|---|---|---|---|
+| `ABSTRACT_EMAIL_INTELLIGENCE_API_KEY` | Email Intelligence | `https://emailreputation.abstractapi.com/v1/` | [Email Reputation](/api/email-reputation) |
+| `ABSTRACT_PHONE_INTELLIGENCE_API_KEY` | Phone Intelligence | `https://phoneintelligence.abstractapi.com/v1/` | [Phone Intelligence](/api/phone-intelligence) |
+| `ABSTRACT_IP_INTELLIGENCE_API_KEY` | IP Intelligence | `https://ip-intelligence.abstractapi.com/v1/` | [IP Intelligence](/api/ip-intelligence) |
+
+<Info>
+  Email Intelligence is served by the `emailreputation` endpoint and documented in the Email Reputation reference. They are the same product.
+</Info>
+
+- Each variable holds the key of your Abstract account for that product, on your current plan. Each call uses one request from that product's plan.
+- The variables are stored as Vercel Sensitive variables: their values cannot be read back in the Vercel dashboard.
+- Only the products you picked are added. You can add products or projects later from the integration's **Configure** button.
+
+## Add the checks to your app
+
+The examples use the Next.js App Router. The same calls work from any server-side code on Vercel.
+
+### 1. A shared client
+
+Create one helper that every check uses. It reads the key from the environment, sends it as a Bearer token, applies a timeout, and returns `null` instead of throwing, so callers can fail open.
+
+```ts lib/abstract.ts
+import "server-only";
+
+const PRODUCTS = {
+  email: {
+    url: "https://emailreputation.abstractapi.com/v1/",
+    envVar: "ABSTRACT_EMAIL_INTELLIGENCE_API_KEY",
+  },
+  phone: {
+    url: "https://phoneintelligence.abstractapi.com/v1/",
+    envVar: "ABSTRACT_PHONE_INTELLIGENCE_API_KEY",
+  },
+  ip: {
+    url: "https://ip-intelligence.abstractapi.com/v1/",
+    envVar: "ABSTRACT_IP_INTELLIGENCE_API_KEY",
+  },
+} as const;
+
+type Product = keyof typeof PRODUCTS;
+
+// Returns the API response, or null when the product is not installed,
+// the call failed or it timed out. Callers treat null as "no signal".
+export async function abstractCheck(
+  product: Product,
+  params: Record<string, string>,
+): Promise<Record<string, any> | null> {
+  const { url, envVar } = PRODUCTS[product];
+  const key = process.env[envVar];
+  if (!key) return null;
+
+  try {
+    const res = await fetch(`${url}?${new URLSearchParams(params)}`, {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(5000),
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+```
+
+### 2. The visitor's IP address
+
+```ts lib/client-ip.ts
+import "server-only";
+import { headers } from "next/headers";
+
+// On Vercel, the first address in x-forwarded-for is the visitor's.
+export async function clientIp(): Promise<string | null> {
+  const h = await headers();
+  return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || null;
+}
+```
+
+In local development the request comes from `127.0.0.1` or `::1`. Skip the IP check for those addresses instead of sending them.
+
+### 3. Signups
+
+Check all three signals before the account exists. Block the clear cases, flag the uncertain ones for review, and allow the rest.
+
+```ts app/signup/actions.ts
+"use server";
+
+import { abstractCheck } from "@/lib/abstract";
+import { clientIp } from "@/lib/client-ip";
+
+export async function signup(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").replace(/\D/g, "");
+  const ip = await clientIp();
+
+  const [e, p, i] = await Promise.all([
+    abstractCheck("email", { email }),
+    phone ? abstractCheck("phone", { phone }) : null,
+    ip ? abstractCheck("ip", { ip_address: ip, fields: "security,location" }) : null,
+  ]);
+
+  const block =
+    e?.email_quality?.is_disposable === true ||
+    e?.email_deliverability?.status === "undeliverable" ||
+    p?.phone_validation?.is_valid === false ||
+    i?.security?.is_tor === true;
+
+  if (block) return { error: "We could not create your account." };
+
+  const review =
+    e?.email_risk?.address_risk_status === "high" ||
+    p?.phone_validation?.is_voip === true ||
+    i?.security?.is_vpn === true ||
+    i?.security?.is_proxy === true;
+
+  // Create the account here with your auth provider. Store `review` so you can
+  // hold the account, ask for extra verification, or limit it until reviewed.
+  return { ok: true, review };
+}
+```
+
+### 4. Logins
+
+At login you usually only have the IP address. Check it on the server before you issue the session.
+
+```ts
+// Inside your login Server Action or Route Handler, with `ip` from clientIp().
+const i = ip ? await abstractCheck("ip", { ip_address: ip, fields: "security,location" }) : null;
+
+if (i?.security?.is_tor) {
+  // Require a second factor or deny the login.
+}
+if (i?.security?.is_vpn || i?.security?.is_proxy || i?.security?.is_abuse) {
+  // Ask for a second factor or an email code.
+}
+// Compare i?.location?.country_code with the user's usual country
+// and ask for a second factor when it changes.
+```
+
+### 5. Checkout
+
+Compare where the email, phone and connection point. A mismatch is a reason to review an order, not to refuse payment on its own.
+
+```ts
+// Inside your checkout Server Action, with `email`, `phone` (digits only),
+// `ip` from clientIp() and `billingCountry` from your payment form.
+const [e, p, i] = await Promise.all([
+  abstractCheck("email", { email }),
+  abstractCheck("phone", { phone }),
+  abstractCheck("ip", { ip_address: ip, fields: "security,location" }),
+]);
+
+const ipCountry = i?.location?.country_code;
+const phoneCountry = p?.phone_location?.country_code;
+
+const review =
+  e?.email_risk?.address_risk_status === "high" ||
+  p?.phone_risk?.risk_level === "high" ||
+  (ipCountry && phoneCountry && ipCountry !== phoneCountry) ||
+  (ipCountry && billingCountry && ipCountry !== billingCountry);
+```
+
+## Fields used on this page
+
+| Product | Field | Values | Typical use |
+|---|---|---|---|
+| Email Intelligence | `email_deliverability.status` | `deliverable`, `undeliverable`, `unknown` | Block `undeliverable` |
+| Email Intelligence | `email_quality.is_disposable` | `true`, `false` | Block disposable addresses |
+| Email Intelligence | `email_risk.address_risk_status` | `low`, `medium`, `high` | Review `high` |
+| Email Intelligence | `email_risk.domain_risk_status` | `low`, `medium`, `high` | Review `high` |
+| Phone Intelligence | `phone_validation.is_valid` | `true`, `false` | Block invalid numbers |
+| Phone Intelligence | `phone_validation.is_voip` | `true`, `false` | Review VoIP numbers |
+| Phone Intelligence | `phone_risk.risk_level` | `low`, `medium`, `high` | Review or block `high` |
+| Phone Intelligence | `phone_location.country_code` | ISO 3166-1 alpha-2 | Compare with the IP country |
+| IP Intelligence | `security.is_tor` | `true`, `false` | Block or step up |
+| IP Intelligence | `security.is_vpn`, `security.is_proxy` | `true`, `false` | Review or step up |
+| IP Intelligence | `security.is_hosting`, `security.is_abuse` | `true`, `false` | Review |
+| IP Intelligence | `location.country_code` | ISO 3166-1 alpha-2 | Compare with phone and billing country |
+
+Any field can be `null` when Abstract has no data for it. Treat `null` as "no signal", not as `false`.
+
+## Errors and limits
+
+| Status | Meaning | What to do |
+|---|---|---|
+| `401` | The key is invalid or was revoked. | Skip the check. Ask the user to check the key in the Abstract dashboard. |
+| `422` with code `quota_reached` | A free plan used its requests for the period. | Skip the check until the period resets or the plan is upgraded. |
+| `403` with code `plan_limit_reached` | A paid plan reached its limit for the billing period. | Skip the check until the limit resets or the plan is upgraded. |
+| `429` | Too many requests per second for the plan. | Skip the check, or retry once after a short delay. |
+| `5xx` or timeout | The API could not answer in time. | Skip the check. |
+
+All errors return JSON with `error.message` and `error.code`. The helper above returns `null` for every one of them, which keeps signups, logins and checkouts working.
+
+## Run locally
+
+Link the project and pull its environment variables:
+
+```bash
+vercel link
+vercel env pull .env.local
+```
+
+If the keys do not come down (Vercel does not return Sensitive values to every environment), copy each key from the [Abstract dashboard](https://app.abstractapi.com/) into `.env.local` under the same variable name. Never commit `.env.local`.
+
+## Change, rotate or remove
+
+- **Add products or projects:** open the integration in Vercel and click **Configure**. Redeploy the affected projects afterwards.
+- **Rotate a key:** rotate it in the Abstract dashboard. The integration writes the new key to every linked project. Redeploy them so running deployments use it.
+- **Revoke a key:** revoking a key in Abstract does not remove it from Vercel. Calls with it return `401` until you link another key from **Configure**.
+- **Uninstall:** Abstract does not delete the environment variables, your account or your keys when you remove the integration, so running deployments keep working.
+
+## Starter template
+
+The [Abstract signup template](https://github.com/abstractapi/abstract-api-vercel-template) is a Next.js app that runs all three checks on a signup form, with the rules in one file (`src/lib/rules.ts`). Deploy your own copy with the button in its README, or copy `src/lib/abstract/` and `src/lib/rules.ts` into an existing app to reuse the same logic.
+
+## Support
+
+Questions about the integration: [support@abstractapi.com](mailto:support@abstractapi.com).
