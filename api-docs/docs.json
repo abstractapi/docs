@@ -60,6 +60,12 @@
               "api/scrape",
               "api/screenshot"
             ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/vercel"
+            ]
           }
         ]
       }
