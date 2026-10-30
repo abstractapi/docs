@@ -241,11 +241,11 @@ If the keys do not come down (Vercel does not return Sensitive values to every e
 - **Add products or projects:** open the integration in Vercel and click **Configure**. Redeploy the affected projects afterwards.
 - **Rotate a key:** rotate it in the Abstract dashboard. The integration writes the new key to every linked project. Redeploy them so running deployments use it.
 - **Revoke a key:** revoking a key in Abstract does not remove it from Vercel. Calls with it return `401` until you link another key from **Configure**.
-- **Uninstall:** Abstract does not delete the environment variables, your account or your keys when you remove the integration, so running deployments keep working.
+- **Uninstall:** Vercel removes the environment variables the integration added, from every project. Abstract keeps your account and your keys. Running deployments keep working until the next deploy, which has no keys; install the integration again to add them back.
 
 ## Starter template
 
-The [Abstract signup template](https://github.com/abstractapi/abstract-api-vercel-template) is a Next.js app that runs all three checks on a signup form, with the rules in one file (`src/lib/rules.ts`). Deploy your own copy with the button in its README, or copy `src/lib/abstract/` and `src/lib/rules.ts` into an existing app to reuse the same logic.
+The [Abstract signup template](https://github.com/abstractapi/abstract-api-vercel-template) is a Next.js app that runs all three checks on a signup form, with the rules in one file (`src/lib/rules.ts`). Its Deploy button creates your copy and installs the integration, so the keys arrive on their own. Or copy `src/lib/abstract/` and `src/lib/rules.ts` into an existing app to reuse the same logic.
 
 ## Support
 
