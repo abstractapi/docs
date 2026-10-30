@@ -247,6 +247,8 @@ If the keys do not come down (Vercel does not return Sensitive values to every e
 
 The [Abstract signup template](https://github.com/abstractapi/abstract-api-vercel-template) is a Next.js app that runs all three checks on a signup form, with the rules in one file (`src/lib/rules.ts`). Its Deploy button creates your copy and installs the integration, so the keys arrive on their own. Or copy `src/lib/abstract/` and `src/lib/rules.ts` into an existing app to reuse the same logic.
 
+If you deployed the template from Vercel's template page, Vercel asks for the three keys instead of installing the integration. Copy each key from the [Abstract dashboard](https://app.abstractapi.com/) into the matching variable: `ABSTRACT_EMAIL_INTELLIGENCE_API_KEY`, `ABSTRACT_PHONE_INTELLIGENCE_API_KEY` and `ABSTRACT_IP_INTELLIGENCE_API_KEY`. Each product has a free plan, and a product without a key is skipped. To switch to the integration later, delete the three variables, install [Abstract API](https://vercel.com/integrations/abstract-api) on the project, and redeploy.
+
 ## Support
 
 Questions about the integration: [support@abstractapi.com](mailto:support@abstractapi.com).
