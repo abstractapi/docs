@@ -8,13 +8,13 @@ Tells you whether a flow is fully connected: the browser SDK collects tokens, yo
 
 ```http
 GET {{RISK_API_BASE_URL}}/v1/integration-health?flow=signup
-Authorization: Bearer YOUR_SECRET_KEY
+Authorization: Bearer sk_...
 ```
 
 <RequestExample>
 ```bash cURL
 curl '{{RISK_API_BASE_URL}}/v1/integration-health?flow=signup' \
-  -H 'Authorization: Bearer YOUR_SECRET_KEY'
+  -H 'Authorization: Bearer sk_...'
 ```
 </RequestExample>
 

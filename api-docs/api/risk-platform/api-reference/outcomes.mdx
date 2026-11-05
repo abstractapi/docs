@@ -10,14 +10,14 @@ Send them from your systems, for example from your payment provider's webhooks.
 
 ```http
 POST {{RISK_API_BASE_URL}}/v1/outcomes
-Authorization: Bearer YOUR_SECRET_KEY
+Authorization: Bearer sk_...
 Content-Type: application/json
 ```
 
 <RequestExample>
 ```bash cURL
 curl -X POST '{{RISK_API_BASE_URL}}/v1/outcomes' \
-  -H 'Authorization: Bearer YOUR_SECRET_KEY' \
+  -H 'Authorization: Bearer sk_...' \
   -H 'Content-Type: application/json' \
   -d '{
     "run_id": "chk_123",

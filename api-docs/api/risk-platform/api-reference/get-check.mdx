@@ -8,13 +8,13 @@ Returns the response of a check you sent earlier, looked up by its event ID. Use
 
 ```http
 GET {{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}/runs/{event_id}
-Authorization: Bearer YOUR_SECRET_KEY
+Authorization: Bearer sk_...
 ```
 
 <RequestExample>
 ```bash cURL
 curl '{{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}/runs/signup:user_123' \
-  -H 'Authorization: Bearer YOUR_SECRET_KEY'
+  -H 'Authorization: Bearer sk_...'
 ```
 </RequestExample>
 

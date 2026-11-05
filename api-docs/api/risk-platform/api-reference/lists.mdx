@@ -20,7 +20,7 @@ All paths are relative to `{{RISK_API_BASE_URL}}`.
 
 ```bash
 curl '{{RISK_API_BASE_URL}}/v1/lists' \
-  -H 'Authorization: Bearer YOUR_KEY'
+  -H 'Authorization: Bearer sk_...'
 ```
 
 Returns an array of lists:
@@ -56,7 +56,7 @@ Returns an array of lists:
 
 ```bash
 curl -X POST '{{RISK_API_BASE_URL}}/v1/lists' \
-  -H 'Authorization: Bearer YOUR_MANAGEMENT_KEY' \
+  -H 'Authorization: Bearer mk_...' \
   -H 'Content-Type: application/json' \
   -d '{
     "id": "verified_customers",
@@ -88,7 +88,7 @@ Returns `201` with the new list.
 
 ```bash
 curl '{{RISK_API_BASE_URL}}/v1/lists/verified_customers/items?limit=500' \
-  -H 'Authorization: Bearer YOUR_KEY'
+  -H 'Authorization: Bearer sk_...'
 ```
 
 <ParamField query="limit" type="integer" default="500">
@@ -107,7 +107,7 @@ Adds a value, or refreshes it if it's already on the list.
 
 ```bash
 curl -X POST '{{RISK_API_BASE_URL}}/v1/lists/verified_customers/items' \
-  -H 'Authorization: Bearer YOUR_MANAGEMENT_KEY' \
+  -H 'Authorization: Bearer mk_...' \
   -H 'Content-Type: application/json' \
   -d '{ "value": "person@example.com", "metadata": { "ticket": "SUP-1042" } }'
 ```
@@ -126,7 +126,7 @@ Returns `201` with the item. Items added this way are attributed to the Manageme
 
 ```bash
 curl -X DELETE '{{RISK_API_BASE_URL}}/v1/lists/verified_customers/items?value=person@example.com' \
-  -H 'Authorization: Bearer YOUR_MANAGEMENT_KEY'
+  -H 'Authorization: Bearer mk_...'
 ```
 
 <ParamField query="value" type="string" required>

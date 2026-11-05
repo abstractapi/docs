@@ -8,7 +8,7 @@ Evaluates one signup or login against the policy for its flow and returns a reco
 
 ```http
 POST {{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}
-Authorization: Bearer YOUR_SECRET_KEY
+Authorization: Bearer sk_...
 Content-Type: application/json
 ```
 
@@ -19,7 +19,7 @@ Content-Type: application/json
 <RequestExample>
 ```bash cURL
 curl -X POST '{{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}' \
-  -H 'Authorization: Bearer YOUR_SECRET_KEY' \
+  -H 'Authorization: Bearer sk_...' \
   -H 'Content-Type: application/json' \
   -d '{
     "flow": "signup",
@@ -50,7 +50,7 @@ curl -X POST '{{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}' \
   "check_id": "chk_123",
   "event_id": "signup:user_123",
   "policy": {
-    "id": "signup_policy",
+    "id": "signup_protection",
     "version": 4,
     "configured": true,
     "action": "review",
@@ -128,7 +128,7 @@ Send at least one of `email`, `phone`, `client.ip` or `device_token`.
 </ParamField>
 
 <ParamField body="test_mode" type="object">
-  Returns a fixed test response instead of running a live check. Test checks aren't stored.
+  Returns a fixed test response instead of running a live check. Test checks aren't stored, and test responses carry the `X-Protection-Test-Mode: true` header.
 
   <Expandable title="properties">
     <ParamField body="fixture" type="string" required>
@@ -241,6 +241,7 @@ Responses also include `call_id`, `run_id`, `verdict`, `risk_level`, `decision_p
 | 403 | `forbidden` | `sandbox_fixture_required` | The public test key only works with `test_mode.fixture`. |
 | 409 | `conflict` | `event_conflict` | The event ID was reused with different inputs, or is still processing. Use a new event ID for a new action. |
 | 429 | `rate_limited` | | Back off and retry after `Retry-After`. |
+| 429 | `rate_limited` | `unconfigured_flow_limit_exceeded` | The flow has no policy and reached its limit. Create a policy for it. See [Flows without a policy](/api/risk-platform/policies#flows-without-a-policy). |
 | 500 | `internal_error` | | Retry only with the same event ID. |
 | 503 | `service_unavailable` | | Continue your flow as allow. |
 

@@ -1,7 +1,7 @@
 ---
 title: 'Keys'
 icon: 'key'
-description: 'The three Risk Platform keys: the Site key for browser code, Secret keys for sending checks from your server, and Management keys for changing lists.'
+description: 'The three Risk Platform keys: the Site key for browser code, Secret keys for sending checks from your server, and Management keys for changing policies and lists.'
 ---
 
 The Risk Platform uses three kinds of keys, each with one job. Find them in **Risk Platform > API Keys** in the dashboard.
@@ -9,8 +9,8 @@ The Risk Platform uses three kinds of keys, each with one job. Find them in **Ri
 | Key | Where it goes | What it can do | What it can't do |
 |---|---|---|---|
 | Site key | Browser code | Collect device tokens from your allowed origins | Send checks, read data, change anything |
-| Secret key | Your server only | Send checks, read integration health, report outcomes, read lists | Change policies or lists |
-| Management key | One person or agent, server-side | Read and change lists | Send checks |
+| Secret key | Your server only | Send checks, read integration health, report outcomes, read lists, set allowed origins | Read or change policies, change lists |
+| Management key | One person or agent, server-side | Read and change policies and lists | Send checks |
 
 These keys are separate from the API keys of Abstract's other products, such as Email Reputation or IP Intelligence. A Risk Platform key doesn't work on those APIs, and their keys don't work on the Risk API.
 
@@ -18,12 +18,14 @@ These keys are separate from the API keys of Abstract's other products, such as 
 
 The Site key is safe to ship in your frontend. It only collects device tokens, and only from the origins configured for it: a request from any other origin gets `401` with reason `origin_not_allowed`. The browser SDK sends it in the `X-Site-Key` header.
 
+To allow a web address, add each origin your signup and login pages run on, such as `https://app.example.com`, with the [allowed origins endpoint](/api/risk-platform/api-reference/allowed-origins). Call it from your server with a Secret key. Allowed origins apply to every Site key on your account.
+
 ## Secret key
 
-Your backend sends the Secret key as a bearer token:
+Secret keys start with `sk_`. Your backend sends the Secret key as a bearer token:
 
 ```http
-Authorization: Bearer YOUR_SECRET_KEY
+Authorization: Bearer sk_...
 ```
 
 The server SDKs read it from the `ABSTRACT_SECRET_KEY` environment variable.
@@ -35,11 +37,13 @@ The server SDKs read it from the `ABSTRACT_SECRET_KEY` environment variable.
 
 ## Management key
 
-A Management key lets a person, or an agent working for them, change lists without the dashboard.
+A Management key lets a person, or an agent working for them, change policy rules and lists without the dashboard. Management keys start with `mk_`.
 
 - It belongs to the person who created it. Every change made with it records that person's email and the key's name, and shows up in the dashboard.
 - You choose an expiry when you create it: 30, 60 or 90 days, 1 year, or no expiration. It is shown once.
-- It can't send checks, and a Secret key can't change lists. Keeping the two apart means a compromised server can't rewrite the rules that judge its own traffic.
+- It can't send checks, and a Secret key can't read or change policies or change lists. Keeping the two apart means a compromised server can't rewrite the rules that judge its own traffic.
+
+See the [Policies endpoints](/api/risk-platform/api-reference/policies) and [Lists endpoints](/api/risk-platform/api-reference/lists).
 
 ## Test key
 

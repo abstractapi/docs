@@ -37,6 +37,10 @@ The npm package contains both the browser SDK and the Node server SDK.
 
 Create one client for your app, start it on the signup or login page, and attach the token to the request your form already sends.
 
+<Note>
+  Your Site key works only on the web addresses allowed for it. Before you test, add each origin your signup and login pages run on (for example `https://app.example.com` and `http://localhost:3000`) with the [allowed origins endpoint](/api/risk-platform/api-reference/allowed-origins), called from your server with your Secret key.
+</Note>
+
 ```ts
 import { {{RISK_BROWSER_CLIENT}} } from "{{RISK_NODE_SDK}}/hosted";
 
@@ -220,24 +224,24 @@ result = sandbox.check(
 ```
 </CodeGroup>
 
-Available fixtures: `allow`, `review`, `block`, `device_invalid` and `timeout`. Your own Secret key also accepts fixtures. The public test key is rate-limited and only works with a fixture.
+Available fixtures: `allow`, `review`, `block`, `device_invalid` and `timeout`. Your own Secret key also accepts fixtures. The public test key is rate-limited and only works with a fixture. Test responses carry the `X-Protection-Test-Mode: true` header.
 
 ## 4. Verify the integration
 
 Run the read-only doctor. It checks that the Risk API is reachable, that your Secret key works, and the health of the flow. It never prints your key.
 
 ```bash
-ABSTRACT_SECRET_KEY=your_secret_key \
+ABSTRACT_SECRET_KEY=sk_... \
 npx {{RISK_NODE_SDK}} doctor --app-url http://localhost:3000 --flow signup --json
 ```
 
-Exit codes: `0` verified, `1` reachable but incomplete, `2` invalid local configuration, `3` service or network unavailable.
+Exit codes: `0` verified, `1` reachable but incomplete, `2` invalid local configuration, `3` service or network unavailable. A check reported as `protection_unavailable` means the doctor couldn't reach the Risk API.
 
 Then complete one real signup and one real login and open **Risk Platform > Integration** in the dashboard. A flow shows as verified when, within the last 24 hours, the browser SDK collected a token on an allowed origin, your backend sent a check for the same flow, that token was valid, and the client context was trusted. The same status is available from the [Integration health endpoint](/api/risk-platform/api-reference/integration-health).
 
 ## Before you go live
 
-1. Confirm your exact staging and production origins are allowed for your Site key. Abstract sets the allowed origins with you.
+1. Confirm your exact staging and production origins are allowed for your Site key. Add any that are missing with the [allowed origins endpoint](/api/risk-platform/api-reference/allowed-origins).
 2. Keep the Site key in browser code and the Secret key on your server only. Scan your built assets and source maps for the Secret key.
 3. Block the collection script in your browser and confirm signup and login still work.
 4. Confirm a failed or rolled-back signup sends no check.

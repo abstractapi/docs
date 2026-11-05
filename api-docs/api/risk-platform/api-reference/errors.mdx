@@ -24,12 +24,12 @@ Every Risk API error uses the same JSON format:
 
 | Status | `error` | Example `reason` | Retry? |
 |---|---|---|---|
-| 400 | `bad_request` | `malformed_json` | No. Fix the request. |
+| 400 | `bad_request` | `malformed_json`, `invalid_rule` | No. Fix the request. |
 | 401 | `unauthorized` | `unauthorized` | No. Check the key. |
 | 403 | `forbidden` | `sandbox_fixture_required`, `management_key_required` | No. Use the right key. |
-| 404 | `not_found` | `run_not_found` | No. |
-| 409 | `conflict` | `event_conflict` | No. Use a new event ID for a new action. |
-| 429 | `rate_limited` | | Yes, with backoff. Respect `Retry-After`. |
+| 404 | `not_found` | `run_not_found`, `policy_not_found` | No. |
+| 409 | `conflict` | `event_conflict`, `version_conflict` | No. Use a new event ID for a new action. For a policy change, read the policy again and reapply. |
+| 429 | `rate_limited` | `unconfigured_flow_limit_exceeded` | Yes, with backoff. Respect `Retry-After`. For `unconfigured_flow_limit_exceeded`, create a policy for the flow first. |
 | 500 | `internal_error` | | Only with the same event ID. |
 | 503 | `service_unavailable` | | Yes, later. Continue your flow as allow now. |
 

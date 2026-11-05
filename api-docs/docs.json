@@ -62,6 +62,8 @@
                   "api/risk-platform/api-reference/integration-health",
                   "api/risk-platform/api-reference/outcomes",
                   "api/risk-platform/api-reference/lists",
+                  "api/risk-platform/api-reference/policies",
+                  "api/risk-platform/api-reference/allowed-origins",
                   "api/risk-platform/api-reference/errors"
                 ]
               }
