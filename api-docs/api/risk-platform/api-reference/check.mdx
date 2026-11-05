@@ -1,0 +1,247 @@
+---
+title: 'Send a check'
+sidebarTitle: 'Send a check'
+description: 'Risk API reference for the check endpoint: request fields, response fields, test fixtures and errors.'
+---
+
+Evaluates one signup or login against the policy for its flow and returns a recommendation. Call it from your backend with a Secret key. The server SDKs build this request for you; use the HTTP API directly only if there is no SDK for your stack.
+
+```http
+POST {{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}
+Authorization: Bearer YOUR_SECRET_KEY
+Content-Type: application/json
+```
+
+<Warning>
+  **Draft value.** The Risk API address and check path are placeholders until the final public address is set.
+</Warning>
+
+<RequestExample>
+```bash cURL
+curl -X POST '{{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}' \
+  -H 'Authorization: Bearer YOUR_SECRET_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "flow": "signup",
+    "event_id": "signup:user_123",
+    "email": "person@example.com",
+    "device_token": "dtok_...",
+    "client": {
+      "ip": "203.0.113.10",
+      "user_agent": "Mozilla/5.0 ...",
+      "accept_language": "en-US,en;q=0.9",
+      "ip_source": "explicit",
+      "ip_trusted": true
+    },
+    "context": { "surface": "password_signup" }
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "contract_version": "1",
+  "flow": "signup",
+  "mode": "monitor",
+  "recommendation": "review",
+  "action": "allow",
+  "enforced": false,
+  "check_id": "chk_123",
+  "event_id": "signup:user_123",
+  "policy": {
+    "id": "signup_policy",
+    "version": 4,
+    "configured": true,
+    "action": "review",
+    "reasons": [{ "code": "R3", "label": "Disposable email" }]
+  },
+  "data_quality": {
+    "confidence": "verified",
+    "gaps": []
+  },
+  "diagnostics": {
+    "device": { "token_present": true, "token_valid": true, "reason": null },
+    "ip_source": "explicit",
+    "ip_trusted": true,
+    "velocity": {
+      "status": "none",
+      "contributors": [],
+      "reason": "No velocity detector reached a monitoring threshold."
+    }
+  },
+  "reasons": [
+    { "rule": "R3", "label": "Disposable email", "expr": "email.is_disposable = true", "contribution": "matched -> review" }
+  ]
+}
+```
+</ResponseExample>
+
+## Request body
+
+Send at least one of `email`, `phone`, `client.ip` or `device_token`.
+
+<ParamField body="flow" type="string" required>
+  The business flow: `signup` or `login`. The Risk Platform runs the policy mapped to this flow.
+</ParamField>
+
+<ParamField body="event_id" type="string">
+  Your correlation key for this check, up to 128 characters. Generate it on your server. A retry with the same event ID and the same inputs returns the existing check; the same event ID with different inputs returns `409 event_conflict`. Strongly recommended.
+</ParamField>
+
+<ParamField body="email" type="string">
+  The email address used in the signup or login.
+</ParamField>
+
+<ParamField body="phone" type="string">
+  The phone number, when your flow collects one.
+</ParamField>
+
+<ParamField body="device_token" type="string">
+  The device token from the `x-abstract-device-token` header of the browser request. Opaque and single-use; don't parse it. See [Device tokens](/api/risk-platform/device-tokens).
+</ParamField>
+
+<ParamField body="client" type="object">
+  The original browser context, read from the user's request to your server.
+
+  <Expandable title="properties">
+    <ParamField body="ip" type="string">
+      The original client IP address. This is the IP signal for the check.
+    </ParamField>
+    <ParamField body="user_agent" type="string">
+      The original browser user agent.
+    </ParamField>
+    <ParamField body="accept_language" type="string">
+      The original `Accept-Language` header.
+    </ParamField>
+    <ParamField body="ip_source" type="string">
+      Where you got the IP: `explicit`, `platform`, `proxy_header`, `socket` or `unavailable`.
+    </ParamField>
+    <ParamField body="ip_trusted" type="boolean">
+      Whether you trust that source. A forwarded header you haven't validated is untrusted.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="context" type="object">
+  Small, non-sensitive metadata of your own, such as the signup surface. Never put passwords, cookies, session data or authorization headers here.
+</ParamField>
+
+<ParamField body="test_mode" type="object">
+  Returns a fixed test response instead of running a live check. Test checks aren't stored.
+
+  <Expandable title="properties">
+    <ParamField body="fixture" type="string" required>
+      `allow`, `review`, `block`, `device_invalid` or `timeout`.
+    </ParamField>
+    <ParamField body="delay_ms" type="integer">
+      Delay for the `timeout` fixture, from 1 to 5000 milliseconds.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="contract_version" type="string">
+  Response contract version. Currently `"1"`.
+</ResponseField>
+
+<ResponseField name="flow" type="string">
+  The flow you sent.
+</ResponseField>
+
+<ResponseField name="mode" type="string">
+  Always `monitor`. See [monitor mode](/api/risk-platform/recommendations#monitor-mode-recommendation-vs-action).
+</ResponseField>
+
+<ResponseField name="recommendation" type="string | null">
+  `allow`, `review` or `block`. `null` when no policy is configured for the flow.
+</ResponseField>
+
+<ResponseField name="action" type="string">
+  What the Risk API did. Always `allow`: the Risk API never blocks a user by itself.
+</ResponseField>
+
+<ResponseField name="enforced" type="boolean">
+  Always `false`.
+</ResponseField>
+
+<ResponseField name="check_id" type="string">
+  The unique ID of this check. Use it to find the check in the dashboard and to report outcomes.
+</ResponseField>
+
+<ResponseField name="event_id" type="string">
+  The event ID you sent.
+</ResponseField>
+
+<ResponseField name="policy" type="object">
+  The policy that scored the check.
+
+  <Expandable title="properties">
+    <ResponseField name="id" type="string | null">
+      Policy ID. `null` when no policy is configured.
+    </ResponseField>
+    <ResponseField name="version" type="integer | null">
+      The policy version that scored the check.
+    </ResponseField>
+    <ResponseField name="configured" type="boolean">
+      `false` when the flow has no policy yet.
+    </ResponseField>
+    <ResponseField name="action" type="string | null">
+      Same value as `recommendation`.
+    </ResponseField>
+    <ResponseField name="reasons" type="array">
+      The rules behind the recommendation. Each has a stable `code` (the rule ID) and an optional display `label`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="data_quality" type="object">
+  How complete the evidence was: `confidence` (`verified`, `partial` or `unverifiable`) and `gaps`, the fields a rule needed but couldn't resolve.
+</ResponseField>
+
+<ResponseField name="diagnostics" type="object">
+  Request quality: `device` (`token_present`, `token_valid`, `reason`), `ip_source`, `ip_trusted`, and the `velocity` assessment (`status` of `none`, `watch` or `high`, `contributors`, `reason`).
+</ResponseField>
+
+<ResponseField name="reasons" type="array">
+  The rule trace: for each rule, `rule`, `label`, `expr` (the condition as text) and `contribution`.
+</ResponseField>
+
+<ResponseField name="email" type="object">
+  The email signal used by the check, from [Email Reputation](/api/email-reputation).
+</ResponseField>
+
+<ResponseField name="phone" type="object">
+  The phone signal used by the check, from [Phone Intelligence](/api/phone-intelligence).
+</ResponseField>
+
+<ResponseField name="ip" type="object">
+  The IP signal used by the check, from [IP Intelligence](/api/ip-intelligence).
+</ResponseField>
+
+<ResponseField name="device" type="object">
+  The device evidence from the device token: browser, automation and integrity flags.
+</ResponseField>
+
+<ResponseField name="context" type="object">
+  The context the check was evaluated with.
+</ResponseField>
+
+### Compatibility fields
+
+Responses also include `call_id`, `run_id`, `verdict`, `risk_level`, `decision_phase`, `score`, `policy_applied`, `policy_version`, `data_gaps` and `check_confidence`. They are kept for older integrations and are deprecated. Use `check_id`, `recommendation`, `policy` and `data_quality` instead.
+
+## Errors
+
+| Status | `error` | Common `reason` | What to do |
+|---|---|---|---|
+| 400 | `bad_request` | `malformed_json` | Fix the request body. Send at least one signal. |
+| 401 | `unauthorized` | `unauthorized` | Check the Secret key. |
+| 403 | `forbidden` | `sandbox_fixture_required` | The public test key only works with `test_mode.fixture`. |
+| 409 | `conflict` | `event_conflict` | The event ID was reused with different inputs, or is still processing. Use a new event ID for a new action. |
+| 429 | `rate_limited` | | Back off and retry after `Retry-After`. |
+| 500 | `internal_error` | | Retry only with the same event ID. |
+| 503 | `service_unavailable` | | Continue your flow as allow. |
+
+See [Errors](/api/risk-platform/api-reference/errors) for the error format.

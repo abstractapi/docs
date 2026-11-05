@@ -1,0 +1,86 @@
+---
+title: 'Integration health'
+sidebarTitle: 'Integration health'
+description: 'Risk API reference: confirm that the browser and backend halves of your Risk Platform integration are connected for a flow.'
+---
+
+Tells you whether a flow is fully connected: the browser SDK collects tokens, your backend sends checks, and the two meet. It's the same status as **Risk Platform > Integration** in the dashboard. Test checks are excluded.
+
+```http
+GET {{RISK_API_BASE_URL}}/v1/integration-health?flow=signup
+Authorization: Bearer YOUR_SECRET_KEY
+```
+
+<RequestExample>
+```bash cURL
+curl '{{RISK_API_BASE_URL}}/v1/integration-health?flow=signup' \
+  -H 'Authorization: Bearer YOUR_SECRET_KEY'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "contract_version": "1",
+  "status": "verified_monitoring",
+  "mode": "monitor",
+  "flow": "signup",
+  "test_data_included": false,
+  "freshness_seconds": 86400,
+  "checks": {
+    "browser_loaded": true,
+    "backend_seen": true,
+    "token_verified": true,
+    "context_present": true
+  },
+  "problems": [],
+  "receipt": {
+    "status": "verified_monitoring",
+    "flow": "signup",
+    "origin": "https://app.example.com",
+    "browser_version": "...",
+    "server_version": "...",
+    "last_verified_event_id": "signup:user_123",
+    "last_verified_at": "2026-11-05T14:02:11Z",
+    "fresh": true
+  }
+}
+```
+</ResponseExample>
+
+## Query parameters
+
+<ParamField query="flow" type="string" required>
+  The flow to check, such as `signup` or `login`.
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="string">
+  - `not_seen`: no live evidence for this flow yet.
+  - `incomplete`: some evidence arrived, but something is missing. See `problems`.
+  - `verified_monitoring`: in the last 24 hours, the browser SDK loaded on an allowed origin, your backend sent a check for the same flow, a valid token was used with matching origin and flow, the user agent was present, and the client IP source was trusted.
+</ResponseField>
+
+<ResponseField name="checks" type="object">
+  Each requirement on its own: `browser_loaded`, `backend_seen`, `token_verified`, `context_present`.
+</ResponseField>
+
+<ResponseField name="problems" type="array">
+  What's blocking verification. Each problem has a stable `code`, a `message`, a `fix`, whether it's `retryable`, and whether it `prevents_verified_monitoring`. Problems are diagnostic only; they never affect your users.
+</ResponseField>
+
+<ResponseField name="receipt" type="object | null">
+  The last successful verification: flow, origin, SDK versions, event ID and time. It contains no keys or personal data. When it's older than 24 hours, `fresh` is `false` and `status` returns to `incomplete`.
+</ResponseField>
+
+## Common problems
+
+| Code | Fix |
+|---|---|
+| `untrusted_proxy_header` | The client IP came from a forwarded header you haven't marked as trusted. Configure your proxy trust, or pass the validated client IP. See [Behind a proxy](/api/risk-platform/quickstart#behind-a-proxy-or-load-balancer). |
+| `origin_not_allowed` | The browser SDK ran on an origin that isn't allowed for your Site key. |
+| `secret_invalid` | The Secret key is wrong or revoked. |
+| `event_conflict` | An event ID was reused with different inputs. |
+
+A `503` response means integration evidence is temporarily unavailable. It still returns this format, and your flows are unaffected.

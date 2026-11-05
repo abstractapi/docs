@@ -1,0 +1,245 @@
+---
+title: 'Risk Platform quickstart'
+sidebarTitle: 'Quickstart'
+icon: 'rocket'
+description: 'Add the Risk Platform to your signup and login flows: collect a device token in the browser, send a check from your backend, and handle the recommendation.'
+---
+
+This guide connects one signup flow and one login flow to the Risk Platform. It has two halves: the browser collects a device token, and your backend sends the check. Both halves fail open, so a problem with the Risk API never stops a real user from signing up or logging in.
+
+<Warning>
+  **Draft values.** The SDK package names, the browser client function and the Risk API address shown as `{{...}}` placeholders are not final. Your Abstract contact gives you the current values with your keys.
+</Warning>
+
+## Before you start
+
+You need:
+
+- The Risk Platform turned on for your account. [Contact sales](https://calendly.com/d/crbk-jpf-9pv?&utm_source=documentation) if it isn't.
+- Your **Site key** and a **Secret key**, from **Risk Platform > API Keys** in the dashboard. The Site key is safe in browser code and only works from your allowed origins. The Secret key stays on your server. See [Keys](/api/risk-platform/keys).
+- Node 18 or later for the JavaScript SDK, or Python 3.9 or later for the Python SDK.
+
+Install the SDK for your stack:
+
+<CodeGroup>
+```bash npm
+npm install {{RISK_NODE_SDK}}
+```
+
+```bash pip
+pip install {{RISK_PYTHON_SDK}}
+```
+</CodeGroup>
+
+The npm package contains both the browser SDK and the Node server SDK.
+
+## 1. Browser: collect a device token
+
+Create one client for your app, start it on the signup or login page, and attach the token to the request your form already sends.
+
+```ts
+import { {{RISK_BROWSER_CLIENT}} } from "{{RISK_NODE_SDK}}/hosted";
+
+// Create one client for the whole app.
+const risk = {{RISK_BROWSER_CLIENT}}({ siteKey: "YOUR_SITE_KEY" }); // browser-safe
+
+// On the signup page, when it mounts (React example):
+useEffect(() => risk.start("signup"), []);
+
+// In your existing submit handler. Don't await anything before submitting.
+await fetch("/signup", risk.withToken("signup", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ email, password }),
+}));
+```
+
+Use `"login"` on your login page. What each call does:
+
+- `start(flow)` loads the collection script in the background and returns a cleanup function. Return it from your effect, or call it when the page unmounts. Start only the flow of the current page, not both flows in a global layout.
+- `withToken(flow, init)` adds the device token to your request in the `x-abstract-device-token` header. If no token is ready, it returns your request unchanged and the form submits as usual.
+- `status(flow)` returns the local collection state and a stable reason, without exposing the token. Use it while debugging.
+
+Each token works once and expires within five minutes. If your user retries a failed submission, call `withToken` again for the new request. See [Device tokens](/api/risk-platform/device-tokens).
+
+<Accordion title="Your API runs on a different origin">
+  The `x-abstract-device-token` header makes the browser send a CORS preflight. Add the header to your API's allowed headers, and keep an explicit list of allowed origins. With Django and `django-cors-headers`:
+
+  ```python
+  from corsheaders.defaults import default_headers
+
+  CORS_ALLOWED_ORIGINS = ["https://app.example.com"]
+  CORS_ALLOW_HEADERS = [*default_headers, "x-abstract-device-token"]
+  ```
+</Accordion>
+
+<Accordion title="Content Security Policy">
+  Allow the Risk API origin in `script-src` (the collection script) and in `connect-src` (token collection). If your policy uses nonces, pass `nonce` when you create the client.
+</Accordion>
+
+## 2. Backend: send a check
+
+Your server reads the Secret key from the `ABSTRACT_SECRET_KEY` environment variable. Pass the incoming request to the SDK: it reads the client IP, user agent, accepted language and the device token header, and nothing else. It never sends cookies, passwords, authorization headers or the request body.
+
+Pick the pattern that matches how you'll use the recommendation.
+
+### Monitor first: send after the action
+
+Create the account (or complete the login) first, then send the check without waiting for the answer. You review recommendations in the dashboard. This is the safest way to start, because the check can't add latency or change what your users see.
+
+<CodeGroup>
+```ts Node.js
+import { Abstract } from "{{RISK_NODE_SDK}}";
+
+const risk = new Abstract(); // reads ABSTRACT_SECRET_KEY
+
+const user = await createAccount(input);
+
+risk.checkLater("signup", {
+  request,
+  user: { id: user.id, email: user.email, phone: user.phone },
+});
+```
+
+```python Django
+from django.db import transaction
+from {{RISK_PYTHON_MODULE}} import Abstract
+
+risk = Abstract()  # reads ABSTRACT_SECRET_KEY
+
+user = create_account(request)
+
+risk.check_later(
+    "signup",
+    request=request,
+    user={"id": user.id, "email": user.email},
+    on_commit=transaction.on_commit,
+)
+```
+</CodeGroup>
+
+- In Python, `on_commit=transaction.on_commit` sends the check only if the account write commits. A rolled-back signup sends nothing.
+- In Node on a serverless platform, pass a `waitUntil` function to the constructor so the check finishes after the response. With Next.js: `new Abstract({ waitUntil: (p) => after(() => p) })`, using `after` from `next/server`.
+- `checkLater` returns a local status (`scheduled` or `skipped`). It confirms the check was handed off, not that it arrived. Use [Integration health](/api/risk-platform/api-reference/integration-health) to confirm delivery.
+
+### Act on the recommendation
+
+When you're ready to act, call `check` at the point where your handler can still change the outcome: for signup, before the new account becomes active; for login, after the password is verified and before you issue the session.
+
+<CodeGroup>
+```ts Node.js
+const result = await risk.check("signup", {
+  request,
+  user: { id: user.id, email: user.email, phone: user.phone },
+});
+
+// Fail open: a skipped or failed check counts as allow.
+const recommendation = result.status === "completed" ? result.recommendation : null;
+
+if (recommendation === "block") {
+  return genericSignupError(); // don't reveal the reason
+}
+if (recommendation === "review") {
+  await sendToReview(user, result.checkId);
+}
+// allow, or no recommendation: continue as usual
+```
+
+```python Python
+result = risk.check(
+    "signup",
+    request=request,
+    user={"id": user.id, "email": user.email, "phone": user.phone},
+)
+
+# Fail open: a skipped or failed check counts as allow.
+recommendation = None
+if result.status == "completed":
+    recommendation = result.response.get("recommendation")
+
+if recommendation == "block":
+    return generic_signup_error()  # don't reveal the reason
+if recommendation == "review":
+    send_to_review(user, result.check_id)
+# allow, or no recommendation: continue as usual
+```
+</CodeGroup>
+
+Put the action behind a setting that is off by default, so you can compare recommendations with real outcomes before turning it on.
+
+### Fail-open behavior
+
+The SDKs never throw on a Risk API problem. A timeout, network error, missing key or error response comes back as a status (`skipped` or `failed`) with a reason, and your flow continues. `check` waits at most 2.5 seconds in Node and 0.5 seconds in Python by default; set `timeoutMs` (Node) or `timeout` in seconds (Python) to change it.
+
+Treat these as allow:
+
+- `status` is not `completed`
+- `recommendation` is `null` (no policy is configured for the flow yet)
+- no device token arrived (the user blocked the script, or collection was late)
+
+### Login
+
+Login uses the same calls with `"login"` as the flow. Send the check after the password is verified:
+
+```ts
+risk.checkLater("login", { request, user: { id: user.id, email: user.email } });
+```
+
+### Behind a proxy or load balancer
+
+By default, a forwarded client IP (such as `X-Forwarded-For`) is recorded as untrusted, because callers can set that header themselves. Once you have confirmed that your load balancer overwrites the header, set `trustProxy: true` (Node) or `trust_proxy=True` (Python). If your app already knows the real client IP, pass it as `ip` instead.
+
+### Event IDs
+
+Each check carries an `event_id`, your correlation key for retries and for finding the check later. When you pass `user.id` and no `eventId`, the SDK uses `flow:user_id`. A retry with the same event ID and the same inputs returns the existing check instead of creating a new one. Generate event IDs on your server; never accept one from the browser.
+
+## 3. Test without live data
+
+Use the public test key `sk_test_public_fixtures` to get each response shape without sending real data. Test checks aren't stored and don't appear in the dashboard.
+
+<CodeGroup>
+```ts Node.js
+const sandbox = new Abstract({ secretKey: "sk_test_public_fixtures" });
+
+const result = await sandbox.check("signup", {
+  email: "person@example.com",
+  eventId: "test:review",
+  testFixture: "review",
+});
+```
+
+```python Python
+sandbox = Abstract(secret_key="sk_test_public_fixtures")
+
+result = sandbox.check(
+    "signup",
+    email="person@example.com",
+    event_id="test:review",
+    test_fixture="review",
+)
+```
+</CodeGroup>
+
+Available fixtures: `allow`, `review`, `block`, `device_invalid` and `timeout`. Your own Secret key also accepts fixtures. The public test key is rate-limited and only works with a fixture.
+
+## 4. Verify the integration
+
+Run the read-only doctor. It checks that the Risk API is reachable, that your Secret key works, and the health of the flow. It never prints your key.
+
+```bash
+ABSTRACT_SECRET_KEY=your_secret_key \
+npx {{RISK_NODE_SDK}} doctor --app-url http://localhost:3000 --flow signup --json
+```
+
+Exit codes: `0` verified, `1` reachable but incomplete, `2` invalid local configuration, `3` service or network unavailable.
+
+Then complete one real signup and one real login and open **Risk Platform > Integration** in the dashboard. A flow shows as verified when, within the last 24 hours, the browser SDK collected a token on an allowed origin, your backend sent a check for the same flow, that token was valid, and the client context was trusted. The same status is available from the [Integration health endpoint](/api/risk-platform/api-reference/integration-health).
+
+## Before you go live
+
+1. Confirm your exact staging and production origins are allowed for your Site key. Abstract sets the allowed origins with you.
+2. Keep the Site key in browser code and the Secret key on your server only. Scan your built assets and source maps for the Secret key.
+3. Block the collection script in your browser and confirm signup and login still work.
+4. Confirm a failed or rolled-back signup sends no check.
+5. Confirm both flows show as verified in **Integration**.
+6. Redact the `x-abstract-device-token` header from your proxy, analytics and error logs.

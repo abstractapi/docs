@@ -1,0 +1,46 @@
+---
+title: 'Keys'
+icon: 'key'
+description: 'The three Risk Platform keys: the Site key for browser code, Secret keys for sending checks from your server, and Management keys for changing lists.'
+---
+
+The Risk Platform uses three kinds of keys, each with one job. Find them in **Risk Platform > API Keys** in the dashboard.
+
+| Key | Where it goes | What it can do | What it can't do |
+|---|---|---|---|
+| Site key | Browser code | Collect device tokens from your allowed origins | Send checks, read data, change anything |
+| Secret key | Your server only | Send checks, read integration health, report outcomes, read lists | Change policies or lists |
+| Management key | One person or agent, server-side | Read and change lists | Send checks |
+
+These keys are separate from the API keys of Abstract's other products, such as Email Reputation or IP Intelligence. A Risk Platform key doesn't work on those APIs, and their keys don't work on the Risk API.
+
+## Site key
+
+The Site key is safe to ship in your frontend. It only collects device tokens, and only from the origins configured for it: a request from any other origin gets `401` with reason `origin_not_allowed`. The browser SDK sends it in the `X-Site-Key` header.
+
+## Secret key
+
+Your backend sends the Secret key as a bearer token:
+
+```http
+Authorization: Bearer YOUR_SECRET_KEY
+```
+
+The server SDKs read it from the `ABSTRACT_SECRET_KEY` environment variable.
+
+- A Secret key is shown once, when you create it. Store it in your secret manager right away.
+- Give each key a label that names where it runs (for example "Production web"). You can have several and revoke each one on its own.
+- Never put it in browser code, a public environment variable, a URL, logs, analytics or a source map.
+- Revoking a Secret key stops API access immediately.
+
+## Management key
+
+A Management key lets a person, or an agent working for them, change lists without the dashboard.
+
+- It belongs to the person who created it. Every change made with it records that person's email and the key's name, and shows up in the dashboard.
+- You choose an expiry when you create it: 30, 60 or 90 days, 1 year, or no expiration. It is shown once.
+- It can't send checks, and a Secret key can't change lists. Keeping the two apart means a compromised server can't rewrite the rules that judge its own traffic.
+
+## Test key
+
+The public key `sk_test_public_fixtures` returns fixed test responses for [testing your integration](/api/risk-platform/quickstart#3-test-without-live-data). It only works with a test fixture, is rate-limited, and never stores a check.

@@ -1,0 +1,74 @@
+---
+title: 'Report an outcome'
+sidebarTitle: 'Report an outcome'
+description: 'Risk API reference: report what an account turned out to be (conversion, fraud or dispute) so you can compare recommendations with real results.'
+---
+
+Attaches a business outcome to an earlier check: the account converted to a paid plan, turned out to be fraud, or caused a chargeback. Outcomes never change the stored recommendation. They show you which recommendations were right, so you can tune your policies.
+
+Send them from your systems, for example from your payment provider's webhooks.
+
+```http
+POST {{RISK_API_BASE_URL}}/v1/outcomes
+Authorization: Bearer YOUR_SECRET_KEY
+Content-Type: application/json
+```
+
+<RequestExample>
+```bash cURL
+curl -X POST '{{RISK_API_BASE_URL}}/v1/outcomes' \
+  -H 'Authorization: Bearer YOUR_SECRET_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "run_id": "chk_123",
+    "outcome_type": "dispute",
+    "outcome_label": "fraudulent",
+    "reported_at": "2026-11-05T16:00:00Z",
+    "context": { "source": "stripe", "outcome_id": "evt_123" }
+  }'
+```
+</RequestExample>
+
+## Request body
+
+Identify the check with one of `run_id`, `event_id` or `email`.
+
+<ParamField body="run_id" type="string">
+  The `check_id` returned by the check.
+</ParamField>
+
+<ParamField body="event_id" type="string">
+  The event ID you sent with the check. Use it when you didn't keep the check ID, for example after a timeout.
+</ParamField>
+
+<ParamField body="email" type="string">
+  The email of the signup. Matches the earliest signup check for that address before `reported_at`. If no check matches, the response is `200` with `"resolved": false` and nothing is stored, because reporting on a user who was never checked is normal.
+</ParamField>
+
+<ParamField body="outcome_type" type="string" required>
+  `conversion`, `fraud` or `dispute`.
+</ParamField>
+
+<ParamField body="outcome_label" type="string" required>
+  Your or your provider's label for the event, such as `approved`, `chargeback` or `fraudulent`.
+</ParamField>
+
+<ParamField body="reported_at" type="string">
+  When the event happened, as an RFC 3339 timestamp.
+</ParamField>
+
+<ParamField body="context" type="object">
+  Where the event came from. Set `source` (for example `stripe`) and a stable `outcome_id` so retries don't create duplicates: resending the same data with the same `outcome_id` returns the original outcome.
+</ParamField>
+
+## Response
+
+`200` with the stored outcome, or `{"resolved": false, "reason": "no_matching_check"}` when an email matched no check.
+
+## Errors
+
+| Status | Meaning |
+|---|---|
+| 400 | Unsupported outcome type or label, or missing check identifier. |
+| 401 | Missing or invalid Secret key. |
+| 404 | No check with this `run_id` or `event_id`. |

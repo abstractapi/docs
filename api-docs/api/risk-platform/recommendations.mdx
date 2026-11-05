@@ -1,0 +1,79 @@
+---
+title: 'Recommendations and reasons'
+icon: 'scale-balanced'
+description: 'How to read a Risk API response: the recommendation, the reasons behind it, data quality, monitor mode, and what to do when evidence is missing.'
+---
+
+Every check returns one recommendation from the policy for its flow, plus the evidence that produced it.
+
+## The three recommendations
+
+| Recommendation | Meaning | Typical handling |
+|---|---|---|
+| `allow` | No block or review rule matched, or an allow rule matched first. | Continue as usual. |
+| `review` | A review rule matched, or a rule needed data that wasn't available. | Continue, and send the account to a verification or manual review step. |
+| `block` | A block rule matched and no allow rule did. | Stop the action with a generic error. Don't reveal the reason to the user. |
+| `null` | No policy is configured for this flow yet. | Treat as allow. |
+
+How the policy picks one is described in [Policies and rules](/api/risk-platform/policies).
+
+## Monitor mode: recommendation vs. action
+
+A response has two separate fields:
+
+```json
+{
+  "mode": "monitor",
+  "recommendation": "block",
+  "action": "allow",
+  "enforced": false
+}
+```
+
+- `recommendation` is what your policy recommends.
+- `action` is what the Risk API did. In monitor mode it is always `allow`, and `enforced` is always `false`. The Risk API never rejects, delays or challenges your user by itself.
+
+Your application decides what a recommendation means for your users. If you don't act on recommendations yet, send checks after the action completes and review them in the dashboard. See [Quickstart](/api/risk-platform/quickstart#2-backend-send-a-check).
+
+## Reasons
+
+`policy.reasons` lists the rules that produced the recommendation:
+
+```json
+"policy": {
+  "id": "signup_policy",
+  "version": 4,
+  "configured": true,
+  "action": "review",
+  "reasons": [
+    { "code": "R3", "label": "Disposable email" }
+  ]
+}
+```
+
+- `code` is stable. Use it for grouping, metrics and logs.
+- `label` is the name you gave the rule in the dashboard. Use it for display only, because you can rename it.
+- `version` is the policy version that scored the check. Every policy change creates a new version, so you can always tell which rules were live.
+
+The top-level `reasons` array carries the same rules with more detail: the rule ID, its condition as text (`expr`), and what it contributed (for example `matched -> block` or `missing data -> review`). The dashboard shows this as the rule trace on each check.
+
+## Data quality
+
+A recommendation is only as good as the evidence behind it. `data_quality` tells you how complete that evidence was:
+
+- `confidence`: `verified` (every signal resolved), `partial` (some signals were missing or failed), or `unverifiable`.
+- `gaps`: the fields a rule needed but couldn't resolve, such as a phone rule on a check sent without a phone number, or a signal that timed out.
+
+Missing data is never filled in with a safe-looking value. By default a rule that can't be evaluated recommends `review`, so a gap is visible instead of silently passing. You can change that per rule; see [Unknown data](/api/risk-platform/policies#unknown-data).
+
+## Diagnostics
+
+`diagnostics` explains the quality of the request itself:
+
+- `device.token_present` and `device.token_valid`: whether a device token arrived and passed its checks. `device.reason` gives a stable reason when it didn't, such as `token_expired` or `token_replayed`. See [Device tokens](/api/risk-platform/device-tokens).
+- `ip_source` and `ip_trusted`: where the client IP came from (`explicit`, `platform`, `proxy_header`, `socket` or `unavailable`) and whether your integration trusts that source.
+- `velocity`: the combined velocity assessment, `none`, `watch` or `high`, with the detectors (IP or device) that contributed and a plain-language reason. Velocity is evidence for your rules; on its own it doesn't change a recommendation.
+
+## Recording outcomes
+
+When you learn what an account turned out to be (a paid conversion, confirmed fraud, a chargeback), report it with the [Outcomes endpoint](/api/risk-platform/api-reference/outcomes). Outcomes never change a stored recommendation. They let you compare what your policy said with what happened, so you can tune it.
