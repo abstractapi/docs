@@ -1,7 +1,7 @@
 ---
 title: 'Recommendations and reasons'
 icon: 'scale-balanced'
-description: 'How to read a Risk API response: the recommendation, the reasons behind it, data quality, monitor mode, and what to do when evidence is missing.'
+description: 'How to read a Risk API response: the recommendation, the reasons behind it, data quality, and what to do when evidence is missing.'
 ---
 
 Every check returns one recommendation from the policy for its flow, plus the evidence that produced it.
@@ -17,21 +17,9 @@ Every check returns one recommendation from the policy for its flow, plus the ev
 
 How the policy picks one is described in [Policies and rules](/api/risk-platform/policies).
 
-## Monitor mode: recommendation vs. action
+## Your application decides
 
-A response has two separate fields:
-
-```json
-{
-  "mode": "monitor",
-  "recommendation": "block",
-  "action": "allow",
-  "enforced": false
-}
-```
-
-- `recommendation` is what your policy recommends.
-- `action` is what the Risk API did. In monitor mode it is always `allow`, and `enforced` is always `false`. The Risk API never rejects, delays or challenges your user by itself.
+`recommendation` is what your policy recommends. The Risk API never rejects, delays or challenges your user by itself.
 
 Your application decides what a recommendation means for your users. If you don't act on recommendations yet, send checks after the action completes and review them in the dashboard. See [Quickstart](/api/risk-platform/quickstart#2-backend-send-a-check).
 

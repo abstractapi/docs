@@ -43,10 +43,7 @@ curl -X POST '{{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}' \
 {
   "contract_version": "1",
   "flow": "signup",
-  "mode": "monitor",
   "recommendation": "review",
-  "action": "allow",
-  "enforced": false,
   "check_id": "chk_123",
   "event_id": "signup:user_123",
   "policy": {
@@ -150,20 +147,8 @@ Send at least one of `email`, `phone`, `client.ip` or `device_token`.
   The flow you sent.
 </ResponseField>
 
-<ResponseField name="mode" type="string">
-  Always `monitor`. See [monitor mode](/api/risk-platform/recommendations#monitor-mode-recommendation-vs-action).
-</ResponseField>
-
 <ResponseField name="recommendation" type="string | null">
   `allow`, `review` or `block`. `null` when no policy is configured for the flow.
-</ResponseField>
-
-<ResponseField name="action" type="string">
-  What the Risk API did. Always `allow`: the Risk API never blocks a user by itself.
-</ResponseField>
-
-<ResponseField name="enforced" type="boolean">
-  Always `false`.
 </ResponseField>
 
 <ResponseField name="check_id" type="string">
