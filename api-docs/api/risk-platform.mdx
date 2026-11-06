@@ -1,0 +1,82 @@
+---
+title: 'Risk Platform'
+sidebarTitle: 'Overview'
+icon: 'shield-halved'
+description: "Stop fake signups, bots and account takeover attempts. The Risk Platform checks every signup and login against email, phone, IP, device and velocity signals and returns allow, review or block with the reasons."
+---
+
+<Note>
+  The Risk Platform is available under contract. There is no free plan: Abstract turns it on for your account. [Contact sales](https://calendly.com/d/crbk-jpf-9pv?&utm_source=documentation) to get access.
+</Note>
+
+Your signup form accepts every new account, including the ones created with disposable emails, from data center IPs, or by the same browser 50 times in an hour. Your login form can't tell a returning customer from someone testing a list of stolen passwords. By the time you notice, the fake accounts have used your free tier, sent spam from your platform, or taken over real accounts.
+
+The Risk Platform checks each signup and login as it happens. You send a check, and the Risk API answers with a recommendation (`allow`, `review` or `block`) and the reasons behind it. Your application decides what to do.
+
+## What a check looks at
+
+Each check combines several signals into one answer, so you don't have to call and reconcile separate APIs:
+
+| Signal | What it tells you | Source |
+|---|---|---|
+| Email | Disposable or free provider, deliverability, domain age, breaches, suspicious usernames | [Email Reputation](/api/email-reputation) |
+| Phone | Validity, line type, VoIP, carrier, risk level | [Phone Intelligence](/api/phone-intelligence) |
+| IP | Country, VPN, proxy, Tor, hosting provider, abuse history | [IP Intelligence](/api/ip-intelligence) |
+| Device | Bots and headless browsers, automation tools, browser and OS, a persistent browser identifier | The Risk Platform browser SDK |
+| Velocity | Bursts of attempts from one IP, one network or one browser | Calculated across your checks |
+
+You send whichever identifiers you have. A check needs at least one: an email, a phone number, an IP address or a device token.
+
+## How a check works
+
+<Steps>
+  <Step title="The browser collects a device token">
+    The browser SDK runs on your signup and login pages and attaches a short-lived device token to the form submission. It never delays the submission.
+  </Step>
+  <Step title="Your backend sends a check">
+    Your server calls the Risk API with the flow (`signup` or `login`), the user's email or phone, the original client IP and user agent, and the device token.
+  </Step>
+  <Step title="Your policy produces a recommendation">
+    The Risk Platform runs the policy for that flow and returns `allow`, `review` or `block`, the rules that matched, and how complete the evidence was.
+  </Step>
+  <Step title="Your application stays in control">
+    The Risk API never blocks a user by itself. You choose whether to record the recommendation, send the account to review, or stop the signup. If the Risk API is slow or unavailable, your flow continues as usual.
+  </Step>
+</Steps>
+
+### Start by reviewing recommendations
+
+The Risk API records what your policy recommends and leaves the decision to you. Start by sending checks and reviewing them in the dashboard. Tune your policies on your real traffic, then act on recommendations once they match what you see. See [Recommendations and reasons](/api/risk-platform/recommendations).
+
+## What's in the dashboard
+
+In the Abstract dashboard, open **Risk Platform**:
+
+- **Dashboard**: live check volume, recommendations over time, integration health and current alerts.
+- **Checks**: every check with its recommendation, the signals it used, and a rule trace showing which conditions matched.
+- **Activity**: repeated attempts from the same IP address, network or browser, with alert history.
+- **Policies**: the rules that turn signals into a recommendation, with full version history and rollback.
+- **Lists**: your own allow and deny lists of emails, IP addresses and phone numbers.
+- **Integration**: setup steps and a health status for each flow, so you can confirm the browser and backend halves are connected.
+- **API Keys**: your Site key and Secret keys.
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/api/risk-platform/quickstart">
+    Add the browser SDK and send your first signup and login checks.
+  </Card>
+  <Card title="Check endpoint" icon="code" href="/api/risk-platform/api-reference/check">
+    Request fields, response fields and errors.
+  </Card>
+  <Card title="Policies and rules" icon="sliders" href="/api/risk-platform/policies">
+    How a policy turns signals into a recommendation.
+  </Card>
+  <Card title="Keys" icon="key" href="/api/risk-platform/keys">
+    Site key and Secret key: which one goes where.
+  </Card>
+</CardGroup>
+
+## Get access
+
+The Risk Platform is sold under contract, with check volume and terms set per account. There is no self-serve plan or public price list. [Contact sales](https://calendly.com/d/crbk-jpf-9pv?&utm_source=documentation) to set it up for your account. Once it's on, the Risk Platform appears in your dashboard with your keys ready.

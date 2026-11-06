@@ -1,0 +1,47 @@
+---
+title: 'Lists'
+icon: 'list'
+description: 'Keep your own allow and deny lists of emails, IP addresses and phone numbers, and use them in Risk Platform rules.'
+---
+
+A list is a named set of emails, IP addresses or phone numbers that your rules can test. Use lists for what only you know: your team's test accounts, customers you've already verified, or addresses you've seen abuse your product.
+
+Manage lists in **Risk Platform > Lists**, and read them through the [Lists endpoints](/api/risk-platform/api-reference/lists).
+
+## Kinds of lists
+
+Each list holds one kind of value: `email`, `ip` or `phone`. A rule can only test a list against a matching field, for example an `email` list against `email.address`.
+
+Lists are either:
+
+- **Manual**: you create the list and add or remove items.
+- **System-managed**: the Risk Platform keeps them up to date, for example IP addresses and emails seen at high velocity across your checks. You can read them and use them in rules.
+
+## Using a list in a rule
+
+Use the `in_list` or `not_in_list` operator with the list's ID:
+
+```json
+{
+  "action": "allow",
+  "groups": [
+    { "match": "all", "conditions": [
+      { "field": "email.address", "op": "in_list", "value": "verified_customers" }
+    ]}
+  ]
+}
+```
+
+An allow rule that tests a list is how you exempt known-good users from your block and review rules, because allow rules win first.
+
+## What isn't a list
+
+Country sets live inside the rule, not in a list. To stop blocking a country, edit the rule's `ip.country_code in ...` condition in the policy. Lists only hold emails, IP addresses and phone numbers.
+
+## Items
+
+Each item records its value, a normalized value used for matching, optional metadata, where it came from, when it was first and last seen, and how many checks it matched. 
+
+## Permissions
+
+Read lists through the Risk API with a Secret key. Create lists and add or remove items in the dashboard.

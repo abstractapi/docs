@@ -1,0 +1,75 @@
+---
+title: 'Lists endpoints'
+sidebarTitle: 'Lists'
+description: 'Risk API reference for Lists: read lists and their items with a Secret key.'
+---
+
+Read the [Lists](/api/risk-platform/lists) your rules test, with a Secret key. Create lists and add or remove items in the dashboard.
+
+| Method | Path | Key |
+|---|---|---|
+| `GET` | `/v1/lists` | Secret |
+| `GET` | `/v1/lists/{list_id}/items` | Secret |
+
+All paths are relative to `https://protection-api-service.vercel.app`.
+
+## List all lists
+
+```bash
+curl 'https://protection-api-service.vercel.app/v1/lists' \
+  -H 'Authorization: Bearer sk_...'
+```
+
+Returns an array of lists:
+
+```json
+[
+  {
+    "id": "verified_customers",
+    "name": "Verified customers",
+    "kind": "email",
+    "description": "Customers verified by our support team",
+    "managed_by": "manual",
+    "created_at": "2026-10-01T12:00:00Z",
+    "updated_at": "2026-11-04T09:30:00Z",
+    "item_count": 214
+  }
+]
+```
+
+<ResponseField name="id" type="string">
+  The list ID. Rules reference this ID with `in_list` and `not_in_list`.
+</ResponseField>
+
+<ResponseField name="kind" type="string">
+  `email`, `ip` or `phone`.
+</ResponseField>
+
+<ResponseField name="managed_by" type="string">
+  `manual` for your own lists, `system` for lists the Risk Platform maintains.
+</ResponseField>
+
+## List items
+
+```bash
+curl 'https://protection-api-service.vercel.app/v1/lists/verified_customers/items?limit=500' \
+  -H 'Authorization: Bearer sk_...'
+```
+
+<ParamField query="limit" type="integer" default="500">
+  How many of the most recent items to return, from 1 to 5000.
+</ParamField>
+
+<ParamField query="audit" type="boolean" default="false">
+  Also return recent changes to the list in `audit_events`.
+</ParamField>
+
+Returns `items`, each with `id`, `list_id`, `value`, `normalized_value`, `metadata`, `source`, `first_seen_at`, `last_seen_at`, `hit_count`, `created_at` and `updated_at`.
+
+## Errors
+
+| Status | `reason` | Meaning |
+|---|---|---|
+| 400 | | Malformed request. |
+| 401 | `unauthorized` | Missing or invalid key. |
+| 404 | | The list doesn't exist. |

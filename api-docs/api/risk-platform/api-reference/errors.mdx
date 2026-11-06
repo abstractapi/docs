@@ -1,0 +1,42 @@
+---
+title: 'Errors'
+sidebarTitle: 'Errors'
+description: 'Risk API error format, status codes, and how to retry without affecting your users.'
+---
+
+Every Risk API error uses the same JSON format:
+
+```json
+{
+  "error": "unauthorized",
+  "reason": "unauthorized",
+  "message": "Missing or invalid API key.",
+  "status": 401,
+  "type": "https://protection-api-service.vercel.app/docs#errors-and-retries"
+}
+```
+
+- `error`: the error class, one of `bad_request`, `unauthorized`, `forbidden`, `not_found`, `method_not_allowed`, `conflict`, `rate_limited`, `internal_error` or `service_unavailable`.
+- `reason`: a stable, machine-readable reason. Branch on this field, never on `message`.
+- `message`: a human-readable explanation. It may change.
+
+## Status codes
+
+| Status | `error` | Example `reason` | Retry? |
+|---|---|---|---|
+| 400 | `bad_request` | `malformed_json`, `invalid_rule` | No. Fix the request. |
+| 401 | `unauthorized` | `unauthorized` | No. Check the key. |
+| 403 | `forbidden` | `sandbox_fixture_required` | No. Use the right key. |
+| 404 | `not_found` | `run_not_found`, `policy_not_found` | No. |
+| 409 | `conflict` | `event_conflict`, `version_conflict` | No. Use a new event ID for a new action. For a policy change, read the policy again and reapply. |
+| 429 | `rate_limited` | `unconfigured_flow_limit_exceeded` | Yes, with backoff. Respect `Retry-After`. For `unconfigured_flow_limit_exceeded`, create a policy for the flow first. |
+| 500 | `internal_error` | | Only with the same event ID. |
+| 503 | `service_unavailable` | | Yes, later. Continue your flow as allow now. |
+
+## Retrying safely
+
+A device token can be used once, so don't resend a check with a fresh copy of the same request. Instead:
+
+- Keep the same `event_id` on every retry. If the first attempt completed, the Risk API returns that check instead of creating a second one.
+- After a timeout, look up the result with [Retrieve a check](/api/risk-platform/api-reference/get-check).
+- Never hold up a signup or login to retry. The server SDKs return a `failed` or `skipped` status instead of throwing, so your flow continues.

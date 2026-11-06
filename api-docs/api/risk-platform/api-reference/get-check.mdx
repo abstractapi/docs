@@ -1,0 +1,38 @@
+---
+title: 'Retrieve a check'
+sidebarTitle: 'Retrieve a check'
+description: 'Risk API reference: fetch the result of an earlier check by its event ID, for example after a timeout.'
+---
+
+Returns the response of a check you sent earlier, looked up by its event ID. Use it when your request timed out but the check may have completed, instead of sending the check again (the device token can only be used once).
+
+```http
+GET https://protection-api-service.vercel.app/v1/protection/runs/{event_id}
+Authorization: Bearer sk_...
+```
+
+<RequestExample>
+```bash cURL
+curl 'https://protection-api-service.vercel.app/v1/protection/runs/signup:user_123' \
+  -H 'Authorization: Bearer sk_...'
+```
+</RequestExample>
+
+## Path parameters
+
+<ParamField path="event_id" type="string" required>
+  The event ID you sent with the original check. Up to 128 characters.
+</ParamField>
+
+## Response
+
+The same response as [Send a check](/api/risk-platform/api-reference/check#response).
+
+## Errors
+
+| Status | `reason` | Meaning |
+|---|---|---|
+| 401 | `unauthorized` | Missing or invalid Secret key. |
+| 404 | `run_not_found` | No check with this event ID for your account. |
+
+The Python SDK wraps this endpoint as `get_by_event_id(event_id)`.

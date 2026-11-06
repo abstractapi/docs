@@ -1,0 +1,87 @@
+---
+title: 'Policies and rules'
+icon: 'sliders'
+description: 'How a Risk Platform policy turns email, phone, IP, device and velocity signals into allow, review or block, and how to change it safely.'
+---
+
+A policy is the set of rules that decides the recommendation for one flow. The `signup` flow runs the `signup_protection` policy, and the `login` flow runs `login_protection`. Your integration sends the flow name; it never needs to know which policy runs.
+
+Manage policies in **Risk Platform > Policies**.
+
+## Rules
+
+A rule has an action and one or more conditions:
+
+- **Action**: `allow`, `review` or `block`.
+- **Conditions**: tests on a signal field, such as `email.is_disposable is true`, `ip.country_code in IR, KP` or `email.address in list known_abusers`.
+- **Match**: conditions are grouped. A rule can require all conditions in a group, or any group to match.
+
+For example, a rule that blocks signups from Tor exit nodes or from automated browsers:
+
+```json
+{
+  "action": "block",
+  "match": "any",
+  "groups": [
+    { "match": "all", "conditions": [{ "field": "ip.is_tor", "op": "is_true" }] },
+    { "match": "all", "conditions": [{ "field": "device.automation.is_bot", "op": "is_true" }] }
+  ]
+}
+```
+
+## How the recommendation is chosen
+
+The policy evaluates in three passes:
+
+1. If any **allow** rule matches, the recommendation is `allow`. Allow rules are how you exempt trusted users, for example an allow list of your own team's emails.
+2. Otherwise, if any **block** or **review** rule matches, the strictest one wins: `block` beats `review`.
+3. Otherwise, the recommendation is `allow`.
+
+## Fields you can test
+
+Rules read normalized fields, not raw API responses. A few examples per signal:
+
+| Signal | Example fields |
+|---|---|
+| Email | `email.is_disposable`, `email.is_free_email`, `email.deliverability`, `email.domain_age`, `email.is_username_suspicious`, `email.total_breaches` |
+| Phone | `phone.is_valid`, `phone.line_type`, `phone.is_voip`, `phone.is_disposable`, `phone.risk_level` |
+| IP | `ip.country_code`, `ip.is_vpn`, `ip.is_proxy`, `ip.is_tor`, `ip.is_hosting`, `ip.is_abuse` |
+| Device | `device.token_valid`, `device.automation.is_bot`, `device.automation.is_headless`, `device.integrity.is_vm`, `device.browser.name` |
+| Velocity | `ip.velocity_status`, `device.velocity_status`, `device.persistent_browser_velocity_status` |
+
+The policy editor in the dashboard lists every field with its operators and allowed values.
+
+Operators include `is_true`, `is_false`, `is`, `is_not`, `in`, `not_in`, `contains`, `starts_with`, `ends_with`, `eq`, `ne`, `lt`, `lte`, `gt`, `gte`, `between`, `is_empty`, `is_not_empty`, and `in_list` / `not_in_list` for [Lists](/api/risk-platform/lists).
+
+## Unknown data
+
+Sometimes a rule can't be evaluated: the check had no phone number, a signal timed out, or a list could not be read. Each rule sets what happens then with `on_unknown`:
+
+- `review` (default): the rule recommends `review`, so the gap is visible.
+- `skip`: the rule is ignored for this check.
+- `apply`: the rule applies its own action as if it had matched.
+
+The missing fields appear in the response under `data_quality.gaps`.
+
+## Versions, history and rollback
+
+Every change to a policy creates a new, numbered version. Versions are never edited, and every check records the version that scored it.
+
+The policy page shows **Policy history**: each version, when it was made, who made it, and which rules changed. To undo a change, roll back to an earlier version in the dashboard. A rollback adds a new version with the earlier rules, so the history stays complete.
+
+Rule IDs are never reused. If you delete rule `R5`, the next rule you add is `R6`, so older checks still point to the right rule.
+
+<Warning>
+  A policy change is live as soon as you save it. If your application acts on recommendations, the next check uses the new rules.
+</Warning>
+
+## Flows without a policy
+
+You can send checks for a flow before it has a policy. They are accepted with `recommendation: null` and `policy.configured: false`, so you can see real traffic in the dashboard before writing rules.
+
+Two limits apply to checks for flows without a policy. They count every such check your account has sent, so they don't reset over time:
+
+- **1,000 checks per flow.** Once a flow without a policy has 1,000 recorded checks, each new check for it is refused with `429` and reason `unconfigured_flow_limit_exceeded`, and nothing is recorded. Create a policy for the flow in the dashboard to keep collecting.
+- **50 flow names.** Up to 50 different flow names without a policy are each recorded under their own name. After that, checks for any new flow name are recorded together under the flow `__other`, which has its own limit of 1,000 checks.
+
+Flows that have a policy have no such limit. The server SDKs treat the `429` like any other error response: your flow continues as allow.

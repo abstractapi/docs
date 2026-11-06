@@ -38,6 +38,36 @@
             ]
           },
           {
+            "group": "Risk Platform",
+            "pages": [
+              "api/risk-platform",
+              "api/risk-platform/quickstart",
+              {
+                "group": "Concepts",
+                "icon": "book-open",
+                "pages": [
+                  "api/risk-platform/recommendations",
+                  "api/risk-platform/policies",
+                  "api/risk-platform/lists",
+                  "api/risk-platform/keys",
+                  "api/risk-platform/device-tokens"
+                ]
+              },
+              {
+                "group": "Risk API reference",
+                "icon": "code",
+                "pages": [
+                  "api/risk-platform/api-reference/check",
+                  "api/risk-platform/api-reference/get-check",
+                  "api/risk-platform/api-reference/integration-health",
+                  "api/risk-platform/api-reference/outcomes",
+                  "api/risk-platform/api-reference/lists",
+                  "api/risk-platform/api-reference/errors"
+                ]
+              }
+            ]
+          },
+          {
             "group": "APIs to verify",
             "pages": [
               "api/iban-validation",
@@ -105,6 +135,10 @@
     {
       "source": "/api",
       "destination": "/introduction"
+    },
+    {
+      "source": "/protection",
+      "destination": "/api/risk-platform"
     }
   ],
   "integrations": {

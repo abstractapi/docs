@@ -1,0 +1,61 @@
+---
+title: 'Device tokens'
+icon: 'fingerprint'
+description: 'How the Risk Platform browser SDK collects device evidence, what a device token is, its lifetime, and what each token reason means.'
+---
+
+A device token carries browser evidence from your signup or login page to your backend check. The browser SDK collects it, your form request carries it, and the Risk API reads it when your server sends the check.
+
+## What the browser SDK collects
+
+The SDK looks for signs of automation (headless browsers, WebDriver, automation tooling), checks whether the browser's claims are consistent, and records the browser and operating system. It never reads your form fields.
+
+It also stores one random browser identifier in first-party storage, so the Risk Platform can recognize the same browser across visits and spot one browser creating many accounts. The identifier lasts 180 days by default and doesn't extend when read. To change that:
+
+```ts
+const risk = createHostedProtection({
+  siteKey: "YOUR_SITE_KEY",
+  storageLifetimeDays: 30, // 1 to 180
+  // storage: "memory",    // or: keep nothing between page loads
+});
+```
+
+Cleared storage, private windows and shared browser profiles weaken this evidence. A browser identifier is evidence, not proof of who a person is.
+
+## Token rules
+
+Every device token is:
+
+- **Opaque**: don't parse it.
+- **Short-lived**: it expires within five minutes.
+- **Single-use**: one token, one check. A retry of the same check (same event ID, same inputs) doesn't consume it again.
+- **Bound**: to the flow it was collected for, the origin it came from, and your account. A login token sent with a signup check is a mismatch.
+
+Treat the `x-abstract-device-token` header like a session token: redact it from proxy, analytics and error logs.
+
+## Token reasons
+
+When a token is missing or fails a check, `diagnostics.device.reason` says why:
+
+| Reason | Meaning |
+|---|---|
+| `token_missing` | No token arrived with the check. |
+| `token_expired` | The token was older than its five-minute lifetime. |
+| `token_replayed` | The token was already used by another check. |
+| `token_invalid` | The token couldn't be verified. |
+| `token_flow_mismatch` | The token was collected for a different flow. |
+| `token_origin_mismatch` | The token came from a different origin. |
+| `token_project_mismatch` | The token belongs to a different account than your Secret key. |
+| `token_limited` | Token collection was rate-limited. |
+
+A missing or invalid token never stops a check. The check runs with the other signals, and the device fields show up as data gaps.
+
+## Collection errors
+
+The browser SDK handles these locally and your form still submits. Call `status(flow)` to see them while debugging:
+
+| Reason | Fix |
+|---|---|
+| `missing_site_key` | Pass `siteKey` when you create the client. |
+| `origin_missing` | The request had no `Origin` header. Collect from a page, not a server. |
+| `origin_not_allowed` | This origin isn't allowed for your Site key. Contact [support](mailto:support@abstractapi.com) to add it. |
