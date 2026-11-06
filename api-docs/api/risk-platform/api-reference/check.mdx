@@ -7,7 +7,7 @@ description: 'Risk API reference for the check endpoint: request fields, respons
 Evaluates one signup or login against the policy for its flow and returns a recommendation. Call it from your backend with a Secret key. The server SDKs build this request for you; use the HTTP API directly only if there is no SDK for your stack.
 
 ```http
-POST {{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}
+POST https://protection-api-service.vercel.app/v1/protection
 Authorization: Bearer sk_...
 Content-Type: application/json
 ```
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 <RequestExample>
 ```bash cURL
-curl -X POST '{{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}' \
+curl -X POST 'https://protection-api-service.vercel.app/v1/protection' \
   -H 'Authorization: Bearer sk_...' \
   -H 'Content-Type: application/json' \
   -d '{

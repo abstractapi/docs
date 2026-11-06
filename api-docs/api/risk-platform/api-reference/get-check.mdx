@@ -7,13 +7,13 @@ description: 'Risk API reference: fetch the result of an earlier check by its ev
 Returns the response of a check you sent earlier, looked up by its event ID. Use it when your request timed out but the check may have completed, instead of sending the check again (the device token can only be used once).
 
 ```http
-GET {{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}/runs/{event_id}
+GET https://protection-api-service.vercel.app/v1/protection/runs/{event_id}
 Authorization: Bearer sk_...
 ```
 
 <RequestExample>
 ```bash cURL
-curl '{{RISK_API_BASE_URL}}{{RISK_CHECK_PATH}}/runs/signup:user_123' \
+curl 'https://protection-api-service.vercel.app/v1/protection/runs/signup:user_123' \
   -H 'Authorization: Bearer sk_...'
 ```
 </RequestExample>

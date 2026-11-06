@@ -7,10 +7,6 @@ description: 'Add the Risk Platform to your signup and login flows: collect a de
 
 This guide connects one signup flow and one login flow to the Risk Platform. It has two halves: the browser collects a device token, and your backend sends the check. Both halves fail open, so a problem with the Risk API never stops a real user from signing up or logging in.
 
-<Warning>
-  **Draft values.** The SDK package names, the browser client function and the Risk API address shown as `{{...}}` placeholders are not final. Your Abstract contact gives you the current values with your keys.
-</Warning>
-
 ## Before you start
 
 You need:
@@ -18,16 +14,17 @@ You need:
 - The Risk Platform turned on for your account. [Contact sales](https://calendly.com/d/crbk-jpf-9pv?&utm_source=documentation) if it isn't.
 - Your **Site key** and a **Secret key**, from **Risk Platform > API Keys** in the dashboard. The Site key is safe in browser code and only works from your allowed origins. The Secret key stays on your server. See [Keys](/api/risk-platform/keys).
 - Node 18 or later for the JavaScript SDK, or Python 3.9 or later for the Python SDK.
+- Access to the SDK packages. They are private for now: ask your Abstract contact to give your team access.
 
 Install the SDK for your stack:
 
 <CodeGroup>
 ```bash npm
-npm install {{RISK_NODE_SDK}}
+npm install @abstract/protection
 ```
 
 ```bash pip
-pip install {{RISK_PYTHON_SDK}}
+pip install abstract-protection
 ```
 </CodeGroup>
 
@@ -38,14 +35,14 @@ The npm package contains both the browser SDK and the Node server SDK.
 Create one client for your app, start it on the signup or login page, and attach the token to the request your form already sends.
 
 <Note>
-  Your Site key works only on the web addresses allowed for it. Before you test, add each origin your signup and login pages run on (for example `https://app.example.com` and `http://localhost:3000`) with the [allowed origins endpoint](/api/risk-platform/api-reference/allowed-origins), called from your server with your Secret key.
+  Your Site key works only on the web addresses allowed for it. Before you test, add each origin your signup and login pages run on (for example `https://app.example.com` and `http://localhost:3000`) by asking [support](mailto:support@abstractapi.com).
 </Note>
 
 ```ts
-import { {{RISK_BROWSER_CLIENT}} } from "{{RISK_NODE_SDK}}/hosted";
+import { createHostedProtection } from "@abstract/protection/hosted";
 
 // Create one client for the whole app.
-const risk = {{RISK_BROWSER_CLIENT}}({ siteKey: "YOUR_SITE_KEY" }); // browser-safe
+const risk = createHostedProtection({ siteKey: "YOUR_SITE_KEY" }); // browser-safe
 
 // On the signup page, when it mounts (React example):
 useEffect(() => risk.start("signup"), []);
@@ -93,7 +90,7 @@ Create the account (or complete the login) first, then send the check without wa
 
 <CodeGroup>
 ```ts Node.js
-import { Abstract } from "{{RISK_NODE_SDK}}";
+import { Abstract } from "@abstract/protection";
 
 const risk = new Abstract(); // reads ABSTRACT_SECRET_KEY
 
@@ -107,7 +104,7 @@ risk.checkLater("signup", {
 
 ```python Django
 from django.db import transaction
-from {{RISK_PYTHON_MODULE}} import Abstract
+from abstract_protection import Abstract
 
 risk = Abstract()  # reads ABSTRACT_SECRET_KEY
 
@@ -232,7 +229,7 @@ Run the read-only doctor. It checks that the Risk API is reachable, that your Se
 
 ```bash
 ABSTRACT_SECRET_KEY=sk_... \
-npx {{RISK_NODE_SDK}} doctor --app-url http://localhost:3000 --flow signup --json
+npx @abstract/protection doctor --app-url http://localhost:3000 --flow signup --json
 ```
 
 Exit codes: `0` verified, `1` reachable but incomplete, `2` invalid local configuration, `3` service or network unavailable. A check reported as `protection_unavailable` means the doctor couldn't reach the Risk API.
@@ -241,7 +238,7 @@ Then complete one real signup and one real login and open **Risk Platform > Inte
 
 ## Before you go live
 
-1. Confirm your exact staging and production origins are allowed for your Site key. Add any that are missing with the [allowed origins endpoint](/api/risk-platform/api-reference/allowed-origins).
+1. Confirm your exact staging and production origins are allowed for your Site key. Ask [support](mailto:support@abstractapi.com) to add any that are missing.
 2. Keep the Site key in browser code and the Secret key on your server only. Scan your built assets and source maps for the Secret key.
 3. Block the collection script in your browser and confirm signup and login still work.
 4. Confirm a failed or rolled-back signup sends no check.

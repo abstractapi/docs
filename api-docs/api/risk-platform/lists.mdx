@@ -6,7 +6,7 @@ description: 'Keep your own allow and deny lists of emails, IP addresses and pho
 
 A list is a named set of emails, IP addresses or phone numbers that your rules can test. Use lists for what only you know: your team's test accounts, customers you've already verified, or addresses you've seen abuse your product.
 
-Manage lists in **Risk Platform > Lists**, or through the [Lists endpoints](/api/risk-platform/api-reference/lists).
+Manage lists in **Risk Platform > Lists**, and read them through the [Lists endpoints](/api/risk-platform/api-reference/lists).
 
 ## Kinds of lists
 
@@ -40,8 +40,8 @@ Country sets live inside the rule, not in a list. To stop blocking a country, ed
 
 ## Items
 
-Each item records its value, a normalized value used for matching, optional metadata, where it came from, when it was first and last seen, and how many checks it matched. Items added with a Management key are attributed to the key's owner.
+Each item records its value, a normalized value used for matching, optional metadata, where it came from, when it was first and last seen, and how many checks it matched. 
 
 ## Permissions
 
-Reading lists works with a Secret key or a Management key. Creating a list and adding or removing items through the Risk API requires a [Management key](/api/risk-platform/keys#management-key). A Secret key gets `403` with reason `management_key_required`.
+Read lists through the Risk API with a Secret key. Create lists and add or remove items in the dashboard.

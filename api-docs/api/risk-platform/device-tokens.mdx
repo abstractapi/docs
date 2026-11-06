@@ -13,7 +13,7 @@ The SDK looks for signs of automation (headless browsers, WebDriver, automation 
 It also stores one random browser identifier in first-party storage, so the Risk Platform can recognize the same browser across visits and spot one browser creating many accounts. The identifier lasts 180 days by default and doesn't extend when read. To change that:
 
 ```ts
-const risk = {{RISK_BROWSER_CLIENT}}({
+const risk = createHostedProtection({
   siteKey: "YOUR_SITE_KEY",
   storageLifetimeDays: 30, // 1 to 180
   // storage: "memory",    // or: keep nothing between page loads
@@ -58,4 +58,4 @@ The browser SDK handles these locally and your form still submits. Call `status(
 |---|---|
 | `missing_site_key` | Pass `siteKey` when you create the client. |
 | `origin_missing` | The request had no `Origin` header. Collect from a page, not a server. |
-| `origin_not_allowed` | This origin isn't allowed for your Site key. Add it with the [allowed origins endpoint](/api/risk-platform/api-reference/allowed-origins). |
+| `origin_not_allowed` | This origin isn't allowed for your Site key. Contact [support](mailto:support@abstractapi.com) to add it. |

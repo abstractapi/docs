@@ -1,25 +1,22 @@
 ---
 title: 'Lists endpoints'
 sidebarTitle: 'Lists'
-description: 'Risk API reference for Lists: read lists and items with a Secret or Management key, and create lists or add and remove items with a Management key.'
+description: 'Risk API reference for Lists: read lists and their items with a Secret key.'
 ---
 
-Read and change the [Lists](/api/risk-platform/lists) your rules test. Reads accept a Secret key or a Management key. Writes require a [Management key](/api/risk-platform/keys#management-key); a Secret key gets `403` with reason `management_key_required`.
+Read the [Lists](/api/risk-platform/lists) your rules test, with a Secret key. Create lists and add or remove items in the dashboard.
 
 | Method | Path | Key |
 |---|---|---|
-| `GET` | `/v1/lists` | Secret or Management |
-| `POST` | `/v1/lists` | Management |
-| `GET` | `/v1/lists/{list_id}/items` | Secret or Management |
-| `POST` | `/v1/lists/{list_id}/items` | Management |
-| `DELETE` | `/v1/lists/{list_id}/items?value=` | Management |
+| `GET` | `/v1/lists` | Secret |
+| `GET` | `/v1/lists/{list_id}/items` | Secret |
 
-All paths are relative to `{{RISK_API_BASE_URL}}`.
+All paths are relative to `https://protection-api-service.vercel.app`.
 
 ## List all lists
 
 ```bash
-curl '{{RISK_API_BASE_URL}}/v1/lists' \
+curl 'https://protection-api-service.vercel.app/v1/lists' \
   -H 'Authorization: Bearer sk_...'
 ```
 
@@ -52,42 +49,10 @@ Returns an array of lists:
   `manual` for your own lists, `system` for lists the Risk Platform maintains.
 </ResponseField>
 
-## Create a list
-
-```bash
-curl -X POST '{{RISK_API_BASE_URL}}/v1/lists' \
-  -H 'Authorization: Bearer mk_...' \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "id": "verified_customers",
-    "name": "Verified customers",
-    "kind": "email",
-    "description": "Customers verified by our support team"
-  }'
-```
-
-<ParamField body="id" type="string" required>
-  The list ID you'll use in rules.
-</ParamField>
-
-<ParamField body="name" type="string" required>
-  Display name.
-</ParamField>
-
-<ParamField body="kind" type="string" required>
-  `email`, `ip` or `phone`. It can't change later.
-</ParamField>
-
-<ParamField body="description" type="string">
-  What the list is for.
-</ParamField>
-
-Returns `201` with the new list.
-
 ## List items
 
 ```bash
-curl '{{RISK_API_BASE_URL}}/v1/lists/verified_customers/items?limit=500' \
+curl 'https://protection-api-service.vercel.app/v1/lists/verified_customers/items?limit=500' \
   -H 'Authorization: Bearer sk_...'
 ```
 
@@ -101,45 +66,10 @@ curl '{{RISK_API_BASE_URL}}/v1/lists/verified_customers/items?limit=500' \
 
 Returns `items`, each with `id`, `list_id`, `value`, `normalized_value`, `metadata`, `source`, `first_seen_at`, `last_seen_at`, `hit_count`, `created_at` and `updated_at`.
 
-## Add an item
-
-Adds a value, or refreshes it if it's already on the list.
-
-```bash
-curl -X POST '{{RISK_API_BASE_URL}}/v1/lists/verified_customers/items' \
-  -H 'Authorization: Bearer mk_...' \
-  -H 'Content-Type: application/json' \
-  -d '{ "value": "person@example.com", "metadata": { "ticket": "SUP-1042" } }'
-```
-
-<ParamField body="value" type="string" required>
-  The email, IP address or phone number. It must match the list's kind.
-</ParamField>
-
-<ParamField body="metadata" type="object">
-  Your own notes on the item, such as a ticket reference.
-</ParamField>
-
-Returns `201` with the item. Items added this way are attributed to the Management key's owner.
-
-## Remove an item
-
-```bash
-curl -X DELETE '{{RISK_API_BASE_URL}}/v1/lists/verified_customers/items?value=person@example.com' \
-  -H 'Authorization: Bearer mk_...'
-```
-
-<ParamField query="value" type="string" required>
-  The value to remove, URL-encoded.
-</ParamField>
-
-Returns `200` with `{"ok": true}`, or `404` if the list doesn't exist.
-
 ## Errors
 
 | Status | `reason` | Meaning |
 |---|---|---|
 | 400 | | Malformed request. |
 | 401 | `unauthorized` | Missing or invalid key. |
-| 403 | `management_key_required` | Writes need a Management key. |
 | 404 | | The list doesn't exist. |

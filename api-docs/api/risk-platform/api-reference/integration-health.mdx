@@ -7,13 +7,13 @@ description: 'Risk API reference: confirm that the browser and backend halves of
 Tells you whether a flow is fully connected: the browser SDK collects tokens, your backend sends checks, and the two meet. It's the same status as **Risk Platform > Integration** in the dashboard. Test checks are excluded.
 
 ```http
-GET {{RISK_API_BASE_URL}}/v1/integration-health?flow=signup
+GET https://protection-api-service.vercel.app/v1/integration-health?flow=signup
 Authorization: Bearer sk_...
 ```
 
 <RequestExample>
 ```bash cURL
-curl '{{RISK_API_BASE_URL}}/v1/integration-health?flow=signup' \
+curl 'https://protection-api-service.vercel.app/v1/integration-health?flow=signup' \
   -H 'Authorization: Bearer sk_...'
 ```
 </RequestExample>

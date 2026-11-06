@@ -9,14 +9,14 @@ Attaches a business outcome to an earlier check: the account converted to a paid
 Send them from your systems, for example from your payment provider's webhooks.
 
 ```http
-POST {{RISK_API_BASE_URL}}/v1/outcomes
+POST https://protection-api-service.vercel.app/v1/outcomes
 Authorization: Bearer sk_...
 Content-Type: application/json
 ```
 
 <RequestExample>
 ```bash cURL
-curl -X POST '{{RISK_API_BASE_URL}}/v1/outcomes' \
+curl -X POST 'https://protection-api-service.vercel.app/v1/outcomes' \
   -H 'Authorization: Bearer sk_...' \
   -H 'Content-Type: application/json' \
   -d '{

@@ -12,7 +12,7 @@ Every Risk API error uses the same JSON format:
   "reason": "unauthorized",
   "message": "Missing or invalid API key.",
   "status": 401,
-  "type": "{{RISK_API_BASE_URL}}/docs#errors-and-retries"
+  "type": "https://protection-api-service.vercel.app/docs#errors-and-retries"
 }
 ```
 
@@ -26,7 +26,7 @@ Every Risk API error uses the same JSON format:
 |---|---|---|---|
 | 400 | `bad_request` | `malformed_json`, `invalid_rule` | No. Fix the request. |
 | 401 | `unauthorized` | `unauthorized` | No. Check the key. |
-| 403 | `forbidden` | `sandbox_fixture_required`, `management_key_required` | No. Use the right key. |
+| 403 | `forbidden` | `sandbox_fixture_required` | No. Use the right key. |
 | 404 | `not_found` | `run_not_found`, `policy_not_found` | No. |
 | 409 | `conflict` | `event_conflict`, `version_conflict` | No. Use a new event ID for a new action. For a policy change, read the policy again and reapply. |
 | 429 | `rate_limited` | `unconfigured_flow_limit_exceeded` | Yes, with backoff. Respect `Retry-After`. For `unconfigured_flow_limit_exceeded`, create a policy for the flow first. |
