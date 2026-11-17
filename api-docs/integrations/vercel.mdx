@@ -6,7 +6,7 @@ icon: 'triangle'
 ---
 
 <Note>
-  This page explains the Vercel integration and how to use the keys it installs. Field-by-field API details live in the [Email Reputation](/api/email-reputation), [Phone Intelligence](/api/phone-intelligence) and [IP Intelligence](/api/ip-intelligence) references.
+  This page explains the Vercel integration and how to use the keys it installs. Field-by-field API details live in the [Email Intelligence](/api/email-reputation), [Phone Intelligence](/api/phone-intelligence) and [IP Intelligence](/api/ip-intelligence) references.
 </Note>
 
 ## Summary for coding agents
@@ -33,12 +33,12 @@ Install it from [vercel.com/integrations/abstract-api](https://vercel.com/integr
 
 | Variable | Product | Endpoint | Reference |
 |---|---|---|---|
-| `ABSTRACT_EMAIL_INTELLIGENCE_API_KEY` | Email Intelligence | `https://emailreputation.abstractapi.com/v1/` | [Email Reputation](/api/email-reputation) |
+| `ABSTRACT_EMAIL_INTELLIGENCE_API_KEY` | Email Intelligence | `https://emailreputation.abstractapi.com/v1/` | [Email Intelligence](/api/email-reputation) |
 | `ABSTRACT_PHONE_INTELLIGENCE_API_KEY` | Phone Intelligence | `https://phoneintelligence.abstractapi.com/v1/` | [Phone Intelligence](/api/phone-intelligence) |
 | `ABSTRACT_IP_INTELLIGENCE_API_KEY` | IP Intelligence | `https://ip-intelligence.abstractapi.com/v1/` | [IP Intelligence](/api/ip-intelligence) |
 
 <Info>
-  Email Intelligence is served by the `emailreputation` endpoint and documented in the Email Reputation reference. They are the same product.
+  Email Intelligence is served by the `emailreputation` endpoint.
 </Info>
 
 - Each variable holds the key of your Abstract account for that product, on your current plan. Each call uses one request from that product's plan.
