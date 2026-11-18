@@ -1,11 +1,11 @@
 ---
-title: 'Email Reputation: Integration guide'
-description: 'Add Email Reputation to a real application. Covers the core pass/fail pattern, fail-open error handling, rate limits for batch imports, and B2B vs. consumer routing.'
+title: 'Email Intelligence: Integration guide'
+description: 'Add Email Intelligence to a real application. Covers the core pass/fail pattern, fail-open error handling, rate limits for batch imports, and B2B vs. consumer routing.'
 ---
 
 ## Overview
 
-This guide shows you how to add Email Reputation to a signup form, lead import pipeline, or checkout flow. It assumes you haven't integrated the API in code yet, so it starts from the beginning.
+This guide shows you how to add Email Intelligence to a signup form, lead import pipeline, or checkout flow. It assumes you haven't integrated the API in code yet, so it starts from the beginning.
 
 The core pattern: collect an email address, call the API, read `email_deliverability.status`, decide what to do next.
 
@@ -91,7 +91,7 @@ def check_email(email: str) -> dict:
 
 ### 1. Fail open, not closed
 
-If the Email Reputation API returns an error or times out, let the user proceed. Blocking signups on API errors costs you real users and revenue.
+If the Email Intelligence API returns an error or times out, let the user proceed. Blocking signups on API errors costs you real users and revenue.
 
 Handle this explicitly in your code. Check the HTTP status code before reading the response body. If you get a non-200 response or a network exception, treat it the same as `unknown` and allow the request through.
 
@@ -109,6 +109,6 @@ The Free tier returns all fields for testing, so you can prototype this routing 
 
 ## Related
 
-- [Explore use cases](https://docs.abstractapi.com/api/email-reputation/use-cases): three patterns teams build with Email Reputation
+- [Explore use cases](https://docs.abstractapi.com/api/email-reputation/use-cases): three patterns teams build with Email Intelligence
 - [Advanced docs](https://docs.abstractapi.com/api/mail-reputation/advanced): batch processing, premium fields by tier, and accuracy methodology
 - [API reference](https://docs.abstractapi.com/api/email-reputation): full response schema and error codes

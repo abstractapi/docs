@@ -1,11 +1,11 @@
 ---
-title: 'Email Reputation: Production guide'
+title: 'Email Intelligence: Production guide'
 description: 'What to handle before going live: bulk list cleaning, fail-open error handling, API key security, and monitoring your usage in production.'
 ---
 
 ## Overview
 
-This guide covers what to handle before you ship Email Reputation to production: the edge cases and infrastructure decisions that don't surface until you're handling real users.
+This guide covers what to handle before you ship Email Intelligence to production: the edge cases and infrastructure decisions that don't surface until you're handling real users.
 
 ---
 
@@ -27,7 +27,7 @@ When cleaning an existing list, the key question isn't just "which addresses are
 
 ## Fail-open error handling
 
-Never block a user action because the Email Reputation API is unreachable. This is the single most important production rule.
+Never block a user action because the Email Intelligence API is unreachable. This is the single most important production rule.
 
 In practice: set an explicit timeout on every request (2 seconds is reasonable), catch network exceptions, and treat any error response the same as `unknown`: allow the user through.
 
