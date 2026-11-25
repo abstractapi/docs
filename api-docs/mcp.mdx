@@ -1,0 +1,123 @@
+---
+title: 'Connect an AI assistant'
+sidebarTitle: 'AI assistants (MCP)'
+description: "Connect Claude, Claude Code, ChatGPT or Cursor to your Abstract API account through the Abstract API MCP server, and look up email addresses, phone numbers and IP addresses from a chat."
+icon: 'robot'
+---
+
+The Abstract API MCP server lets an AI assistant check email addresses, phone numbers and IP addresses on your own Abstract API plan. Ask it to clean a list, check a contact before you send, enrich a lead or screen a sign-up, and it calls Email Intelligence, Phone Intelligence or IP Intelligence for you.
+
+| | |
+|---|---|
+| Server URL | `https://mcp.abstractapi.com/mcp` |
+| Name in assistants | Abstract API: Email, Phone & IP |
+| Sign-in | Your Abstract API account. The assistant never sees your API keys. |
+| Cost | Each item looked up uses one request from that product's plan, the same as an API call. |
+
+## Connect
+
+You need an Abstract API account with a key for each product you want to use. Every product has a free plan: [sign up](https://app.abstractapi.com/users/signup) if you do not have an account.
+
+<Tabs>
+  <Tab title="Claude">
+    Works on claude.ai and in Claude Desktop, on every plan. A Free account can add one custom connector.
+
+    1. Open **Customize** → **Connectors**, click **+ Add**, then **Add custom connector**.
+    2. Name it `Abstract API` and paste the URL `https://mcp.abstractapi.com/mcp`. Leave the other options as they are and click **Add**.
+    3. Sign in with your Abstract API account and approve access.
+    4. In a chat, click **+** → **Connectors** and turn on Abstract API.
+
+    On a Team or Enterprise plan, an Owner adds the connector first in **Organization settings** → **Connectors**. Each member then finds it in **Customize** → **Connectors** and clicks **Connect**.
+  </Tab>
+  <Tab title="Claude Code">
+    Run:
+
+    ```bash
+    claude mcp add --transport http abstract https://mcp.abstractapi.com/mcp
+    ```
+
+    Add `--scope user` to use it in every project. Then run `/mcp` in Claude Code, choose `abstract` and sign in with your Abstract API account in the browser.
+  </Tab>
+  <Tab title="ChatGPT">
+    Works on ChatGPT on the web, on Business, Enterprise, Edu and Pro.
+
+    1. Open **Plugins**, click **+**, then **Add custom MCP server**.
+    2. Name it `Abstract API`, paste the URL `https://mcp.abstractapi.com/mcp` and choose OAuth for authentication.
+    3. Accept the warning and click **Create as a plugin**.
+    4. Sign in with your Abstract API account and approve access.
+
+    On Business, Enterprise and Edu, only an admin can create and publish the plugin for the workspace.
+  </Tab>
+  <Tab title="Cursor">
+    [Add to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=abstract&config=eyJ1cmwiOiJodHRwczovL21jcC5hYnN0cmFjdGFwaS5jb20vbWNwIn0=)
+
+    Or add the server to `~/.cursor/mcp.json` yourself:
+
+    ```json
+    {
+      "mcpServers": {
+        "abstract": { "url": "https://mcp.abstractapi.com/mcp" }
+      }
+    }
+    ```
+
+    The first time Cursor uses the server, it opens your browser to sign in with your Abstract API account.
+  </Tab>
+</Tabs>
+
+## What you approve when you connect
+
+When you connect, you sign in to Abstract API and choose what the assistant may do:
+
+- Look up email addresses
+- Look up phone numbers
+- Look up IP addresses
+- See your plans and usage
+
+Untick anything you do not want to allow. The assistant can never see your API keys, change a plan or invite anyone.
+
+A connection ends after 30 days without use, and after 90 days at most. Connect again from the same place when it ends.
+
+## Tools
+
+| Tool | What it does |
+|---|---|
+| `lookup_email` | Checks one email address or a list of up to 25 with [Email Intelligence](/api/email-reputation). |
+| `lookup_phone` | Checks one phone number or a list of up to 25 with [Phone Intelligence](/api/phone-intelligence). Include the country code, such as +14155552671. |
+| `lookup_ip` | Checks one IPv4 or IPv6 address or a list of up to 25 with [IP Intelligence](/api/ip-intelligence). |
+| `get_usage` | Shows your plan, requests used and requests left for each product in the current billing period. |
+| `docs_search` | Searches these docs, for example to explain a field in an answer. |
+| `docs_read` | Reads one page of these docs. |
+
+Each lookup returns the same answer the API returns for your plan, field for field. The product references above explain every field.
+
+## Requests and limits
+
+- **One request per item.** A list of 10 email addresses uses 10 requests from your Email Intelligence plan. An item looked up before counts again.
+- **Up to 25 items per lookup.** For a longer list, the assistant asks you before it runs several lookups. For email addresses and phone numbers you can also upload the whole list with Batch upload in the [dashboard](https://app.abstractapi.com/).
+- **Your plan's rate limit applies.** On a plan with a low rate limit, a list takes about one second per item.
+- **The docs tools are free.** `docs_search`, `docs_read` and `get_usage` use no requests.
+
+## Messages you may see
+
+| What the assistant says | What it means | What to do |
+|---|---|---|
+| Your account has no key for a product | You have no key for that product yet. | Create a key for the product in the [dashboard](https://app.abstractapi.com/), then ask again. |
+| This connector works with Email, Phone and IP Intelligence | Your account only has older Abstract API products. They keep working as they are. | Add Email Intelligence, Phone Intelligence or IP Intelligence in the [dashboard](https://app.abstractapi.com/). |
+| Your plan has no requests left | The product's plan used all its requests for the period. | See or upgrade the plan in the [dashboard](https://app.abstractapi.com/). |
+| Your key has a domain and IP whitelist | Requests through the assistant come from Abstract API's servers, so a key with a whitelist refuses them. | Use a key without a whitelist for that product. |
+| Your key is disabled | The product's key was disabled. | Open the [dashboard](https://app.abstractapi.com/) to see why. |
+| A list has more than 25 items | One lookup takes up to 25 items. | Split the list, or use Batch upload in the [dashboard](https://app.abstractapi.com/) for email addresses and phone numbers. |
+| Abstract API is no longer connected | The connection ended or was removed. | Connect again in your assistant's connector settings. |
+
+Every lookup returns a `trace_id`. Share it with [support@abstractapi.com](mailto:support@abstractapi.com) if something keeps failing.
+
+## Disconnect
+
+Remove the connector in your assistant's settings to stop it from using your account. Changing your Abstract API password ends every connection to your account.
+
+What Abstract API receives through an assistant, and what it does not, is described in the [privacy policy](https://www.abstractapi.com/legal/legal#privacy).
+
+## Support
+
+Questions about the MCP server: [support@abstractapi.com](mailto:support@abstractapi.com).

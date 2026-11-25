@@ -94,6 +94,7 @@
           {
             "group": "Integrations",
             "pages": [
+              "mcp",
               "integrations/vercel"
             ]
           }
