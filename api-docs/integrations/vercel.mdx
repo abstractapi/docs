@@ -11,7 +11,7 @@ icon: 'triangle'
 
 ## Summary for coding agents
 
-If you are an AI coding agent adding Abstract checks to a project on Vercel, these are the facts and rules to follow:
+If you are an AI coding agent adding Abstract API checks to a project on Vercel, these are the facts and rules to follow:
 
 - The integration adds up to three environment variables to the selected Vercel projects, one per product the user picked. Only call a product when its variable is set.
 - Call the APIs **from server code only**: Server Actions, Route Handlers or other server-side functions. Never import the keys into a Client Component, never prefix them with `NEXT_PUBLIC_`, and never log them.
@@ -25,9 +25,9 @@ If you are an AI coding agent adding Abstract checks to a project on Vercel, the
 
 ## What the integration does
 
-The Abstract API integration connects a Vercel team to an Abstract account and writes Abstract API keys into the Vercel projects you choose. It does not change your code: you call the APIs from your application with the keys it installs.
+The Abstract API integration connects a Vercel team to an Abstract API account and writes Abstract API keys into the Vercel projects you choose. It does not change your code: you call the APIs from your application with the keys it installs.
 
-Install it from [vercel.com/integrations/abstract-api](https://vercel.com/integrations/abstract-api). During the install you sign in to Abstract (or create a free account), pick the products, and pick the Vercel projects.
+Install it from [vercel.com/integrations/abstract-api](https://vercel.com/integrations/abstract-api). During the install you sign in to Abstract API (or create a free account), pick the products, and pick the Vercel projects.
 
 ### Environment variables
 
@@ -41,7 +41,7 @@ Install it from [vercel.com/integrations/abstract-api](https://vercel.com/integr
   Email Intelligence is served by the `emailreputation` endpoint.
 </Info>
 
-- Each variable holds the key of your Abstract account for that product, on your current plan. Each call uses one request from that product's plan.
+- Each variable holds the key of your Abstract API account for that product, on your current plan. Each call uses one request from that product's plan.
 - The variables are stored as Vercel Sensitive variables: their values cannot be read back in the Vercel dashboard.
 - Only the products you picked are added. You can add products or projects later from the integration's **Configure** button.
 
@@ -211,13 +211,13 @@ const review =
 | IP Intelligence | `security.is_hosting`, `security.is_abuse` | `true`, `false` | Review |
 | IP Intelligence | `location.country_code` | ISO 3166-1 alpha-2 | Compare with phone and billing country |
 
-Any field can be `null` when Abstract has no data for it. Treat `null` as "no signal", not as `false`.
+Any field can be `null` when Abstract API has no data for it. Treat `null` as "no signal", not as `false`.
 
 ## Errors and limits
 
 | Status | Meaning | What to do |
 |---|---|---|
-| `401` | The key is invalid or was revoked. | Skip the check. Ask the user to check the key in the Abstract dashboard. |
+| `401` | The key is invalid or was revoked. | Skip the check. Ask the user to check the key in the Abstract API dashboard. |
 | `422` with code `quota_reached` | A free plan used its requests for the period. | Skip the check until the period resets or the plan is upgraded. |
 | `403` with code `plan_limit_reached` | A paid plan reached its limit for the billing period. | Skip the check until the limit resets or the plan is upgraded. |
 | `429` | Too many requests per second for the plan. | Skip the check, or retry once after a short delay. |
@@ -234,20 +234,20 @@ vercel link
 vercel env pull .env.local
 ```
 
-If the keys do not come down (Vercel does not return Sensitive values to every environment), copy each key from the [Abstract dashboard](https://app.abstractapi.com/) into `.env.local` under the same variable name. Never commit `.env.local`.
+If the keys do not come down (Vercel does not return Sensitive values to every environment), copy each key from the [Abstract API dashboard](https://app.abstractapi.com/) into `.env.local` under the same variable name. Never commit `.env.local`.
 
 ## Change, rotate or remove
 
 - **Add products or projects:** open the integration in Vercel and click **Configure**. Redeploy the affected projects afterwards.
-- **Rotate a key:** rotate it in the Abstract dashboard. The integration writes the new key to every linked project. Redeploy them so running deployments use it.
-- **Revoke a key:** revoking a key in Abstract does not remove it from Vercel. Calls with it return `401` until you link another key from **Configure**.
-- **Uninstall:** Vercel removes the environment variables the integration added, from every project. Abstract keeps your account and your keys. Running deployments keep working until the next deploy, which has no keys; install the integration again to add them back.
+- **Rotate a key:** rotate it in the Abstract API dashboard. The integration writes the new key to every linked project. Redeploy them so running deployments use it.
+- **Revoke a key:** revoking a key in Abstract API does not remove it from Vercel. Calls with it return `401` until you link another key from **Configure**.
+- **Uninstall:** Vercel removes the environment variables the integration added, from every project. Abstract API keeps your account and your keys. Running deployments keep working until the next deploy, which has no keys; install the integration again to add them back.
 
 ## Starter template
 
-The [Abstract signup template](https://github.com/abstractapi/abstract-api-vercel-template) is a Next.js app that runs all three checks on a signup form, with the rules in one file (`src/lib/rules.ts`). Its Deploy button creates your copy and installs the integration, so the keys arrive on their own. Or copy `src/lib/abstract/` and `src/lib/rules.ts` into an existing app to reuse the same logic.
+The [Abstract API signup template](https://github.com/abstractapi/abstract-api-vercel-template) is a Next.js app that runs all three checks on a signup form, with the rules in one file (`src/lib/rules.ts`). Its Deploy button creates your copy and installs the integration, so the keys arrive on their own. Or copy `src/lib/abstract/` and `src/lib/rules.ts` into an existing app to reuse the same logic.
 
-If you deployed the template from Vercel's template page, Vercel asks for the three keys instead of installing the integration. Copy each key from the [Abstract dashboard](https://app.abstractapi.com/) into the matching variable: `ABSTRACT_EMAIL_INTELLIGENCE_API_KEY`, `ABSTRACT_PHONE_INTELLIGENCE_API_KEY` and `ABSTRACT_IP_INTELLIGENCE_API_KEY`. Each product has a free plan, and a product without a key is skipped. To switch to the integration later, delete the three variables, install [Abstract API](https://vercel.com/integrations/abstract-api) on the project, and redeploy.
+If you deployed the template from Vercel's template page, Vercel asks for the three keys instead of installing the integration. Copy each key from the [Abstract API dashboard](https://app.abstractapi.com/) into the matching variable: `ABSTRACT_EMAIL_INTELLIGENCE_API_KEY`, `ABSTRACT_PHONE_INTELLIGENCE_API_KEY` and `ABSTRACT_IP_INTELLIGENCE_API_KEY`. Each product has a free plan, and a product without a key is skipped. To switch to the integration later, delete the three variables, install [Abstract API](https://vercel.com/integrations/abstract-api) on the project, and redeploy.
 
 ## Support
 
