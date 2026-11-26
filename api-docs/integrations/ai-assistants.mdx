@@ -82,9 +82,9 @@ A connection ends after 30 days without use, and after 90 days at most. Connect 
 
 | Tool | What it does |
 |---|---|
-| `lookup_email` | Checks one email address or a list of up to 25 with [Email Intelligence](/api/email-reputation). |
-| `lookup_phone` | Checks one phone number or a list of up to 25 with [Phone Intelligence](/api/phone-intelligence). Include the country code, such as +14155552671. |
-| `lookup_ip` | Checks one IPv4 or IPv6 address or a list of up to 25 with [IP Intelligence](/api/ip-intelligence). |
+| `lookup_email` | Checks one email address or a list of up to 10 with [Email Intelligence](/api/email-reputation). |
+| `lookup_phone` | Checks one phone number or a list of up to 10 with [Phone Intelligence](/api/phone-intelligence). Include the country code, such as +14155552671. |
+| `lookup_ip` | Checks one IPv4 or IPv6 address or a list of up to 10 with [IP Intelligence](/api/ip-intelligence). |
 | `get_usage` | Shows your plan, requests used and requests left for each product in the current billing period. |
 | `docs_search` | Searches these docs, for example to explain a field in an answer. Returns short excerpts and links to the matching pages. |
 
@@ -93,7 +93,7 @@ Each lookup returns the same answer the API returns for your plan, field for fie
 ## Requests and limits
 
 - **One request per item.** A list of 10 email addresses uses 10 requests from your Email Intelligence plan. An item looked up before counts again.
-- **Up to 25 items per lookup.** For a longer list, the assistant asks you before it runs several lookups. For email addresses and phone numbers you can also upload the whole list with Batch upload in the [dashboard](https://app.abstractapi.com/).
+- **Up to 10 items per lookup.** For a longer list, the assistant asks you before it runs several lookups. For email addresses and phone numbers you can also upload the whole list with Batch upload in the [dashboard](https://app.abstractapi.com/).
 - **Your plan's rate limit applies.** On a plan with a low rate limit, a list takes about one second per item.
 - **`docs_search` and `get_usage` are free.** They use no requests.
 
@@ -106,7 +106,7 @@ Each lookup returns the same answer the API returns for your plan, field for fie
 | Your plan has no requests left | The product's plan used all its requests for the period. | See or upgrade the plan in the [dashboard](https://app.abstractapi.com/). |
 | Your key has a domain and IP whitelist | Requests through the assistant come from Abstract API's servers, so a key with a whitelist refuses them. | Use a key without a whitelist for that product. |
 | Your key is disabled | The product's key was disabled. | Open the [dashboard](https://app.abstractapi.com/) to see why. |
-| A list has more than 25 items | One lookup takes up to 25 items. | Split the list, or use Batch upload in the [dashboard](https://app.abstractapi.com/) for email addresses and phone numbers. |
+| A list has more than 10 items | One lookup takes up to 10 items. | Split the list, or use Batch upload in the [dashboard](https://app.abstractapi.com/) for email addresses and phone numbers. |
 | Abstract API is no longer connected | The connection ended or was removed. | Connect again in your assistant's connector settings. |
 
 Every lookup returns a `trace_id`. Share it with [support@abstractapi.com](mailto:support@abstractapi.com) if something keeps failing.
