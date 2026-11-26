@@ -101,7 +101,7 @@ def check_ip(ip_address: str) -> dict:
 
 ### 1. Cache IP-to-location data aggressively
 
-IP-to-location data is the most cacheable of Abstract's products. Abstract's database is updated continuously, but a given IP address typically points to the same location across a 24-hour window, making it safe to cache for short periods.
+IP-to-location data is the most cacheable Abstract API product. Abstract API's database is updated continuously, but a given IP address typically points to the same location across a 24-hour window, making it safe to cache for short periods.
 
 Cache key: the IP address string. TTL: 24 hours. This keeps cached data fresh while substantially reducing your request volume.
 

@@ -2,7 +2,7 @@
 title: 'IP Intelligence API documentation'
 sidebarTitle: 'IP Intelligence API'
 icon: 'location-dot'
-description: "Endpoint reference for Abstract's IP Intelligence API: base URL, request parameters, response fields for VPN, proxy, Tor, hosting, relay, mobile and abuse detection, error codes and code samples."
+description: "Endpoint reference for Abstract API's IP Intelligence API: base URL, request parameters, response fields for VPN, proxy, Tor, hosting, relay, mobile and abuse detection, error codes and code samples."
 api: 'GET https://ip-intelligence.abstractapi.com/v1'
 hideApiMarker: true
 ---
@@ -21,7 +21,7 @@ It is very simple to use: you only need to submit your API key and an IP address
 
 ### REST
 
-The IP Intelligence API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+The IP Intelligence API, like every Abstract API product, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
@@ -29,11 +29,11 @@ The IP Intelligence API requires all communications to be secured with TLS 1.2 o
 
 ### API Versions
 
-All of Abstract's APIs are versioned. The IP Intelligence API is currently on Version 1.
+Every Abstract API product is versioned. The IP Intelligence API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's IP Intelligence API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IP Intelligence and Email Validation APIs, for example. You can send it as a query parameter or in an `Authorization` header: see [Authentication methods](#authentication-methods).
+Your API key is your unique authentication key to be used to access Abstract API's IP Intelligence API. Note that each Abstract API product has a unique API key, so you will need different keys to access the IP Intelligence and Email Validation APIs, for example. You can send it as a query parameter or in an `Authorization` header: see [Authentication methods](#authentication-methods).
 
 ### Base URL
 
@@ -66,7 +66,7 @@ When using header-based authentication, omit `api_key` from the query string. On
 
 ## Validation endpoint
 
-Abstract's IP Intelligence API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
+Abstract API's IP Intelligence API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
 
 ```
 https://ip-intelligence.abstractapi.com/v1/
@@ -172,7 +172,7 @@ When using the Bearer token with POST, the body only needs to contain the `ip_ad
 ## Request parameters
 
 <ParamField query="api_key" type="String" required>
-  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your IP Intelligence API key will not work for your Email Validation API, for example.
+  Your unique API key. Note that each user has unique API keys for each Abstract API product, so your IP Intelligence API key will not work for your Email Validation API, for example.
 </ParamField>
 
 <ParamField query="ip_address" type="String">

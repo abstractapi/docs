@@ -1,7 +1,7 @@
 ---
 title: 'IP Geolocation API documentation'
 icon: 'location-dot'
-description: "Endpoint reference for Abstract's IP Geolocation API: base URL, request parameters, response fields, error codes and code samples for locating IP addresses in 190+ countries."
+description: "Endpoint reference for Abstract API's IP Geolocation API: base URL, request parameters, response fields, error codes and code samples for locating IP addresses in 190+ countries."
 api: 'GET https://ipgeolocation.abstractapi.com/v1'
 hideApiMarker: true
 ---
@@ -16,7 +16,7 @@ It's very simple to use: you only need to submit your API key and an IP address,
 
 ### REST
 
-The IP Geolocation API, like all of Abstract's APIs, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
+The IP Geolocation API, like every Abstract API product, is organized around REST. It is designed to use predictable, resource-oriented URLs and to use HTTP status codes to indicate errors.
 
 ### HTTPS
 
@@ -24,11 +24,11 @@ The IP Geolocation API requires all communications to be secured with TLS 1.2 or
 
 ### API Versions
 
-All of Abstract's APIs are versioned. The IP Geolocation API is currently on Version 1.
+Every Abstract API product is versioned. The IP Geolocation API is currently on Version 1.
 
 ### Your API Key
 
-Your API key is your unique authentication key to be used to access Abstract's IP Geolocation API. Note that each of Abstract's APIs has a unique API key, so you will need different keys to access the IP Geolocation and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
+Your API key is your unique authentication key to be used to access Abstract API's IP Geolocation API. Note that each Abstract API product has a unique API key, so you will need different keys to access the IP Geolocation and Email Validation APIs, for example. To authenticate your requests, you will need to append your API key to the base URL.
 
 ### Base URL
 
@@ -38,7 +38,7 @@ https://ipgeolocation.abstractapi.com/v1/
 
 ### Validation endpoint
 
-Abstract's IP Geolocation API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
+Abstract API's IP Geolocation API simply requires your unique API key and will automatically detect the IP address from the client where it is called. You can also append the "ip_address" parameter to specify the IP to analyze:
 
 ```
 https://ipgeolocation.abstractapi.com/v1/
@@ -103,7 +103,7 @@ This was a successful request, so the IP address and details associated with it 
 ### Request parameters
 
 <ParamField query="api_key" type="String" required>
-  Your unique API key. Note that each user has unique API keys for each of Abstract's APIs, so your IP Geolocation API key will not work for your Email Validation API, for example.
+  Your unique API key. Note that each user has unique API keys for each Abstract API product, so your IP Geolocation API key will not work for your Email Validation API, for example.
 </ParamField>
 
 <ParamField query="ip_address" type="String">

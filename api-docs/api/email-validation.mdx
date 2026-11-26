@@ -1,6 +1,6 @@
 ---
 title: 'Email Validation API'
-description: Improve your delivery rate and clean your email lists with Abstract's industry-leading Email Validation API.
+description: Improve your delivery rate and clean your email lists with Abstract API's industry-leading Email Validation API.
 icon: 'envelope'
 api: 'GET https://emailvalidation.abstractapi.com/v1'
 hideApiMarker: true
@@ -8,7 +8,7 @@ hideApiMarker: true
 
 ## Getting Started
 
-Abstract's Email Validation and Verification API requires only your unique API key `api_key` and a single email `email`:
+Abstract API's Email Validation and Verification API requires only your unique API key `api_key` and a single email `email`:
 
 ```bash
 https://emailvalidation.abstractapi.com/v1/
@@ -62,8 +62,8 @@ This was a successful request, and all available details about that email were r
 ### Request parameters
 
 <ParamField query="api_key" type="string" required>
-  Your unique API key. Note that each user has unique API keys _for each of
-  Abstract's APIs_, so your Email Validation API key will not work for your IP
+  Your unique API key. Note that each user has unique API keys _for each
+  Abstract API product_, so your Email Validation API key will not work for your IP
   Geolocation API, for example.
 </ParamField>
 
@@ -90,12 +90,12 @@ The API response is returned in a universal and lightweight [JSON format](https:
 </ResponseField>
 
 <ResponseField name="deliverability" type="String">
-  Abstract's evaluation of the deliverability of the email. Possible values are:
+  Abstract API's evaluation of the deliverability of the email. Possible values are:
   `DELIVERABLE`, `UNDELIVERABLE`, and `UNKNOWN`.
 </ResponseField>
 
 <ResponseField name="quality_score" type="Float">
-  An internal decimal score between 0.01 and 0.99 reflecting Abstract's
+  An internal decimal score between 0.01 and 0.99 reflecting Abstract API's
   confidence in the quality and deliverability of the submitted email.
 </ResponseField>
 
@@ -106,12 +106,12 @@ The API response is returned in a universal and lightweight [JSON format](https:
 </ResponseField>
 
 <ResponseField name="is_free_email" type="Boolean">
-  Is `true` if the email's domain is found among Abstract's list of free email
+  Is `true` if the email's domain is found among Abstract API's list of free email
   providers Gmail, Yahoo, etc.
 </ResponseField>
 
 <ResponseField name="is_disposable_email" type="Boolean">
-  Is `true` if the email's domain is found among Abstract's list of disposable
+  Is `true` if the email's domain is found among Abstract API's list of disposable
   email providers (e.g., Mailinator, Yopmail, etc).
 </ResponseField>
 
